@@ -22,5 +22,22 @@ namespace Survey.Models
 
         [InverseProperty("Execution")]
         public virtual ICollection<QuestionExecution> QuestionExecutions { get; set; }
+
+        public class DTO
+        {
+            public int Id { get; set; }
+            public string Key { get; set; }
+            public string Notes { get; set; }
+        }
+
+        public static DTO ToDTO(Execution execution)
+        {
+            return new DTO
+            {
+                Id = execution.Id,
+                Key = execution.Key,
+                Notes = execution.Notes
+            };
+        }
     }
 }

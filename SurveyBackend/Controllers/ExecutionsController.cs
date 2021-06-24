@@ -18,10 +18,11 @@ namespace Survey.Controllers
             _context = context;
         }
 
+        // One guide recommended using async more often here.
         [HttpGet]
-        public IEnumerable<Execution> Get()
+        public IEnumerable<Execution.DTO> Get()
         {
-            return _context.Executions.ToList();
+            return _context.Executions.Select(x => Execution.ToDTO(x)).ToList();
         }
     }
 }
