@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
-    public partial class QuestionTypes
+    public partial class QuestionType
     {
-        public QuestionTypes()
+        public QuestionType()
         {
-            PossibleResponses = new HashSet<PossibleResponses>();
-            Questions = new HashSet<Questions>();
+            PossibleResponses = new HashSet<PossibleResponse>();
+            Questions = new HashSet<Question>();
         }
 
         [Key]
@@ -19,8 +19,8 @@ namespace SurveyBackend.Models
         public string Name { get; set; }
 
         [InverseProperty("QuestionType")]
-        public virtual ICollection<PossibleResponses> PossibleResponses { get; set; }
+        public virtual ICollection<PossibleResponse> PossibleResponses { get; set; }
         [InverseProperty("QuestionType")]
-        public virtual ICollection<Questions> Questions { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
     }
 }

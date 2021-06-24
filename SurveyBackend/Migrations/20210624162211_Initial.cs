@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SurveyBackend.Migrations
+namespace Survey.Migrations
 {
     public partial class Initial : Migration
     {

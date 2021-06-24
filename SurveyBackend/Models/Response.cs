@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
-    public partial class Responses
+    public partial class Response
     {
         [Key]
         public int Id { get; set; }
@@ -16,13 +16,13 @@ namespace SurveyBackend.Models
         public int DataGroupId { get; set; }
 
         [ForeignKey(nameof(DataGroupId))]
-        [InverseProperty(nameof(DataGroups.Responses))]
-        public virtual DataGroups DataGroup { get; set; }
+        [InverseProperty(nameof(Models.DataGroup.Responses))]
+        public virtual DataGroup DataGroup { get; set; }
         [ForeignKey(nameof(PossibleResponseId))]
-        [InverseProperty(nameof(PossibleResponses.Responses))]
-        public virtual PossibleResponses PossibleResponse { get; set; }
+        [InverseProperty(nameof(Models.PossibleResponse.Responses))]
+        public virtual PossibleResponse PossibleResponse { get; set; }
         [ForeignKey(nameof(QuestionExecutionId))]
-        [InverseProperty(nameof(QuestionExecutions.Responses))]
-        public virtual QuestionExecutions QuestionExecution { get; set; }
+        [InverseProperty(nameof(Models.QuestionExecution.Responses))]
+        public virtual QuestionExecution QuestionExecution { get; set; }
     }
 }

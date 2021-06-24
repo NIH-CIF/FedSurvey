@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
     public partial class CoreDbContext : DbContext
     {
@@ -15,14 +15,14 @@ namespace SurveyBackend.Models
         {
         }
 
-        public virtual DbSet<DataGroups> DataGroups { get; set; }
-        public virtual DbSet<Executions> Executions { get; set; }
-        public virtual DbSet<PossibleResponseStrings> PossibleResponseStrings { get; set; }
-        public virtual DbSet<PossibleResponses> PossibleResponses { get; set; }
-        public virtual DbSet<QuestionExecutions> QuestionExecutions { get; set; }
-        public virtual DbSet<QuestionTypes> QuestionTypes { get; set; }
-        public virtual DbSet<Questions> Questions { get; set; }
-        public virtual DbSet<Responses> Responses { get; set; }
+        public virtual DbSet<DataGroup> DataGroups { get; set; }
+        public virtual DbSet<Execution> Executions { get; set; }
+        public virtual DbSet<PossibleResponseString> PossibleResponseStrings { get; set; }
+        public virtual DbSet<PossibleResponse> PossibleResponses { get; set; }
+        public virtual DbSet<QuestionExecution> QuestionExecutions { get; set; }
+        public virtual DbSet<QuestionType> QuestionTypes { get; set; }
+        public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<Response> Responses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -35,14 +35,14 @@ namespace SurveyBackend.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DataGroups>(entity =>
+            modelBuilder.Entity<DataGroup>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Name).IsUnicode(false);
             });
 
-            modelBuilder.Entity<Executions>(entity =>
+            modelBuilder.Entity<Execution>(entity =>
             {
                 entity.HasIndex(e => e.Key)
                     .HasName("UQ__Executio__C41E02890F7150F6")
@@ -53,7 +53,7 @@ namespace SurveyBackend.Models
                 entity.Property(e => e.Key).IsUnicode(false);
             });
 
-            modelBuilder.Entity<PossibleResponseStrings>(entity =>
+            modelBuilder.Entity<PossibleResponseString>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -66,7 +66,7 @@ namespace SurveyBackend.Models
                     .HasConstraintName("FK_PossibleResponseStrings_PossibleResponses");
             });
 
-            modelBuilder.Entity<PossibleResponses>(entity =>
+            modelBuilder.Entity<PossibleResponse>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -77,7 +77,7 @@ namespace SurveyBackend.Models
                     .HasConstraintName("FK_PossibleResponses_QuestionTypes");
             });
 
-            modelBuilder.Entity<QuestionExecutions>(entity =>
+            modelBuilder.Entity<QuestionExecution>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -94,14 +94,14 @@ namespace SurveyBackend.Models
                     .HasConstraintName("FK_QuestionExecutions_Questions");
             });
 
-            modelBuilder.Entity<QuestionTypes>(entity =>
+            modelBuilder.Entity<QuestionType>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Name).IsUnicode(false);
             });
 
-            modelBuilder.Entity<Questions>(entity =>
+            modelBuilder.Entity<Question>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -112,7 +112,7 @@ namespace SurveyBackend.Models
                     .HasConstraintName("FK_Questions_QuestionTypes");
             });
 
-            modelBuilder.Entity<Responses>(entity =>
+            modelBuilder.Entity<Response>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 

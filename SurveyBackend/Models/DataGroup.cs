@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
-    public partial class DataGroups
+    public partial class DataGroup
     {
-        public DataGroups()
+        public DataGroup()
         {
-            Responses = new HashSet<Responses>();
+            Responses = new HashSet<Response>();
         }
 
         [Key]
@@ -19,6 +19,6 @@ namespace SurveyBackend.Models
         public string Name { get; set; }
 
         [InverseProperty("DataGroup")]
-        public virtual ICollection<Responses> Responses { get; set; }
+        public virtual ICollection<Response> Responses { get; set; }
     }
 }

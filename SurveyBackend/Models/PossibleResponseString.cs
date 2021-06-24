@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
-    public partial class PossibleResponseStrings
+    public partial class PossibleResponseString
     {
         [Key]
         public int Id { get; set; }
@@ -15,7 +15,7 @@ namespace SurveyBackend.Models
         public string Name { get; set; }
 
         [ForeignKey(nameof(PossibleResponseId))]
-        [InverseProperty(nameof(PossibleResponses.PossibleResponseStrings))]
-        public virtual PossibleResponses PossibleResponse { get; set; }
+        [InverseProperty(nameof(Models.PossibleResponse.PossibleResponseStrings))]
+        public virtual PossibleResponse PossibleResponse { get; set; }
     }
 }

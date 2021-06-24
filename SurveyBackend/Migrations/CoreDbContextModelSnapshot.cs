@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SurveyBackend.Models;
+using Survey.Models;
 
-namespace SurveyBackend.Migrations
+namespace Survey.Migrations
 {
     [DbContext(typeof(CoreDbContext))]
     partial class CoreDbContextModelSnapshot : ModelSnapshot
@@ -18,7 +18,7 @@ namespace SurveyBackend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SurveyBackend.Models.DataGroups", b =>
+            modelBuilder.Entity("Survey.Models.DataGroups", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -34,7 +34,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("DataGroups");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.Executions", b =>
+            modelBuilder.Entity("Survey.Models.Executions", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -57,7 +57,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("Executions");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.PossibleResponseStrings", b =>
+            modelBuilder.Entity("Survey.Models.PossibleResponseStrings", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -78,7 +78,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("PossibleResponseStrings");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.PossibleResponses", b =>
+            modelBuilder.Entity("Survey.Models.PossibleResponses", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -93,7 +93,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("PossibleResponses");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.QuestionExecutions", b =>
+            modelBuilder.Entity("Survey.Models.QuestionExecutions", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -120,7 +120,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("QuestionExecutions");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.QuestionTypes", b =>
+            modelBuilder.Entity("Survey.Models.QuestionTypes", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -135,7 +135,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("QuestionTypes");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.Questions", b =>
+            modelBuilder.Entity("Survey.Models.Questions", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -150,7 +150,7 @@ namespace SurveyBackend.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.Responses", b =>
+            modelBuilder.Entity("Survey.Models.Responses", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -178,63 +178,63 @@ namespace SurveyBackend.Migrations
                     b.ToTable("Responses");
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.PossibleResponseStrings", b =>
+            modelBuilder.Entity("Survey.Models.PossibleResponseStrings", b =>
                 {
-                    b.HasOne("SurveyBackend.Models.PossibleResponses", "PossibleResponse")
+                    b.HasOne("Survey.Models.PossibleResponses", "PossibleResponse")
                         .WithMany("PossibleResponseStrings")
                         .HasForeignKey("PossibleResponseId")
                         .HasConstraintName("FK_PossibleResponseStrings_PossibleResponses")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.PossibleResponses", b =>
+            modelBuilder.Entity("Survey.Models.PossibleResponses", b =>
                 {
-                    b.HasOne("SurveyBackend.Models.QuestionTypes", "QuestionType")
+                    b.HasOne("Survey.Models.QuestionTypes", "QuestionType")
                         .WithMany("PossibleResponses")
                         .HasForeignKey("QuestionTypeId")
                         .HasConstraintName("FK_PossibleResponses_QuestionTypes")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.QuestionExecutions", b =>
+            modelBuilder.Entity("Survey.Models.QuestionExecutions", b =>
                 {
-                    b.HasOne("SurveyBackend.Models.Executions", "Execution")
+                    b.HasOne("Survey.Models.Executions", "Execution")
                         .WithMany("QuestionExecutions")
                         .HasForeignKey("ExecutionId")
                         .HasConstraintName("FK_QuestionExecutions_Executions")
                         .IsRequired();
 
-                    b.HasOne("SurveyBackend.Models.Questions", "Question")
+                    b.HasOne("Survey.Models.Questions", "Question")
                         .WithMany("QuestionExecutions")
                         .HasForeignKey("QuestionId")
                         .HasConstraintName("FK_QuestionExecutions_Questions")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.Questions", b =>
+            modelBuilder.Entity("Survey.Models.Questions", b =>
                 {
-                    b.HasOne("SurveyBackend.Models.QuestionTypes", "QuestionType")
+                    b.HasOne("Survey.Models.QuestionTypes", "QuestionType")
                         .WithMany("Questions")
                         .HasForeignKey("QuestionTypeId")
                         .HasConstraintName("FK_Questions_QuestionTypes")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SurveyBackend.Models.Responses", b =>
+            modelBuilder.Entity("Survey.Models.Responses", b =>
                 {
-                    b.HasOne("SurveyBackend.Models.DataGroups", "DataGroup")
+                    b.HasOne("Survey.Models.DataGroups", "DataGroup")
                         .WithMany("Responses")
                         .HasForeignKey("DataGroupId")
                         .HasConstraintName("FK_Responses_DataGroups")
                         .IsRequired();
 
-                    b.HasOne("SurveyBackend.Models.PossibleResponses", "PossibleResponse")
+                    b.HasOne("Survey.Models.PossibleResponses", "PossibleResponse")
                         .WithMany("Responses")
                         .HasForeignKey("PossibleResponseId")
                         .HasConstraintName("FK_Responses_PossibleResponses")
                         .IsRequired();
 
-                    b.HasOne("SurveyBackend.Models.QuestionExecutions", "QuestionExecution")
+                    b.HasOne("Survey.Models.QuestionExecutions", "QuestionExecution")
                         .WithMany("Responses")
                         .HasForeignKey("QuestionExecutionId")
                         .HasConstraintName("FK_Responses_QuestionExecutions")

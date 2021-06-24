@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
-    public partial class Executions
+    public partial class Execution
     {
-        public Executions()
+        public Execution()
         {
-            QuestionExecutions = new HashSet<QuestionExecutions>();
+            QuestionExecutions = new HashSet<QuestionExecution>();
         }
 
         [Key]
@@ -21,6 +21,6 @@ namespace SurveyBackend.Models
         public string Notes { get; set; }
 
         [InverseProperty("Execution")]
-        public virtual ICollection<QuestionExecutions> QuestionExecutions { get; set; }
+        public virtual ICollection<QuestionExecution> QuestionExecutions { get; set; }
     }
 }

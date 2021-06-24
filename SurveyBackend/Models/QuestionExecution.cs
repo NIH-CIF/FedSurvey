@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SurveyBackend.Models
+namespace Survey.Models
 {
-    public partial class QuestionExecutions
+    public partial class QuestionExecution
     {
-        public QuestionExecutions()
+        public QuestionExecution()
         {
-            Responses = new HashSet<Responses>();
+            Responses = new HashSet<Response>();
         }
 
         [Key]
@@ -22,12 +22,12 @@ namespace SurveyBackend.Models
         public int QuestionId { get; set; }
 
         [ForeignKey(nameof(ExecutionId))]
-        [InverseProperty(nameof(Executions.QuestionExecutions))]
-        public virtual Executions Execution { get; set; }
+        [InverseProperty(nameof(Models.Execution.QuestionExecutions))]
+        public virtual Execution Execution { get; set; }
         [ForeignKey(nameof(QuestionId))]
-        [InverseProperty(nameof(Questions.QuestionExecutions))]
-        public virtual Questions Question { get; set; }
+        [InverseProperty(nameof(Models.Question.QuestionExecutions))]
+        public virtual Question Question { get; set; }
         [InverseProperty("QuestionExecution")]
-        public virtual ICollection<Responses> Responses { get; set; }
+        public virtual ICollection<Response> Responses { get; set; }
     }
 }

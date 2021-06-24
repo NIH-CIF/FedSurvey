@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SurveyBackend
+namespace Survey
 {
     public class Program
     {
