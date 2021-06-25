@@ -8,6 +8,7 @@ namespace Survey.Models
     public partial class PossibleResponseString
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int PossibleResponseId { get; set; }
         [Required]

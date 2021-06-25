@@ -21,7 +21,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.DataGroup", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -37,7 +38,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.Execution", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Key")
                         .IsRequired()
@@ -60,7 +62,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.PossibleResponse", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("QuestionTypeId")
                         .HasColumnType("int");
@@ -75,7 +78,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.PossibleResponseString", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -96,7 +100,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.Question", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("QuestionTypeId")
                         .HasColumnType("int");
@@ -111,7 +116,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.QuestionExecution", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -138,7 +144,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.QuestionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
                         .HasMaxLength(300)
@@ -153,7 +160,8 @@ namespace Survey.Migrations
             modelBuilder.Entity("Survey.Models.Response", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<decimal>("Count")
                         .HasColumnType("decimal(18,0)");

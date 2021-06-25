@@ -8,6 +8,7 @@ namespace Survey.Models
     public partial class Response
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal Count { get; set; }

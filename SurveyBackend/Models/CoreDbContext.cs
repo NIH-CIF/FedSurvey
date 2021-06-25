@@ -37,7 +37,7 @@ namespace Survey.Models
         {
             modelBuilder.Entity<DataGroup>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name).IsUnicode(false);
             });
@@ -48,14 +48,14 @@ namespace Survey.Models
                     .HasName("UQ__Executio__C41E02890F7150F6")
                     .IsUnique();
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Key).IsUnicode(false);
             });
 
             modelBuilder.Entity<PossibleResponseString>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name).IsUnicode(false);
 
@@ -68,7 +68,7 @@ namespace Survey.Models
 
             modelBuilder.Entity<PossibleResponse>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.QuestionType)
                     .WithMany(p => p.PossibleResponses)
@@ -79,7 +79,7 @@ namespace Survey.Models
 
             modelBuilder.Entity<QuestionExecution>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.Execution)
                     .WithMany(p => p.QuestionExecutions)
@@ -96,14 +96,14 @@ namespace Survey.Models
 
             modelBuilder.Entity<QuestionType>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name).IsUnicode(false);
             });
 
             modelBuilder.Entity<Question>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.QuestionType)
                     .WithMany(p => p.Questions)
@@ -114,7 +114,7 @@ namespace Survey.Models
 
             modelBuilder.Entity<Response>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.DataGroup)
                     .WithMany(p => p.Responses)
