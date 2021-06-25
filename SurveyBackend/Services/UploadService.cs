@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace Survey.Services
 {
+    // While the seeding migration will primarily have its own code, common code could be stored here.
     public class UploadService
     {
-        public void Test()
-        {
-            Console.WriteLine("hi");
-        }
     }
 }
