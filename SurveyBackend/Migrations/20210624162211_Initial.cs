@@ -10,7 +10,8 @@ namespace Survey.Migrations
                 name: "DataGroups",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(unicode: false, maxLength: 300, nullable: false)
                 },
                 constraints: table =>
@@ -22,7 +23,8 @@ namespace Survey.Migrations
                 name: "Executions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Key = table.Column<string>(unicode: false, maxLength: 50, nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true)
                 },
@@ -35,7 +37,8 @@ namespace Survey.Migrations
                 name: "QuestionTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(unicode: false, maxLength: 300, nullable: true)
                 },
                 constraints: table =>
@@ -47,7 +50,8 @@ namespace Survey.Migrations
                 name: "PossibleResponses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     QuestionTypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -65,7 +69,8 @@ namespace Survey.Migrations
                 name: "Questions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     QuestionTypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -83,7 +88,8 @@ namespace Survey.Migrations
                 name: "PossibleResponseStrings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PossibleResponseId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(unicode: false, maxLength: 300, nullable: false)
                 },
@@ -102,7 +108,8 @@ namespace Survey.Migrations
                 name: "QuestionExecutions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Position = table.Column<int>(nullable: false),
                     Body = table.Column<string>(type: "text", nullable: false),
                     ExecutionId = table.Column<int>(nullable: false),
@@ -129,7 +136,8 @@ namespace Survey.Migrations
                 name: "Responses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Count = table.Column<decimal>(type: "decimal(18, 0)", nullable: false),
                     QuestionExecutionId = table.Column<int>(nullable: false),
                     PossibleResponseId = table.Column<int>(nullable: false),
