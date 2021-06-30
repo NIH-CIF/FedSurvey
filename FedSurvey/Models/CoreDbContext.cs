@@ -6,9 +6,6 @@ namespace FedSurvey.Models
 {
     public partial class CoreDbContext : DbContext
     {
-        // Change this to false once we are actually ready to upload data in.
-        private const bool INCLUDE_DUMMY_DATA = true;
-
         public CoreDbContext(DbContextOptions<CoreDbContext> options)
             : base(options)
         {
@@ -135,58 +132,9 @@ namespace FedSurvey.Models
             });
 
             OnModelCreatingPartial(modelBuilder);
-
-            if (INCLUDE_DUMMY_DATA)
-                DummySeed(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-        private void DummySeed(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<QuestionType>().HasData(
-                new QuestionType { Id = 1, Name = "Core Survey" }
-            );
-
-            modelBuilder.Entity<PossibleResponse>().HasData(
-                new PossibleResponse { Id = 1, QuestionTypeId = 1 }
-            );
-
-            modelBuilder.Entity<PossibleResponseString>().HasData(
-                new PossibleResponseString { Id = 1, PossibleResponseId = 1, Name = "Positive" }
-            );
-
-            modelBuilder.Entity<PossibleResponse>().HasData(
-                new PossibleResponse { Id = 2, QuestionTypeId = 1 }
-            );
-
-            modelBuilder.Entity<PossibleResponseString>().HasData(
-                new PossibleResponseString { Id = 2, PossibleResponseId = 2, Name = "Neutral" }
-            );
-
-            modelBuilder.Entity<PossibleResponse>().HasData(
-                new PossibleResponse { Id = 3, QuestionTypeId = 1 }
-            );
-
-            modelBuilder.Entity<PossibleResponseString>().HasData(
-                new PossibleResponseString { Id = 3, PossibleResponseId = 3, Name = "Negative" }
-            );
-
-            modelBuilder.Entity<DataGroup>().HasData(
-                new DataGroup { Id = 1, Name = "Dummy" }
-            );
-
-            modelBuilder.Entity<Execution>().HasData(
-                new Execution { Id = 1, Key = "2016" },
-                new Execution { Id = 2, Key = "2017" },
-                new Execution { Id = 3, Key = "2018" },
-                new Execution { Id = 4, Key = "2019" },
-                new Execution { Id = 5, Key = "2020" }
-            );
-
-            int QuestionId = 1;
-            int QuestionExecutionId = 1;
-            int ResponseId = 1;
-        }
     }
 }
