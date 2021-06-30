@@ -21,19 +21,19 @@ namespace FedSurvey.Controllers
         // One guide recommended using async more often here.
         [HttpGet]
         public IEnumerable<QuestionExecution.DTO> Get(
-            [FromQuery(Name = "execution-id")] int executionId,
-            [FromQuery(Name = "question-id")] int questionId
+            [FromQuery(Name = "execution-ids")] List<int> executionIds,
+            [FromQuery(Name = "question-ids")] List<int> questionIds
         ) {
             IEnumerable<QuestionExecution> questionExecutions = _context.QuestionExecutions;
 
-            if (executionId > 0)
+            if (executionIds.Count > 0)
             {
-                questionExecutions = questionExecutions.Where(x => x.ExecutionId == executionId);
+                questionExecutions = questionExecutions.Where(x => executionIds.Contains(x.ExecutionId));
             }
 
-            if (questionId > 0)
+            if (questionIds.Count > 0)
             {
-                questionExecutions = questionExecutions.Where(x => x.QuestionId == questionId);
+                questionExecutions = questionExecutions.Where(x => questionIds.Contains(x.QuestionId));
             }
 
             return questionExecutions.Select(x => QuestionExecution.ToDTO(x)).ToList();
