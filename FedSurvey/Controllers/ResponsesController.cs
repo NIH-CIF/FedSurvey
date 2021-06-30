@@ -45,6 +45,7 @@ namespace FedSurvey.Controllers
                 Responses.DataGroupId"
             );
 
+            // This would be optimized by including in the manual SQL, but save that for after benchmarking.
             if (questionExecutionIds.Count > 0)
             {
                 responses = responses.Where(x => questionExecutionIds.Contains(x.QuestionExecutionId));
