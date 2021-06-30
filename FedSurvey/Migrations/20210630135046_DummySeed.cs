@@ -48,7 +48,6 @@ namespace FedSurvey.Migrations
 
             int QuestionId = 1;
             int QuestionExecutionId = 1;
-            int ResponseId = 1;
 
             using (var reader = new StreamReader("Models\\SeedData\\questions.csv"))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -107,7 +106,35 @@ namespace FedSurvey.Migrations
                             }
                         );
 
-                        // Create response here.
+                        Random rand = new Random();
+
+                        // Need to figure out why this is giving integer values,
+                        // but will build API routes first.
+                        migrationBuilder.InsertData(
+                            table: "Responses",
+                            columns: new[] { "QuestionExecutionId", "PossibleResponseId", "DataGroupId", "Count" },
+                            values: new object[,]
+                            {
+                                {
+                                    QuestionExecutionId,
+                                    1,
+                                    1,
+                                    rand.NextDouble() * 50.0
+                                },
+                                {
+                                    QuestionExecutionId,
+                                    2,
+                                    1,
+                                    rand.NextDouble() * 50.0
+                                },
+                                {
+                                    QuestionExecutionId,
+                                    3,
+                                    1,
+                                    rand.NextDouble() * 50.0
+                                },
+                            }
+                        );
 
                         QuestionExecutionId++;
                     }
