@@ -25,5 +25,20 @@ namespace FedSurvey.Models
         public virtual ICollection<PossibleResponseString> PossibleResponseStrings { get; set; }
         [InverseProperty("PossibleResponse")]
         public virtual ICollection<Response> Responses { get; set; }
+
+        public class DTO
+        {
+            public int Id { get; set; }
+            public int QuestionTypeId { get; set; }
+        }
+
+        public static DTO ToDTO(PossibleResponse possibleResponse)
+        {
+            return new DTO
+            {
+                Id = possibleResponse.Id,
+                QuestionTypeId = possibleResponse.QuestionTypeId
+            };
+        }
     }
 }
