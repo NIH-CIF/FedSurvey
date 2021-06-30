@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FedSurvey.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FedSurvey.Controllers
 {
@@ -23,7 +24,7 @@ namespace FedSurvey.Controllers
         public IEnumerable<PossibleResponse.DTO> Get(
             [FromQuery] List<int> ids
         ) {
-            IEnumerable<PossibleResponse> possibleResponses = _context.PossibleResponses;
+            IEnumerable<PossibleResponse> possibleResponses = _context.PossibleResponses.Include(x => x.PossibleResponseStrings);
 
             if (ids.Count > 0)
             {
