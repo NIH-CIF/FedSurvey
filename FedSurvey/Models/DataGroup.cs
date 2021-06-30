@@ -21,5 +21,20 @@ namespace FedSurvey.Models
 
         [InverseProperty("DataGroup")]
         public virtual ICollection<Response> Responses { get; set; }
+
+        public class DTO
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
+
+        public static DTO ToDTO(DataGroup dataGroup)
+        {
+            return new DTO
+            {
+                Id = dataGroup.Id,
+                Name = dataGroup.Name
+            };
+        }
     }
 }
