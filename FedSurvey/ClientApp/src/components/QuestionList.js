@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 export class QuestionList extends Component {
     static displayName = QuestionList.name;
@@ -22,14 +23,16 @@ export class QuestionList extends Component {
             <div>
                 <ListGroup>
                     {this.state.questionExecutions.map(qe => (
-                        <ListGroup horizontal key={qe.id} style={{paddingBottom: '0.8rem'}}>
-                            <ListGroupItem>
-                                {qe.position}
-                            </ListGroupItem>
-                            <ListGroupItem>
-                                {qe.body}
-                            </ListGroupItem>
-                        </ListGroup>
+                        <Link to={`/questions/${qe.questionId}`} key={ qe.id }>
+                            <ListGroup horizontal style={{paddingBottom: '0.8rem'}}>
+                                <ListGroupItem>
+                                    {qe.position}
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    {qe.body}
+                                </ListGroupItem>
+                            </ListGroup>
+                        </Link>
                     ))}
                 </ListGroup>
             </div>
