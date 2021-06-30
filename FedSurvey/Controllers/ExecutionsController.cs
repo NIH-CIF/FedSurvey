@@ -8,7 +8,7 @@ using FedSurvey.Models;
 namespace FedSurvey.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ExecutionsController : ControllerBase
     {
         private readonly CoreDbContext _context;

@@ -30,5 +30,26 @@ namespace FedSurvey.Models
         public virtual Question Question { get; set; }
         [InverseProperty("QuestionExecution")]
         public virtual ICollection<Response> Responses { get; set; }
+
+        public class DTO
+        {
+            public int Id { get; set; }
+            public int ExecutionId { get; set; }
+            public int QuestionId { get; set; }
+            public int Position { get; set; }
+            public string Body { get; set; }
+        }
+
+        public static DTO ToDTO(QuestionExecution questionExecution)
+        {
+            return new DTO
+            {
+                Id = questionExecution.Id,
+                ExecutionId = questionExecution.ExecutionId,
+                QuestionId = questionExecution.QuestionId,
+                Position = questionExecution.Position,
+                Body = questionExecution.Body
+            };
+        }
     }
 }
