@@ -42,21 +42,35 @@ export class QuestionPage extends Component {
                                 ) : <td></td>;
                             })}
                         </tr>
-                    </tbody>
-                    {this.state.possibleResponses.map(pr => (
-                        <tr key={pr.id}>
-                            <th scope="row">{pr.name}</th>
-                            {this.state.executions.map(e => {
-                                const qes = this.state.questionExecutions.filter(qe => qe.executionId === e.id).map(qe => qe.id);
-                                const r = this.state.responses.find(r => r.possibleResponseId === pr.id && qes.includes(r.questionExecutionId));
+                        {this.state.possibleResponses.map(pr => (
+                            <tr key={pr.id}>
+                                <th scope="row">{pr.name}</th>
+                                {this.state.executions.map(e => {
+                                    const qes = this.state.questionExecutions.filter(qe => qe.executionId === e.id).map(qe => qe.id);
+                                    const r = this.state.responses.find(r => r.possibleResponseId === pr.id && qes.includes(r.questionExecutionId));
 
-                                return r ? (
-                                    <td key={r.id}>{r.percentage.toFixed(1)}%</td>
-                                ) : <td></td>;
-                            })}
-                        </tr>
-                    ))}
+                                    return r ? (
+                                        <td key={r.id}>{r.percentage.toFixed(1)}%</td>
+                                    ) : <td></td>;
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
                 </Table>
+
+                {Object.keys(this.state.questionChanges).length > 0 && (
+                    <div>
+                        <h4>
+                            Past Question Wordings:
+                        </h4>
+
+                        <ul>
+                            {Object.keys(this.state.questionChanges).map(year => (
+                                <li key={year}>{year}: {this.state.questionChanges[year]}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
         );
     }
@@ -86,6 +100,12 @@ export class QuestionPage extends Component {
         response = await fetch('api/possible-responses?' + new URLSearchParams([...new Set(responses.map(r => ['ids', r.possibleResponseId]))]));
         const possibleResponses = await response.json();
 
-        this.setState({ dataGroups: dataGroups, questionExecutions: questionExecutions, responses: responses, executions: executions, possibleResponses: possibleResponses, latestQuestionExecution: latestQuestionExecution, loading: false });
+        // prepare question text changes
+        const questionTexts = [...new Set(questionExecutions.map(qe => qe.body))];
+        const questionYears = Object.assign({}, ...questionTexts.map(qt => ({ [Math.min(...questionExecutions.filter(qe => qe.body === qt).map(qe => qe.executionId).map(eid => executions.find(e => e.id === eid).key))]: qt })));
+
+        const questionChanges = Object.keys(questionYears).length > 1 ? questionYears : {};
+
+        this.setState({ dataGroups: dataGroups, questionExecutions: questionExecutions, responses: responses, executions: executions, possibleResponses: possibleResponses, latestQuestionExecution: latestQuestionExecution, questionChanges: questionChanges, loading: false });
     }
 }
