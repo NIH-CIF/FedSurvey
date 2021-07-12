@@ -21,10 +21,8 @@ namespace FedSurvey.Controllers
         }
 
         [HttpPost]
-        public IActionResult Upload(List<IFormFile> files)
+        public IActionResult Upload(IFormFile file)
         {
-            var file = files.First();
-
             using (var stream = file.OpenReadStream())
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
