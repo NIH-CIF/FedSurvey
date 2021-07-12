@@ -49,6 +49,7 @@ namespace FedSurvey.Migrations
             int QuestionId = 1;
             int QuestionExecutionId = 1;
 
+            // May be worth rewriting this using the ExcelDataReader CSV reader to use fewer libraries.
             using (var reader = new StreamReader("Models\\SeedData\\questions.csv"))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
