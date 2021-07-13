@@ -17,7 +17,7 @@ namespace FedSurvey.Models
         public int PossibleResponseId { get; set; }
         public int DataGroupId { get; set; }
 
-        // Extra variable not stored in DB.
+        [NotMapped]
         public decimal Total { get; set; }
 
         [ForeignKey(nameof(DataGroupId))]
