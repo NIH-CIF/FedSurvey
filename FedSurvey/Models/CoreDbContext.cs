@@ -16,6 +16,7 @@ namespace FedSurvey.Models
         public virtual DbSet<PossibleResponseString> PossibleResponseStrings { get; set; }
         public virtual DbSet<PossibleResponse> PossibleResponses { get; set; }
         public virtual DbSet<QuestionExecution> QuestionExecutions { get; set; }
+        public virtual DbSet<QuestionTypeString> QuestionTypeStrings { get; set; }
         public virtual DbSet<QuestionType> QuestionTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Response> Responses { get; set; }
@@ -93,8 +94,19 @@ namespace FedSurvey.Models
             modelBuilder.Entity<QuestionType>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<QuestionTypeString>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.HasOne(d => d.QuestionType)
+                    .WithMany(p => p.QuestionTypeStrings)
+                    .HasForeignKey(d => d.QuestionTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_QuestionTypeStrings_QuestionTypes_QuestionTypeId");
             });
 
             modelBuilder.Entity<Question>(entity =>

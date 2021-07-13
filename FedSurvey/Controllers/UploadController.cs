@@ -32,7 +32,8 @@ namespace FedSurvey.Controllers
                     do
                     {
                         // Later consideration: is doing n queries where n is the number of sheets okay?
-                        QuestionType currentType = _context.QuestionTypes.Where(qt => qt.Name == reader.Name).FirstOrDefault();
+                        //QuestionType currentType = _context.QuestionTypes.Where(qt => qt.Name == reader.Name).FirstOrDefault();
+                        QuestionType currentType = null;
 
                         if (currentType != null)
                         {

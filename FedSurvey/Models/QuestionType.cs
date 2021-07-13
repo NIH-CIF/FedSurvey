@@ -16,12 +16,13 @@ namespace FedSurvey.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [StringLength(300)]
-        public string Name { get; set; }
 
         [InverseProperty("QuestionType")]
         public virtual ICollection<PossibleResponse> PossibleResponses { get; set; }
         [InverseProperty("QuestionType")]
         public virtual ICollection<Question> Questions { get; set; }
+
+        [InverseProperty("QuestionType")]
+        public virtual ICollection<QuestionTypeString> QuestionTypeStrings { get; set; }
     }
 }
