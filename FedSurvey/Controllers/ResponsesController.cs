@@ -21,29 +21,11 @@ namespace FedSurvey.Controllers
 
         // One guide recommended using async more often here.
         [HttpGet]
-        public IEnumerable<Response.DTO> Get(
+        public IEnumerable<ResponseDTO> Get(
             [FromQuery(Name = "question-execution-ids")] List<int> questionExecutionIds,
             [FromQuery(Name = "data-group-ids")] List<int> dataGroupIds
         ) {
-            // do FromSqlRaw, try using Percentage as field first
-            IEnumerable<Response> responses = _context.Responses.FromSqlRaw(
-                @"SELECT
-                  Responses.Id,
-                  Responses.Count,
-                  Responses.QuestionExecutionId,
-                  Responses.PossibleResponseId,
-                  Responses.DataGroupId,
-                  SUM(QuestionExecutionResponses.Count) AS Total
-                FROM Responses
-                LEFT JOIN Responses QuestionExecutionResponses
-                ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
-                GROUP BY
-                Responses.Id,
-                Responses.Count,
-                Responses.QuestionExecutionId,
-                Responses.PossibleResponseId,
-                Responses.DataGroupId"
-            );
+            IEnumerable<ResponseDTO> responses = _context.ResponseDTOs;
 
             // This would be optimized by including in the manual SQL, but save that for after benchmarking.
             if (questionExecutionIds.Count > 0)
@@ -56,7 +38,7 @@ namespace FedSurvey.Controllers
                 responses = responses.Where(x => dataGroupIds.Contains(x.DataGroupId));
             }
 
-            return responses.Select(x => Models.Response.ToDTO(x)).ToList();
+            return responses.ToList();
         }
     }
 }

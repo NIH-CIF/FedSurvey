@@ -20,6 +20,7 @@ namespace FedSurvey.Models
         public virtual DbSet<QuestionType> QuestionTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Response> Responses { get; set; }
+        public virtual DbSet<ResponseDTO> ResponseDTOs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -153,6 +154,26 @@ namespace FedSurvey.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Responses_QuestionExecutions");
             });
+
+            modelBuilder.Entity<ResponseDTO>().ToSqlQuery(
+                @"SELECT
+                  Responses.Id,
+                  Responses.Count,
+                  Responses.QuestionExecutionId,
+                  Responses.PossibleResponseId,
+                  Responses.DataGroupId,
+                  Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 AS Percentage
+                FROM Responses
+                LEFT JOIN Responses QuestionExecutionResponses
+                ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
+                GROUP BY
+                Responses.Id,
+                Responses.Count,
+                Responses.QuestionExecutionId,
+                Responses.PossibleResponseId,
+                Responses.DataGroupId"
+            );
+            modelBuilder.Entity<ResponseDTO>().ToTable(null);
 
             OnModelCreatingPartial(modelBuilder);
         }
