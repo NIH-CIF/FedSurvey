@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace FedSurvey.Models
 {
@@ -15,12 +16,12 @@ namespace FedSurvey.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required]
-        [StringLength(300)]
-        public string Name { get; set; }
 
         [InverseProperty("DataGroup")]
         public virtual ICollection<Response> Responses { get; set; }
+
+        [InverseProperty("DataGroup")]
+        public virtual ICollection<DataGroupString> DataGroupStrings { get; set; }
 
         public class DTO
         {
@@ -30,10 +31,12 @@ namespace FedSurvey.Models
 
         public static DTO ToDTO(DataGroup dataGroup)
         {
+            string name = dataGroup.DataGroupStrings.Count > 0 ? dataGroup.DataGroupStrings.FirstOrDefault().Name : null;
+
             return new DTO
             {
                 Id = dataGroup.Id,
-                Name = dataGroup.Name
+                Name = name
             };
         }
     }

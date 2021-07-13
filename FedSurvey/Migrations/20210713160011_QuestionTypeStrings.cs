@@ -41,7 +41,7 @@ namespace FedSurvey.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "QuestionTypeString");
+                name: "QuestionTypeStrings");
 
             migrationBuilder.AddColumn<string>(
                 name: "Name",

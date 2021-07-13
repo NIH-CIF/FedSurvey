@@ -35,8 +35,19 @@ namespace FedSurvey.Models
             modelBuilder.Entity<DataGroup>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<DataGroupString>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.HasOne(d => d.DataGroup)
+                    .WithMany(p => p.DataGroupStrings)
+                    .HasForeignKey(d => d.DataGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DataGroupStrings_DataGroups_DataGroupId");
             });
 
             modelBuilder.Entity<Execution>(entity =>
