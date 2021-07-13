@@ -23,15 +23,25 @@ namespace FedSurvey.Controllers
         [HttpPost]
         public IActionResult Upload(IFormFile file)
         {
+            // Starting by assuming 2016 thru 2019 format.
+            // 2020 will have to be programmed for specially anyway.
             using (var stream = file.OpenReadStream())
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     do
                     {
-                        while (reader.Read())
+                        // Later consideration: is doing n queries where n is the number of sheets okay?
+                        QuestionType currentType = _context.QuestionTypes.Where(qt => qt.Name == reader.Name).FirstOrDefault();
+
+                        if (currentType != null)
                         {
-                            System.Diagnostics.Debug.WriteLine(reader.GetString(0));
+                            System.Diagnostics.Debug.WriteLine("Processing " + reader.Name);
+
+                            while (reader.Read())
+                            {
+                                // Sorting level
+                            }
                         }
                     } while (reader.NextResult());
                 }
