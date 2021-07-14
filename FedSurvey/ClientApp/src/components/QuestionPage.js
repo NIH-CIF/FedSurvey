@@ -19,12 +19,12 @@ export class QuestionPage extends Component {
     render() {
         return !this.state.loading && (
             <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Link to='/'>Home</Link>
 
-                    <div style={{ display: 'flex' }}>
-                        <Label for="dataGroupSelect" style={{ marginRight: '0.5rem' }}>Data Group</Label>
-                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupId: e.target.value }); this.populateQuestionData() }} value={this.state.currentDataGroupId}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Label for="dataGroupSelect" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Data Group</Label>
+                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupId: e.target.value }); this.populateQuestionData() }} value={this.state.currentDataGroupId} style={{ flexShrink: 2100 }}>
                             {this.state.dataGroups.map(dg => (
                                 <option value={dg.id} key={dg.id}>{dg.name}</option>
                             ))}
