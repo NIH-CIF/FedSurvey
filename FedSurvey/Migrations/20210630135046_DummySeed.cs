@@ -19,13 +19,13 @@ namespace FedSurvey.Migrations
             migrationBuilder.InsertData(
                 table: "PossibleResponses",
                 columns: new[] { "Id", "QuestionTypeId" },
-                values: new object[,] { { 1, 1 }, { 2, 1 }, { 3, 1 } }
+                values: new object[,] { { 1, 1 }, { 2, 1 }, { 3, 1 }, { 4, 1 } }
             );
 
             migrationBuilder.InsertData(
                 table: "PossibleResponseStrings",
                 columns: new[] { "Id", "PossibleResponseId", "Name" },
-                values: new object[,] { { 1, 1, "Positive" }, { 2, 2, "Neutral" }, { 3, 3, "Negative" } }
+                values: new object[,] { { 1, 1, "Positive" }, { 2, 2, "Neutral" }, { 3, 3, "Negative" }, { 4, 4, "Do Not Know/ No Basis to Judge" } }
             );
 
             migrationBuilder.InsertData(
