@@ -50,7 +50,7 @@ namespace FedSurvey.Migrations
 
                     b.HasIndex("DataGroupId");
 
-                    b.ToTable("DataGroupString");
+                    b.ToTable("DataGroupStrings");
                 });
 
             modelBuilder.Entity("FedSurvey.Models.Execution", b =>

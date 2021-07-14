@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FedSurvey.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FedSurvey.Controllers
 {
@@ -22,7 +23,7 @@ namespace FedSurvey.Controllers
         [HttpGet]
         public IEnumerable<DataGroup.DTO> Get()
         {
-            return _context.DataGroups.Select(x => DataGroup.ToDTO(x)).ToList();
+            return _context.DataGroups.Include(x => x.DataGroupStrings).Select(x => DataGroup.ToDTO(x)).ToList();
         }
     }
 }

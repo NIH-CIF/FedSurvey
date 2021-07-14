@@ -50,6 +50,7 @@ namespace FedSurvey.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DataGroupStrings_DataGroups_DataGroupId");
             });
+            modelBuilder.Entity<DataGroupString>().ToTable("DataGroupStrings");
 
             modelBuilder.Entity<Execution>(entity =>
             {
@@ -120,6 +121,7 @@ namespace FedSurvey.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_QuestionTypeStrings_QuestionTypes_QuestionTypeId");
             });
+            modelBuilder.Entity<QuestionTypeString>().ToTable("QuestionTypeStrings");
 
             modelBuilder.Entity<Question>(entity =>
             {
