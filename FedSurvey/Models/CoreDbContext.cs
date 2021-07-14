@@ -169,6 +169,7 @@ namespace FedSurvey.Models
                 FROM Responses
                 LEFT JOIN Responses QuestionExecutionResponses
                 ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
+                    AND QuestionExecutionResponses.DataGroupId = Responses.DataGroupId
                 GROUP BY
                 Responses.Id,
                 Responses.Count,

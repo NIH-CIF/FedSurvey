@@ -7,6 +7,7 @@ using FedSurvey.Models;
 using Microsoft.AspNetCore.Http;
 using ExcelDataReader;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace FedSurvey.Controllers
 {
@@ -47,8 +48,42 @@ namespace FedSurvey.Controllers
 
                         if (currentType != null)
                         {
-                            // Skip the header row.
+                            // Pull out a PossibleResponse mapping from the header row.
                             reader.Read();
+
+                            const int POSSIBLE_RESPONSE_START = 5;
+                            Dictionary<int, PossibleResponse> colToPossibleResponse = new Dictionary<int, PossibleResponse>();
+
+                            for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount - 1; i++)
+                            {
+                                // Long-term, might be good to support data in fields with "N" suffix.
+                                string response = Regex.Replace(reader.GetString(i).Replace("\n", " "), @"[%|N]$", "").Trim();
+
+                                PossibleResponseString responseName = _context.PossibleResponseStrings.Where(prs => prs.Name == response).Include(x => x.PossibleResponse).FirstOrDefault();
+
+                                if (responseName == null)
+                                {
+                                    System.Diagnostics.Debug.WriteLine(response + " causing trouble");
+                                    return UnprocessableEntity();
+                                }
+                                else
+                                {
+                                    colToPossibleResponse[i] = responseName.PossibleResponse;
+                                }
+
+                                // Hiding this for now, as I should have seeded the question type properly.
+                                //if (possibleResponse == null)
+                                //{
+                                //    PossibleResponse newPossibleResponse = new PossibleResponse
+                                //    {
+                                //        QuestionType = currentType
+                                //    };
+                                //}
+                                //else
+                                //{
+
+                                //}
+                            }
 
                             // If we do not have an execution, we need to set it or make one.
                             if (execution == null)
@@ -64,13 +99,17 @@ namespace FedSurvey.Controllers
                                     };
                                     _context.Executions.Add(newExecution);
                                     execution = newExecution;
+
+                                    // Save changes so that execution has an ID for comparison later.
+                                    _context.SaveChanges();
                                 }
                             }
 
                             System.Diagnostics.Debug.WriteLine("Processing " + reader.Name);
 
-                            // Store the organizations that have been made to not double create.
+                            // Store the organizations, question executions that have been made to not double create.
                             Dictionary<string, DataGroupString> organizationStringToObject = new Dictionary<string, DataGroupString>();
+                            Dictionary<string, QuestionExecution> questionTextToObject = new Dictionary<string, QuestionExecution>();
 
                             while (reader.Read())
                             {
@@ -104,6 +143,49 @@ namespace FedSurvey.Controllers
                                 else
                                 {
                                     organizationStringToObject[rowOrgName] = organizationName;
+                                }
+
+                                string text = reader.GetString(3).Replace("\n", "");
+                                QuestionExecution questionExecution = questionTextToObject.ContainsKey(text) ? questionTextToObject[text] : _context.QuestionExecutions.Where(qe => qe.Body == text && qe.ExecutionId == execution.Id).FirstOrDefault();
+
+                                if (questionExecution == null)
+                                {
+                                    Question newQuestion = new Question
+                                    {
+                                        QuestionType = currentType
+                                    };
+                                    QuestionExecution newQuestionExecution = new QuestionExecution
+                                    {
+                                        Position = Int32.Parse(reader.GetString(2).Replace("Q", "")),
+                                        Body = text,
+                                        Execution = execution,
+                                        Question = newQuestion
+                                    };
+
+                                    _context.Questions.Add(newQuestion);
+                                    _context.QuestionExecutions.Add(newQuestionExecution);
+
+                                    questionExecution = newQuestionExecution;
+                                    questionTextToObject[text] = newQuestionExecution;
+                                }
+                                else
+                                {
+                                    questionTextToObject[text] = questionExecution;
+                                }
+
+                                int respondents = reader.GetFieldType(4) == "".GetType() ? Int32.Parse(reader.GetString(4).Replace(",", "")) : (int)(reader.GetDouble(4));
+
+                                for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount - 1; i++)
+                                {
+                                    decimal count = (decimal)(respondents * reader.GetDouble(i));
+
+                                    _context.Responses.Add(new Models.Response
+                                    {
+                                        Count = count,
+                                        QuestionExecution = questionExecution,
+                                        PossibleResponse = colToPossibleResponse[i],
+                                        DataGroup = organization
+                                    });
                                 }
                             }
                         }

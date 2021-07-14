@@ -17,7 +17,7 @@ namespace FedSurvey.Models
         public int Id { get; set; }
         public int Position { get; set; }
         [Required]
-        [Column(TypeName = "text")]
+        [Column(TypeName = "varchar(max)")]
         public string Body { get; set; }
         public int ExecutionId { get; set; }
         public int QuestionId { get; set; }
