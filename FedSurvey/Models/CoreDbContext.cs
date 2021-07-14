@@ -12,6 +12,7 @@ namespace FedSurvey.Models
         }
 
         public virtual DbSet<DataGroup> DataGroups { get; set; }
+        public virtual DbSet<DataGroupString> DataGroupStrings { get; set; }
         public virtual DbSet<Execution> Executions { get; set; }
         public virtual DbSet<PossibleResponseString> PossibleResponseStrings { get; set; }
         public virtual DbSet<PossibleResponse> PossibleResponses { get; set; }

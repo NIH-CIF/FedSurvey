@@ -47,6 +47,9 @@ namespace FedSurvey.Controllers
 
                         if (currentType != null)
                         {
+                            // Skip the header row.
+                            reader.Read();
+
                             // If we do not have an execution, we need to set it or make one.
                             if (execution == null)
                             {
@@ -66,6 +69,9 @@ namespace FedSurvey.Controllers
 
                             System.Diagnostics.Debug.WriteLine("Processing " + reader.Name);
 
+                            // Store the organizations that have been made to not double create.
+                            Dictionary<string, DataGroupString> organizationStringToObject = new Dictionary<string, DataGroupString>();
+
                             while (reader.Read())
                             {
                                 // Columns:
@@ -75,6 +81,30 @@ namespace FedSurvey.Controllers
                                 // 3 Item Text - this is the question text in this year
                                 // 4 Item Respondents - this is the number that will be multiplied by the percentage to get Count
                                 // 5-n Options - each column becomes a possible response option
+                                string rowOrgName = reader.GetString(1);
+                                DataGroupString organizationName = organizationStringToObject.ContainsKey(rowOrgName) ? organizationStringToObject[rowOrgName] : _context.DataGroupStrings.Where(dgs => dgs.Name == rowOrgName).Include(x => x.DataGroup).FirstOrDefault();
+                                DataGroup organization = organizationName != null ? organizationName.DataGroup : null;
+
+                                // Make new organization if one does not already exist.
+                                if (organization == null)
+                                {
+                                    DataGroup newOrganization = new DataGroup { };
+                                    DataGroupString newString = new DataGroupString
+                                    {
+                                        DataGroup = newOrganization,
+                                        Name = rowOrgName
+                                    };
+
+                                    _context.DataGroups.Add(newOrganization);
+                                    _context.DataGroupStrings.Add(newString);
+
+                                    organization = newOrganization;
+                                    organizationStringToObject[rowOrgName] = newString;
+                                }
+                                else
+                                {
+                                    organizationStringToObject[rowOrgName] = organizationName;
+                                }
                             }
                         }
                         // In final version, need to create a new question type when this happens.
