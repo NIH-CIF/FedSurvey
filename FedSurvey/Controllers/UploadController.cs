@@ -145,7 +145,7 @@ namespace FedSurvey.Controllers
                                     organizationStringToObject[rowOrgName] = organizationName;
                                 }
 
-                                string text = reader.GetString(3).Replace("\n", "");
+                                string text = reader.GetString(3).Replace("\n", " ");
                                 QuestionExecution questionExecution = questionTextToObject.ContainsKey(text) ? questionTextToObject[text] : _context.QuestionExecutions.Where(qe => qe.Body == text && qe.ExecutionId == execution.Id).FirstOrDefault();
 
                                 if (questionExecution == null)
