@@ -101,6 +101,7 @@ namespace FedSurvey.Controllers
                                     execution = newExecution;
 
                                     // Save changes so that execution has an ID for comparison later.
+                                    // Can this be refactored out?
                                     _context.SaveChanges();
                                 }
                             }
@@ -177,7 +178,7 @@ namespace FedSurvey.Controllers
 
                                 for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount - 1; i++)
                                 {
-                                    decimal count = (decimal)(respondents * reader.GetDouble(i));
+                                    decimal count = reader.GetFieldType(i) == "".GetType() ? 0 : (decimal)(respondents * reader.GetDouble(i));
 
                                     _context.Responses.Add(new Models.Response
                                     {

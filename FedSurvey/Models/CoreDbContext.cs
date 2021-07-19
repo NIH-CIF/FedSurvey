@@ -165,7 +165,7 @@ namespace FedSurvey.Models
                   Responses.QuestionExecutionId,
                   Responses.PossibleResponseId,
                   Responses.DataGroupId,
-                  Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 AS Percentage
+                  CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 THEN 0 ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage
                 FROM Responses
                 LEFT JOIN Responses QuestionExecutionResponses
                 ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
