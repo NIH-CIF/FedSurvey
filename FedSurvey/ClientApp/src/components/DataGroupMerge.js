@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { FormGroup, Input, Label } from 'reactstrap';
+import { Button, FormGroup, Input, Label } from 'reactstrap';
 
 export class DataGroupMerge extends Component {
     static displayName = DataGroupMerge.name;
@@ -8,7 +8,7 @@ export class DataGroupMerge extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataGroups: [], checked: [], mergeTo: null, step: 0, loading: true
+            dataGroups: [], checked: [], mergeTo: null, step: 0, loading: true, processing: false, success: null
         };
     }
 
@@ -39,9 +39,26 @@ export class DataGroupMerge extends Component {
                 </FormGroup>
 
                 <p>
-                    Merging {this.state.checked.map(checked => checked.name).join(', ') || '? '}
+                    Merging {(this.state.checked.map(checked => checked.name).join(', ') + ' ') || '? '}
                     into a group of the name {this.state.mergeTo?.name || '?'}
                 </p>
+
+                <Button onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Merge</Button>
+
+                {this.state.processing && (<p>Processing merge...</p>)}
+                {this.state.success === true && (
+                    <p>
+                        Merge success!
+                        Press "Home" above to view modified data or refresh the page
+                        to merge again.
+                    </p>
+                )}
+                {this.state.success === false && (
+                    <p>
+                        Merge failed!
+                        Please contact the development team.
+                    </p>
+                )}
             </div>
         );
     }
@@ -58,6 +75,21 @@ export class DataGroupMerge extends Component {
 
     handleCheck(dataGroup) {
         this.setState({ checked: this.state.checked.concat(dataGroup), mergeTo: this.state.mergeTo || dataGroup, step: 1 });
+    }
+
+    submit() {
+        // Prepare the ids for the POST in the correct order.
+        const ids = this.state.checked.sort((a, b) => (b.id === this.state.mergeTo.id ? 1 : 0) - (a.id === this.state.mergeTo.id ? 1 : 0)).map(dg => dg.id);
+        this.setState({ processing: true });
+
+        fetch('api/data-groups/merge', {
+            method: 'post',
+            body: JSON.stringify(ids),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => this.setState({ success: response.status === 200, processing: false }));
     }
 
     async populateDataGroups() {
