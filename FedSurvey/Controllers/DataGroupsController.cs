@@ -27,6 +27,10 @@ namespace FedSurvey.Controllers
         }
 
         // Accepts list of ids like "[2,6]" as JSON body and merges them.
+        // Proposal for new functionality:
+        // If a name of a data group is optionally provided, the merge will occur into a newly created data group.
+        // Otherwise, the later data groups will be deleted and only the first data group will be left.
+        // Make a computed group so that we do not copy data.
         [HttpPost]
         [Route("api/data-groups/merge")]
         public IActionResult Merge([FromBody] List<int> ids)
