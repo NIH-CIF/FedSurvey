@@ -18,6 +18,7 @@ namespace FedSurvey.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int QuestionTypeId { get; set; }
+        public bool PartOfPercentage { get; set; } = true;
 
         [ForeignKey(nameof(QuestionTypeId))]
         [InverseProperty(nameof(Models.QuestionType.PossibleResponses))]
