@@ -12,6 +12,45 @@ namespace FedSurvey.Services
 {
     public static class UploadService
     {
+        public static bool IsStandardFormat(IFormFile file)
+        {
+            string extension = System.IO.Path.GetExtension(file.FileName);
+
+            if (!extension.Equals(".xlsx"))
+            {
+                return false;
+            }
+
+            using (var stream = file.OpenReadStream())
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    do
+                    {
+                        // This approach is because the 2018 raw data has a header row that comes later than the first line
+                        // on one of the sheets.
+                        bool headerRowExists = false;
+
+                        while (reader.Read())
+                        {
+                            // Maybe more validation to do, but the upload should be able to handle bad data.
+                            if (reader.GetString(0).Replace("\n", " ").Equals("Sorting Level") &&
+                                reader.GetString(1).Replace("\n", " ").Equals("Organization") &&
+                                reader.GetString(2).Replace("\n", " ").Equals("Item") &&
+                                reader.GetString(3).Replace("\n", " ").Equals("Item Text") &&
+                                reader.GetString(4).Replace("\n", " ").Equals("Item Respondents N"))
+                                return headerRowExists = true;
+                        }
+
+                        if (!headerRowExists)
+                            return false;
+                    } while (reader.NextResult());
+                }
+            }
+
+            return true;
+        }
+
         public static bool UploadStandardFormat(CoreDbContext context, string key, string notes, IFormFile file)
         {
             // Starting by assuming 2016 thru 2019 format.
@@ -27,7 +66,7 @@ namespace FedSurvey.Services
                     do
                     {
                         // Later consideration: is doing n queries where n is the number of sheets okay?
-                        QuestionTypeString savedString = context.QuestionTypeStrings.Where(qts => qts.Name == reader.Name).Include(x => x.QuestionType).FirstOrDefault();
+                        QuestionTypeString savedString = context.QuestionTypeStrings.Where(qts => qts.Name.Equals(reader.Name)).Include(x => x.QuestionType).FirstOrDefault();
                         QuestionType currentType = savedString != null ? savedString.QuestionType : null;
 
                         if (currentType != null)
@@ -43,7 +82,7 @@ namespace FedSurvey.Services
                                 // Long-term, might be good to support data in fields with "N" suffix.
                                 string response = Regex.Replace(reader.GetString(i).Replace("\n", " "), @"[%|N]$", "").Trim();
 
-                                PossibleResponseString responseName = context.PossibleResponseStrings.Where(prs => prs.Name == response).Include(x => x.PossibleResponse).FirstOrDefault();
+                                PossibleResponseString responseName = context.PossibleResponseStrings.Where(prs => prs.Name.Equals(response)).Include(x => x.PossibleResponse).FirstOrDefault();
 
                                 if (responseName == null)
                                 {
@@ -72,7 +111,7 @@ namespace FedSurvey.Services
                             // If we do not have an execution, we need to set it or make one.
                             if (execution == null)
                             {
-                                execution = context.Executions.Where(e => e.Key == key).FirstOrDefault();
+                                execution = context.Executions.Where(e => e.Key.Equals(key)).FirstOrDefault();
 
                                 if (execution == null)
                                 {
@@ -106,7 +145,7 @@ namespace FedSurvey.Services
                                 // 4 Item Respondents - this is the number that will be multiplied by the percentage to get Count
                                 // 5-n Options - each column becomes a possible response option
                                 string rowOrgName = reader.GetString(1);
-                                DataGroupString organizationName = organizationStringToObject.ContainsKey(rowOrgName) ? organizationStringToObject[rowOrgName] : context.DataGroupStrings.Where(dgs => dgs.Name == rowOrgName).Include(x => x.DataGroup).FirstOrDefault();
+                                DataGroupString organizationName = organizationStringToObject.ContainsKey(rowOrgName) ? organizationStringToObject[rowOrgName] : context.DataGroupStrings.Where(dgs => dgs.Name.Equals(rowOrgName)).Include(x => x.DataGroup).FirstOrDefault();
                                 DataGroup organization = organizationName != null ? organizationName.DataGroup : null;
 
                                 // Make new organization if one does not already exist.
@@ -131,7 +170,7 @@ namespace FedSurvey.Services
                                 }
 
                                 string text = reader.GetString(3).Replace("\n", " ");
-                                QuestionExecution questionExecution = questionTextToObject.ContainsKey(text) ? questionTextToObject[text] : context.QuestionExecutions.Where(qe => qe.Body == text && qe.ExecutionId == execution.Id).FirstOrDefault();
+                                QuestionExecution questionExecution = questionTextToObject.ContainsKey(text) ? questionTextToObject[text] : context.QuestionExecutions.Where(qe => qe.Body.Equals(text) && qe.ExecutionId == execution.Id).FirstOrDefault();
 
                                 if (questionExecution == null)
                                 {
