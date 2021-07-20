@@ -13,6 +13,7 @@ namespace FedSurvey.Models
         public int QuestionExecutionId { get; set; }
         public int PossibleResponseId { get; set; }
         public int DataGroupId { get; set; }
+        public decimal Count { get; set; }
         public decimal Percentage { get; set; }
     }
 }

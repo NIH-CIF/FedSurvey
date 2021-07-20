@@ -133,7 +133,7 @@ namespace FedSurvey.Migrations
                                     3,
                                     1,
                                     rand.NextDouble() * 50.0
-                                },
+                                }
                             }
                         );
 

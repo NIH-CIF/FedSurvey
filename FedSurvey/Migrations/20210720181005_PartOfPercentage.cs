@@ -24,6 +24,10 @@ namespace FedSurvey.Migrations
                 columns: new[] { "Id", "PossibleResponseId", "Name" },
                 values: new object[,] { { 4, 4, "Do Not Know/ No Basis to Judge" } }
             );
+
+            // This uses the same random number for each row, which is not ideal, but it sounds too non-trivial
+            // to immediately fix.
+            migrationBuilder.Sql("INSERT INTO Responses (QuestionExecutionId, PossibleResponseId, DataGroupId, Count) SELECT QuestionExecutions.Id, 4, 1, RAND() * 50 FROM QuestionExecutions");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

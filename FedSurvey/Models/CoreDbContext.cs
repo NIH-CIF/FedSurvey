@@ -165,9 +165,17 @@ namespace FedSurvey.Models
                   Responses.QuestionExecutionId,
                   Responses.PossibleResponseId,
                   Responses.DataGroupId,
-                  CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 THEN 0 ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage
+                  CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 OR PossibleResponses.PartOfPercentage = 0 THEN 0 ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage
                 FROM Responses
-                LEFT JOIN Responses QuestionExecutionResponses
+                JOIN PossibleResponses
+                ON PossibleResponses.Id = Responses.PossibleResponseId
+                LEFT JOIN (
+                    SELECT Responses.*
+                    FROM Responses
+                    JOIN PossibleResponses
+                        ON PossibleResponses.Id = Responses.PossibleResponseId
+                    WHERE PossibleResponses.PartOfPercentage = 1
+                ) QuestionExecutionResponses
                 ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
                     AND QuestionExecutionResponses.DataGroupId = Responses.DataGroupId
                 GROUP BY
@@ -175,7 +183,8 @@ namespace FedSurvey.Models
                 Responses.Count,
                 Responses.QuestionExecutionId,
                 Responses.PossibleResponseId,
-                Responses.DataGroupId"
+                Responses.DataGroupId,
+                PossibleResponses.PartOfPercentage"
             );
             modelBuilder.Entity<ResponseDTO>().ToTable(null);
 
