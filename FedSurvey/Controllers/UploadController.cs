@@ -35,6 +35,10 @@ namespace FedSurvey.Controllers
             {
                 return Ok();
             }
+            else if (UploadService.IsSurveyMonkeyFormat(uploadModel.file))
+            {
+                return Ok();
+            }
             else
             {
                 return UnprocessableEntity();

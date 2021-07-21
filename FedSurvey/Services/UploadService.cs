@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -224,6 +225,30 @@ namespace FedSurvey.Services
 
             // Might have to move up, but for now I want to see if associations work in this setup.
             context.SaveChanges();
+
+            return true;
+        }
+
+        public static bool IsSurveyMonkeyFormat(IFormFile file)
+        {
+            string extension = System.IO.Path.GetExtension(file.FileName);
+
+            if (!extension.Equals(".csv"))
+            {
+                return false;
+            }
+
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                if (reader.ReadLine() == null)
+                    return false;
+
+                if (!reader.ReadLine().Equals(""))
+                    return false;
+
+                if (!reader.ReadLine().StartsWith('Q'))
+                    return false;
+            }
 
             return true;
         }
