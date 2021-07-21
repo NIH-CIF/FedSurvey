@@ -34,6 +34,7 @@ namespace FedSurvey.Models
             public int Id { get; set; }
             public int QuestionTypeId { get; set; }
             public string Name { get; set; }
+            public bool PartOfPercentage { get; set; }
         }
 
         public static DTO ToDTO(PossibleResponse possibleResponse)
@@ -44,7 +45,8 @@ namespace FedSurvey.Models
             {
                 Id = possibleResponse.Id,
                 QuestionTypeId = possibleResponse.QuestionTypeId,
-                Name = name
+                Name = name,
+                PartOfPercentage = possibleResponse.PartOfPercentage
             };
         }
     }

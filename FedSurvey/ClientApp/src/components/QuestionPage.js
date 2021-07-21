@@ -62,7 +62,7 @@ export class QuestionPage extends Component {
                                     const r = this.state.responses.find(r => r.possibleResponseId === pr.id && qes.includes(r.questionExecutionId));
 
                                     return r ? (
-                                        <td key={r.id}>{r.percentage.toFixed(1)}%</td>
+                                        <td key={r.id}>{pr.partOfPercentage ? r.percentage.toFixed(1) : r.count}{pr.partOfPercentage && '%'}</td>
                                     ) : <td></td>;
                                 })}
                             </tr>
