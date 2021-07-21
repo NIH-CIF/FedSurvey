@@ -8,6 +8,7 @@ using ExcelDataReader;
 using FedSurvey.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.FileIO;
 
 namespace FedSurvey.Services
 {
@@ -112,25 +113,9 @@ namespace FedSurvey.Services
                                 //}
                             }
 
-                            // If we do not have an execution, we need to set it or make one.
                             if (execution == null)
                             {
-                                execution = context.Executions.Where(e => e.Key.Equals(key)).FirstOrDefault();
-
-                                if (execution == null)
-                                {
-                                    Execution newExecution = new Execution
-                                    {
-                                        Key = key,
-                                        Notes = notes
-                                    };
-                                    context.Executions.Add(newExecution);
-                                    execution = newExecution;
-
-                                    // Save changes so that execution has an ID for comparison later.
-                                    // Can this be refactored out?
-                                    context.SaveChanges();
-                                }
+                                execution = FindOrCreateExecution(context, key, notes);
                             }
 
                             System.Diagnostics.Debug.WriteLine("Processing " + reader.Name);
@@ -251,6 +236,83 @@ namespace FedSurvey.Services
             }
 
             return true;
+        }
+
+        public static bool UploadSurveyMonkeyFormat(CoreDbContext context, string key, string notes, IFormFile file)
+        {
+            using (var parser = new TextFieldParser(file.OpenReadStream()))
+            {
+                parser.TextFieldType = FieldType.Delimited;
+                parser.SetDelimiters(",");
+
+                // Move past the title line.
+                parser.ReadLine();
+
+                bool inQuestion = false;
+                List<string[]> questionLines = new List<string[]>();
+                List<List<string[]>> questionBlocks = new List<List<string[]>>();
+
+                while (!parser.EndOfData)
+                {
+                    string[] next = parser.ReadFields();
+
+                    // Blank line means that we should keep looking for the start of new data.
+                    if (next.Length == 1)
+                    {
+                        if (questionLines.Count > 0)
+                        {
+                            questionBlocks.Add(questionLines);
+                            questionLines = new List<string[]>();
+                        }
+
+                        questionLines.Add(next);
+                    }
+                    else
+                    {
+                        questionLines.Add(next);
+                    }
+                }
+
+                if (questionLines.Count > 0)
+                {
+                    questionBlocks.Add(questionLines);
+                    questionLines = new List<string[]>();
+                }
+
+                foreach (List<string[]> block in questionBlocks)
+                {
+                    string titleLine = block[0][0];
+                    string regex = @"^Q(\d+)\. ";
+                    Match match = Regex.Match(titleLine, regex);
+
+                    int position = Int32.Parse(match.Groups[1].Captures[0].Value);
+                    string title = Regex.Replace(titleLine, regex, "");
+                    System.Diagnostics.Debug.WriteLine(title);
+                }
+            }
+
+            return true;
+        }
+
+        private static Execution FindOrCreateExecution(CoreDbContext context, string key, string notes)
+        {
+            Execution execution = context.Executions.Where(e => e.Key.Equals(key)).FirstOrDefault();
+
+            if (execution == null)
+            {
+                Execution newExecution = new Execution
+                {
+                    Key = key,
+                    Notes = notes
+                };
+                context.Executions.Add(newExecution);
+                execution = newExecution;
+
+                // Save changes so that execution has an ID for comparison later.
+                context.SaveChanges();
+            }
+
+            return execution;
         }
     }
 }
