@@ -248,7 +248,6 @@ namespace FedSurvey.Services
                 // Move past the title line.
                 parser.ReadLine();
 
-                bool inQuestion = false;
                 List<string[]> questionLines = new List<string[]>();
                 List<List<string[]>> questionBlocks = new List<List<string[]>>();
 
@@ -279,6 +278,14 @@ namespace FedSurvey.Services
                     questionLines = new List<string[]>();
                 }
 
+                Execution execution = null;
+
+                // Hardcoded for now.
+                QuestionTypeString savedString = context.QuestionTypeStrings.Where(qts => qts.Name.Equals("Core Survey")).Include(x => x.QuestionType).FirstOrDefault();
+                QuestionType currentType = savedString != null ? savedString.QuestionType : null;
+
+                Dictionary<string, PossibleResponse> textToPossibleResponse = new Dictionary<string, PossibleResponse>();
+
                 foreach (List<string[]> block in questionBlocks)
                 {
                     string titleLine = block[0][0];
@@ -287,7 +294,69 @@ namespace FedSurvey.Services
 
                     int position = Int32.Parse(match.Groups[1].Captures[0].Value);
                     string title = Regex.Replace(titleLine, regex, "");
-                    System.Diagnostics.Debug.WriteLine(title);
+
+                    Dictionary<string, int> possibleResponseStringToCount = new Dictionary<string, int>();
+                    
+                    foreach (string[] line in block.Skip(1))
+                    {
+                        // Header row
+                        if (line[0].Equals("Answer Choices"))
+                        {
+                            // Do not bother with the alternate table format for now.
+                            if (line[1].Equals("Response Percent") && line[2].Equals("Responses"))
+                                continue;
+                            else
+                                break;
+                        }
+
+                        string firstNonEmpty = line.First(label => !label.Equals(""));
+
+                        // Answered total count
+                        if (firstNonEmpty.Equals("Answered"))
+                            continue;
+
+                        // somewhat a fallacy to call this "second"
+                        int secondNonEmpty = Int32.Parse(line.Last(label => !label.Equals("")));
+                        possibleResponseStringToCount[line[0].Equals("") ? firstNonEmpty : line[0]] = secondNonEmpty;
+                    }
+
+                    if (possibleResponseStringToCount.Count == 0)
+                        continue;
+
+                    // Check our possible response options and make sure they belong to the right question type.
+                    List<string> possibleResponseStrings = new List<string>(possibleResponseStringToCount.Keys);
+                    bool validQuestionTypes = true;
+
+                    foreach (string possibleResponseString in possibleResponseStrings)
+                    {
+                        if (textToPossibleResponse.ContainsKey(possibleResponseString))
+                            continue;
+
+                        PossibleResponseString responseName = context.PossibleResponseStrings.Where(prs => prs.Name.Equals(possibleResponseString)).Include(x => x.PossibleResponse).FirstOrDefault();
+
+                        if (responseName == null || responseName.PossibleResponse.QuestionTypeId != currentType.Id)
+                        {
+                            System.Diagnostics.Debug.WriteLine(possibleResponseString + " belonging to other question type");
+                            validQuestionTypes = false;
+                        }
+                        else
+                        {
+                            textToPossibleResponse[possibleResponseString] = responseName.PossibleResponse;
+                        }
+                    }
+
+                    if (!validQuestionTypes)
+                        continue;
+
+                    // title is text to compare question upon
+                    // position is the question position in this case
+                    // data group needs to be supplied from outside
+                    // execution needs to be applied from outside
+                    // possible response will come from the dictionary
+                    if (execution == null)
+                    {
+                        execution = FindOrCreateExecution(context, key, notes);
+                    }
                 }
             }
 
