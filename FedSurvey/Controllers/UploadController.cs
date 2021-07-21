@@ -31,7 +31,7 @@ namespace FedSurvey.Controllers
                 return UnprocessableEntity();
             }
 
-            if (UploadService.UploadStandardFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.file))
+            if (UploadService.IsFEVSFormat(uploadModel.file) && UploadService.UploadFEVSFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.file))
             {
                 return Ok();
             }

@@ -11,7 +11,9 @@ namespace FedSurvey.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Column(TypeName = "decimal(18, 0)")]
+        // 19 total precision to allow 7 digits before the decimal (government wide employees has 6 digits currently,
+        // so assuming the government will not start employing 10s of millions of Americans!)
+        [Column(TypeName = "decimal(19, 12)")]
         public decimal Count { get; set; }
         public int QuestionExecutionId { get; set; }
         public int PossibleResponseId { get; set; }

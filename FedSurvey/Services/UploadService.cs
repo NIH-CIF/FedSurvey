@@ -12,7 +12,7 @@ namespace FedSurvey.Services
 {
     public static class UploadService
     {
-        public static bool IsStandardFormat(IFormFile file)
+        public static bool IsFEVSFormat(IFormFile file)
         {
             string extension = System.IO.Path.GetExtension(file.FileName);
 
@@ -51,10 +51,8 @@ namespace FedSurvey.Services
             return true;
         }
 
-        public static bool UploadStandardFormat(CoreDbContext context, string key, string notes, IFormFile file)
+        public static bool UploadFEVSFormat(CoreDbContext context, string key, string notes, IFormFile file)
         {
-            // Starting by assuming 2016 thru 2019 format.
-            // 2020 will have to be programmed for specially anyway.
             using (var stream = file.OpenReadStream())
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -77,10 +75,15 @@ namespace FedSurvey.Services
                             const int POSSIBLE_RESPONSE_START = 5;
                             Dictionary<int, PossibleResponse> colToPossibleResponse = new Dictionary<int, PossibleResponse>();
 
-                            for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount - 1; i++)
+                            // Stores whether the specified column is an exact number or a percentage.
+                            Dictionary<int, bool> isPercent = new Dictionary<int, bool>();
+
+                            for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount; i++)
                             {
-                                // Long-term, might be good to support data in fields with "N" suffix.
-                                string response = Regex.Replace(reader.GetString(i).Replace("\n", " "), @"[%|N]$", "").Trim();
+                                string responseWithSuffix = reader.GetString(i).Replace("\n", " ");
+                                isPercent[i] = responseWithSuffix.EndsWith('%');
+
+                                string response = Regex.Replace(responseWithSuffix, @"[%|N]$", "").Trim();
 
                                 PossibleResponseString responseName = context.PossibleResponseStrings.Where(prs => prs.Name.Equals(response)).Include(x => x.PossibleResponse).FirstOrDefault();
 
@@ -199,9 +202,9 @@ namespace FedSurvey.Services
 
                                 int respondents = reader.GetFieldType(4) == "".GetType() ? Int32.Parse(reader.GetString(4).Replace(",", "")) : (int)(reader.GetDouble(4));
 
-                                for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount - 1; i++)
+                                for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount; i++)
                                 {
-                                    decimal count = reader.GetFieldType(i) == "".GetType() ? 0 : (decimal)(respondents * reader.GetDouble(i));
+                                    decimal count = reader.GetFieldType(i) == "".GetType() ? 0 : (decimal)((isPercent[i] ? (double) respondents : 1) * reader.GetDouble(i));
 
                                     context.Responses.Add(new Models.Response
                                     {
