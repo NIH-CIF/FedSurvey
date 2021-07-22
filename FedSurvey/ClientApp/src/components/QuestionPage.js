@@ -23,7 +23,7 @@ export class QuestionPage extends Component {
                     <Link to='/'>Home</Link>
 
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Label for="dataGroupSelect" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Data Group</Label>
+                        <Label for="dataGroupSelect" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Organization</Label>
                         <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupId: e.target.value }); this.populateQuestionData() }} value={this.state.currentDataGroupId} style={{ flexShrink: 2100 }}>
                             {this.state.dataGroups.map(dg => (
                                 <option value={dg.id} key={dg.id}>{dg.name}</option>
@@ -45,7 +45,7 @@ export class QuestionPage extends Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row">Position</th>
+                            <th scope="row">Question Number</th>
                             {this.state.executions.map(e => {
                                 const qe = this.state.questionExecutions.find(qe => qe.executionId === e.id);
 
@@ -73,7 +73,7 @@ export class QuestionPage extends Component {
                 {Object.keys(this.state.questionChanges).length > 0 && (
                     <div>
                         <h4>
-                            Past Question Wordings:
+                            Question Text Changes:
                         </h4>
 
                         <ul>

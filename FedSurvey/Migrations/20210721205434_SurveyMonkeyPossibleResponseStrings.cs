@@ -8,10 +8,10 @@ namespace FedSurvey.Migrations
         {
             migrationBuilder.InsertData(
                 table: "PossibleResponses",
-                columns: new[] { "Id", "QuestionTypeId" },
+                columns: new[] { "Id", "QuestionTypeId", "PartOfPercentage" },
                 values: new object[,]
                 {
-                    { 5, 1 }
+                    { 5, 1, false }
                 }
             );
 

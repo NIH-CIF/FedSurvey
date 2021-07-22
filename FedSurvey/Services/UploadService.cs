@@ -238,7 +238,7 @@ namespace FedSurvey.Services
             return true;
         }
 
-        public static bool UploadSurveyMonkeyFormat(CoreDbContext context, string key, string notes, IFormFile file)
+        public static bool UploadSurveyMonkeyFormat(CoreDbContext context, string key, string notes, string dataGroupName, IFormFile file)
         {
             using (var parser = new TextFieldParser(file.OpenReadStream()))
             {
@@ -279,6 +279,7 @@ namespace FedSurvey.Services
                 }
 
                 Execution execution = null;
+                DataGroup dataGroup = null;
 
                 // Hardcoded for now.
                 QuestionTypeString savedString = context.QuestionTypeStrings.Where(qts => qts.Name.Equals("Core Survey")).Include(x => x.QuestionType).FirstOrDefault();
@@ -357,8 +358,65 @@ namespace FedSurvey.Services
                     {
                         execution = FindOrCreateExecution(context, key, notes);
                     }
+
+                    QuestionExecution questionExecution = context.QuestionExecutions.Where(qe => qe.Body.Equals(title) && qe.ExecutionId == execution.Id).FirstOrDefault();
+
+                    if (questionExecution == null)
+                    {
+                        Question newQuestion = new Question
+                        {
+                            QuestionType = currentType
+                        };
+                        QuestionExecution newQuestionExecution = new QuestionExecution
+                        {
+                            Position = position,
+                            Body = title,
+                            Execution = execution,
+                            Question = newQuestion
+                        };
+
+                        context.Questions.Add(newQuestion);
+                        context.QuestionExecutions.Add(newQuestionExecution);
+
+                        questionExecution = newQuestionExecution;
+                    }
+
+                    // Make new organization if one does not already exist.
+                    if (dataGroup == null)
+                    {
+                        DataGroupString organizationName = context.DataGroupStrings.Where(dgs => dgs.Name.Equals(dataGroupName)).Include(x => x.DataGroup).FirstOrDefault();
+                        dataGroup = organizationName != null ? organizationName.DataGroup : null;
+
+                        if (dataGroup == null)
+                        {
+                            DataGroup newOrganization = new DataGroup { };
+                            DataGroupString newString = new DataGroupString
+                            {
+                                DataGroup = newOrganization,
+                                Name = dataGroupName
+                            };
+
+                            context.DataGroups.Add(newOrganization);
+                            context.DataGroupStrings.Add(newString);
+
+                            dataGroup = newOrganization;
+                        }
+                    }
+
+                    foreach (KeyValuePair<string, int> possibleResponseResults in possibleResponseStringToCount)
+                    {
+                        context.Responses.Add(new Models.Response
+                        {
+                            Count = possibleResponseResults.Value,
+                            QuestionExecution = questionExecution,
+                            PossibleResponse = textToPossibleResponse[possibleResponseResults.Key],
+                            DataGroup = dataGroup
+                        });
+                    }
                 }
             }
+
+            context.SaveChanges();
 
             return true;
         }

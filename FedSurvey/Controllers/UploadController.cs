@@ -31,11 +31,12 @@ namespace FedSurvey.Controllers
                 return UnprocessableEntity();
             }
 
+            // Maybe future validation not to send data group name for FEVS format.
             if (UploadService.IsFEVSFormat(uploadModel.file) && UploadService.UploadFEVSFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.file))
             {
                 return Ok();
             }
-            else if (UploadService.IsSurveyMonkeyFormat(uploadModel.file) && UploadService.UploadSurveyMonkeyFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.file))
+            else if (UploadService.IsSurveyMonkeyFormat(uploadModel.file) && UploadService.UploadSurveyMonkeyFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.dataGroupName, uploadModel.file))
             {
                 return Ok();
             }
@@ -50,6 +51,7 @@ namespace FedSurvey.Controllers
         {
             public string key { get; set; }
             public string notes { get; set; }
+            public string dataGroupName { get; set; }
             public IFormFile file { get; set; }
         }
     }
