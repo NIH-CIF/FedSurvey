@@ -53,7 +53,7 @@ namespace FedSurvey.Services
             return true;
         }
 
-        public static bool UploadFEVSFormat(CoreDbContext context, string key, string notes, IFormFile file)
+        public static bool UploadFEVSFormat(CoreDbContext context, string key, string notes, DateTime date, IFormFile file)
         {
             using (var stream = file.OpenReadStream())
             {
@@ -115,7 +115,7 @@ namespace FedSurvey.Services
 
                             if (execution == null)
                             {
-                                execution = FindOrCreateExecution(context, key, notes);
+                                execution = FindOrCreateExecution(context, key, notes, date);
                             }
 
                             System.Diagnostics.Debug.WriteLine("Processing " + reader.Name);
@@ -239,7 +239,7 @@ namespace FedSurvey.Services
             return true;
         }
 
-        public static bool UploadSurveyMonkeyFormat(CoreDbContext context, string key, string notes, string dataGroupName, IFormFile file)
+        public static bool UploadSurveyMonkeyFormat(CoreDbContext context, string key, string notes, DateTime date, string dataGroupName, IFormFile file)
         {
             using (var parser = new TextFieldParser(file.OpenReadStream()))
             {
@@ -357,7 +357,7 @@ namespace FedSurvey.Services
                     // possible response will come from the dictionary
                     if (execution == null)
                     {
-                        execution = FindOrCreateExecution(context, key, notes);
+                        execution = FindOrCreateExecution(context, key, notes, date);
                     }
 
                     QuestionExecution questionExecution = context.QuestionExecutions.Where(qe => qe.Body.Equals(title) && qe.ExecutionId == execution.Id).FirstOrDefault();
@@ -423,7 +423,7 @@ namespace FedSurvey.Services
             return true;
         }
 
-        private static Execution FindOrCreateExecution(CoreDbContext context, string key, string notes)
+        private static Execution FindOrCreateExecution(CoreDbContext context, string key, string notes, DateTime date)
         {
             Execution execution = context.Executions.Where(e => e.Key.Equals(key)).FirstOrDefault();
 
@@ -432,7 +432,8 @@ namespace FedSurvey.Services
                 Execution newExecution = new Execution
                 {
                     Key = key,
-                    Notes = notes
+                    Notes = notes,
+                    OccurredTime = date
                 };
                 context.Executions.Add(newExecution);
                 execution = newExecution;

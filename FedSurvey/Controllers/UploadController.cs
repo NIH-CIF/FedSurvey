@@ -31,12 +31,19 @@ namespace FedSurvey.Controllers
                 return UnprocessableEntity();
             }
 
+            DateTime executionDate = DateTime.UtcNow;
+
+            if (uploadModel.date != null)
+            {
+                executionDate = DateTime.Parse(uploadModel.date, null, System.Globalization.DateTimeStyles.RoundtripKind).ToUniversalTime();
+            }
+
             // Maybe future validation not to send data group name for FEVS format.
-            if (UploadService.IsFEVSFormat(uploadModel.file) && UploadService.UploadFEVSFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.file))
+            if (UploadService.IsFEVSFormat(uploadModel.file) && UploadService.UploadFEVSFormat(_context, uploadModel.key, uploadModel.notes, executionDate, uploadModel.file))
             {
                 return Ok();
             }
-            else if (UploadService.IsSurveyMonkeyFormat(uploadModel.file) && UploadService.UploadSurveyMonkeyFormat(_context, uploadModel.key, uploadModel.notes, uploadModel.dataGroupName, uploadModel.file))
+            else if (UploadService.IsSurveyMonkeyFormat(uploadModel.file) && UploadService.UploadSurveyMonkeyFormat(_context, uploadModel.key, uploadModel.notes, executionDate, uploadModel.dataGroupName, uploadModel.file))
             {
                 return Ok();
             }
@@ -51,6 +58,7 @@ namespace FedSurvey.Controllers
         {
             public string key { get; set; }
             public string notes { get; set; }
+            public string date { get; set; }
             public string dataGroupName { get; set; }
             public IFormFile file { get; set; }
         }
