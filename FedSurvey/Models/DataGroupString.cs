@@ -14,6 +14,7 @@ namespace FedSurvey.Models
         [Required]
         [StringLength(300)]
         public string Name { get; set; }
+        public bool Preferred { get; set; }
 
         [ForeignKey(nameof(DataGroupId))]
         [InverseProperty(nameof(Models.DataGroup.DataGroupStrings))]

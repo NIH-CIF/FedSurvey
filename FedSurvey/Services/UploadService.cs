@@ -144,7 +144,8 @@ namespace FedSurvey.Services
                                     DataGroupString newString = new DataGroupString
                                     {
                                         DataGroup = newOrganization,
-                                        Name = rowOrgName
+                                        Name = rowOrgName,
+                                        Preferred = true
                                     };
 
                                     context.DataGroups.Add(newOrganization);
@@ -393,7 +394,8 @@ namespace FedSurvey.Services
                             DataGroupString newString = new DataGroupString
                             {
                                 DataGroup = newOrganization,
-                                Name = dataGroupName
+                                Name = dataGroupName,
+                                Preferred = true
                             };
 
                             context.DataGroups.Add(newOrganization);

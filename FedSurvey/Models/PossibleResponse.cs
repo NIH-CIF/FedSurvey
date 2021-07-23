@@ -39,7 +39,7 @@ namespace FedSurvey.Models
 
         public static DTO ToDTO(PossibleResponse possibleResponse)
         {
-            string name = possibleResponse.PossibleResponseStrings.Count > 0 ? possibleResponse.PossibleResponseStrings.FirstOrDefault().Name : null;
+            string name = possibleResponse.PossibleResponseStrings.Count > 0 ? possibleResponse.PossibleResponseStrings.Where(prs => prs.Preferred).FirstOrDefault().Name : null;
 
             return new DTO
             {

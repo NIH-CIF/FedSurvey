@@ -31,7 +31,7 @@ namespace FedSurvey.Models
 
         public static DTO ToDTO(DataGroup dataGroup)
         {
-            string name = dataGroup.DataGroupStrings.Count > 0 ? dataGroup.DataGroupStrings.FirstOrDefault().Name : null;
+            string name = dataGroup.DataGroupStrings.Count > 0 ? dataGroup.DataGroupStrings.Where(dgs => dgs.Preferred).FirstOrDefault().Name : null;
 
             return new DTO
             {
