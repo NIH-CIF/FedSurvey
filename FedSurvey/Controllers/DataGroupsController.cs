@@ -46,6 +46,7 @@ namespace FedSurvey.Controllers
             foreach (DataGroupString dgs in dataGroupStrings)
             {
                 dgs.DataGroupId = unifiedDataGroup;
+                dgs.Preferred = false;
             }
 
             // Update the responses of these data groups to point to the new data group.
