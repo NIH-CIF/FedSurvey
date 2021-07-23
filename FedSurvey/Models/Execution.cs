@@ -21,6 +21,7 @@ namespace FedSurvey.Models
         public string Key { get; set; }
         [Column(TypeName = "text")]
         public string Notes { get; set; }
+        public DateTime OccurredTime { get; set; }
 
         [InverseProperty("Execution")]
         public virtual ICollection<QuestionExecution> QuestionExecutions { get; set; }
