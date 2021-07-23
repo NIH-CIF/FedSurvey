@@ -9,6 +9,7 @@ namespace FedSurvey.Models
     [NotMapped]
     public partial class ResponseDTO
     {
+        // Consider exposing created at and updated at too if it could help debugging.
         public int Id { get; set; }
         public int QuestionExecutionId { get; set; }
         public int PossibleResponseId { get; set; }

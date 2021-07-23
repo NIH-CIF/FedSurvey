@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FedSurvey.Models.Util;
 
 namespace FedSurvey.Models
 {
-    public partial class PossibleResponseString
+    public partial class PossibleResponseString : Timestamps
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

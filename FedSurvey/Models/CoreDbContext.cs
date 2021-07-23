@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -189,6 +190,30 @@ namespace FedSurvey.Models
             modelBuilder.Entity<ResponseDTO>().ToTable(null);
 
             OnModelCreatingPartial(modelBuilder);
+        }
+
+        public override int SaveChanges()
+        {
+            var AddedEntities = ChangeTracker.Entries()
+                .Where(E => E.State == EntityState.Added)
+                .ToList();
+
+            AddedEntities.ForEach(E =>
+            {
+                E.Property("CreatedTime").CurrentValue = DateTime.UtcNow;
+                E.Property("UpdatedTime").CurrentValue = DateTime.UtcNow;
+            });
+
+            var EditedEntities = ChangeTracker.Entries()
+                .Where(E => E.State == EntityState.Modified)
+                .ToList();
+
+            EditedEntities.ForEach(E =>
+            {
+                E.Property("UpdatedTime").CurrentValue = DateTime.UtcNow;
+            });
+
+            return base.SaveChanges();
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

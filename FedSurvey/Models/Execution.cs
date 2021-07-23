@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FedSurvey.Models.Util;
 
 namespace FedSurvey.Models
 {
-    public partial class Execution
+    public partial class Execution : Timestamps
     {
         public Execution()
         {
