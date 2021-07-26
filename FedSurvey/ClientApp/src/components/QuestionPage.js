@@ -2,6 +2,7 @@
 import { Table } from 'reactstrap';
 import { Input, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { ResultsDataTable } from './ResultsDataTable';
 
 export class QuestionPage extends Component {
     static displayName = QuestionPage.name;
@@ -33,6 +34,8 @@ export class QuestionPage extends Component {
                 </div>
 
                 <h2>{this.state.latestQuestionExecution.body}</h2>
+
+                <ResultsDataTable />
 
                 <Table>
                     <thead>
