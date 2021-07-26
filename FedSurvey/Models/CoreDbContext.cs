@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace FedSurvey.Models
 {
@@ -23,6 +22,7 @@ namespace FedSurvey.Models
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Response> Responses { get; set; }
         public virtual DbSet<ResponseDTO> ResponseDTOs { get; set; }
+        public virtual DbSet<ResultDTO> ResultDTOs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -159,6 +159,7 @@ namespace FedSurvey.Models
                     .HasConstraintName("FK_Responses_QuestionExecutions");
             });
 
+            // Later this should probably go away, as ResultDTO does the same thing but better.
             modelBuilder.Entity<ResponseDTO>().ToSqlQuery(
                 @"SELECT
                   Responses.Id,
@@ -188,6 +189,56 @@ namespace FedSurvey.Models
                 PossibleResponses.PartOfPercentage"
             );
             modelBuilder.Entity<ResponseDTO>().ToTable(null);
+
+            // Percentage shold be NULL when not part of percentage, but this gave an error that was not worth dealing with.
+            modelBuilder.Entity<ResultDTO>().ToSqlQuery(
+                @"SELECT
+                    Executions.""Key"" AS ExecutionName,
+                    Executions.OccurredTime AS ExecutionTime,
+                    PossibleResponseStrings.""Name"" AS PossibleResponseName,
+                    Responses.Count,
+                    CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 OR PossibleResponses.PartOfPercentage = 0 THEN NULL ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage,
+                    QuestionExecutions.Body AS QuestionText,
+                    DataGroupStrings.""Name"" AS DataGroupName,
+                    QuestionExecutions.QuestionId AS QuestionId,
+                    QuestionExecutions.Position AS QuestionNumber
+                FROM Responses
+                JOIN PossibleResponses
+                ON PossibleResponses.Id = Responses.PossibleResponseId
+                JOIN PossibleResponseStrings
+                ON PossibleResponseStrings.PossibleResponseId = PossibleResponses.Id
+                    AND PossibleResponseStrings.Preferred = 1
+                JOIN QuestionExecutions
+                ON QuestionExecutions.Id = Responses.QuestionExecutionId
+                JOIN Executions
+                ON Executions.Id = QuestionExecutions.ExecutionId
+                JOIN DataGroups
+                ON DataGroups.Id = Responses.DataGroupId
+                JOIN DataGroupStrings
+                ON DataGroupStrings.DataGroupId = DataGroups.Id
+                    AND DataGroupStrings.Preferred = 1
+                LEFT JOIN(
+                    SELECT Responses.*
+                    FROM Responses
+                    JOIN PossibleResponses
+                        ON PossibleResponses.Id = Responses.PossibleResponseId
+                    WHERE PossibleResponses.PartOfPercentage = 1
+                ) QuestionExecutionResponses
+                ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
+                    AND QuestionExecutionResponses.DataGroupId = Responses.DataGroupId
+                GROUP BY
+                Executions.""Key"",
+                Executions.OccurredTime,
+                PossibleResponseStrings.""Name"",
+                Responses.Count,
+                PossibleResponses.PartOfPercentage,
+                QuestionExecutions.Body,
+                DataGroupStrings.""Name"",
+                QuestionExecutions.QuestionId,
+                QuestionExecutions.Position"
+            );
+            modelBuilder.Entity<ResultDTO>().HasNoKey();
+            modelBuilder.Entity<ResultDTO>().ToTable(null);
 
             OnModelCreatingPartial(modelBuilder);
         }

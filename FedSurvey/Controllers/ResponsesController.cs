@@ -20,6 +20,7 @@ namespace FedSurvey.Controllers
         }
 
         // One guide recommended using async more often here.
+        // Later, this should get cleaned up to not compute Percentage any more.
         [HttpGet]
         public IEnumerable<ResponseDTO> Get(
             [FromQuery(Name = "question-execution-ids")] List<int> questionExecutionIds,
