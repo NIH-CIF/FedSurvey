@@ -246,7 +246,12 @@ namespace FedSurvey.Models
                 QuestionExecutions.Body,
                 DataGroupStrings.""Name"",
                 QuestionExecutions.QuestionId,
-                QuestionExecutions.Position"
+                QuestionExecutions.Position,
+                PossibleResponses.Id
+                ORDER BY
+                PossibleResponses.PartOfPercentage DESC,
+                PossibleResponses.Id ASC" // this is a hack due to my manual DB setup and
+                // should get replaced by a defined sort order
             );
             modelBuilder.Entity<ResultDTO>().HasNoKey();
             modelBuilder.Entity<ResultDTO>().ToTable(null);

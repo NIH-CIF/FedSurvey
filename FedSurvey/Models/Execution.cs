@@ -31,6 +31,7 @@ namespace FedSurvey.Models
             public int Id { get; set; }
             public string Key { get; set; }
             public string Notes { get; set; }
+            public DateTime OccurredTime { get; set; }
         }
 
         public static DTO ToDTO(Execution execution)
@@ -39,7 +40,8 @@ namespace FedSurvey.Models
             {
                 Id = execution.Id,
                 Key = execution.Key,
-                Notes = execution.Notes
+                Notes = execution.Notes,
+                OccurredTime = execution.OccurredTime
             };
         }
     }

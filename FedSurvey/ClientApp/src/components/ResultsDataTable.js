@@ -17,6 +17,12 @@ export class ResultsDataTable extends Component {
         this.populateResultsData();
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.filters !== this.props.filters) {
+            this.populateResultsData();
+        }
+    }
+
     render() {
 
         return !this.state.loading && (
@@ -34,9 +40,9 @@ export class ResultsDataTable extends Component {
                         <tr key={key}>
                             <th scope="row">{key}</th>
                             {val.map((r, index) => {
-                                return r ? (
+                                return r?.count ? (
                                     <td key={index}>{r.percentage?.toFixed(1) || r.count}{r.percentage && '%'}</td>
-                                ) : <td></td>;
+                                ) : <td key={index}>N/A</td>;
                             })}
                         </tr>
                     ))}
@@ -46,8 +52,15 @@ export class ResultsDataTable extends Component {
     }
 
     async populateResultsData() {
-        const response = await fetch('api/results?' + new URLSearchParams(this.props.filters));
-        const results = await response.json();
+        const response = await Promise.all(
+            [
+                fetch('api/results?' + new URLSearchParams(this.props.filters)),
+                fetch('api/executions') // later will be an if to be included based on config
+            ]
+        );
+        const [results, executions] = await Promise.all(
+            response.map(r => r.json())
+        );
 
         const startingObject = this.props.showQuestionNumber ? {
             'Question Number': []
@@ -57,24 +70,42 @@ export class ResultsDataTable extends Component {
             ...startingObject,
             ..._.groupBy(results, r => r.possibleResponseName)
         };
+        const sortGrouped = _.groupBy(results, r => r.executionTime);
+
         Object.keys(grouped).forEach(key => {
+            // future if on what is across in table
+            if (grouped[key].length !== executions.length) {
+                executions.forEach(e => {
+                    if (!Object.keys(sortGrouped).includes(e.occurredTime)) {
+                        grouped[key].push({
+                            executionTime: e.occurredTime
+                        });
+                    }
+                });
+            }
+
             grouped[key] = grouped[key].sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0)));
         });
 
-        const sortGrouped = _.groupBy(results, r => r.executionTime);
+        const combinedSortGrouped = {
+            ...Object.assign({}, ...executions.map(e => ({ [e.occurredTime]: [{ executionName: e.key }] }))),
+            ...sortGrouped
+        };
         const headers = [];
 
         // Open Q is force headers?
 
-        Object.keys(sortGrouped).sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0))).forEach(key => {
+        Object.keys(combinedSortGrouped).sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0))).forEach(key => {
             if (this.props.showQuestionNumber) {
                 grouped['Question Number'].push({
-                    count: sortGrouped[key][0].questionNumber
+                    count: combinedSortGrouped[key][0].questionNumber
                 });
             }
 
-            headers.push(sortGrouped[key][0].executionName);
+            headers.push(combinedSortGrouped[key][0].executionName);
         });
+
+        // Other open Q is how best to allow reordering of rows, etc.
 
         this.setState({ results: grouped, headers: headers, loading: false });
     }

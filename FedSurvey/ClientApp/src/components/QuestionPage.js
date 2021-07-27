@@ -30,7 +30,7 @@ export class QuestionPage extends Component {
 
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Label for="dataGroupSelect" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Organization</Label>
-                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupName: e.target.value }); this.populateQuestionData() }} value={this.state.currentDataGroupName} style={{ flexShrink: 2100 }}>
+                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupName: e.target.value }) }} value={this.state.currentDataGroupName} style={{ flexShrink: 2100 }}>
                             {this.state.dataGroups.map(dg => (
                                 <option value={dg.name} key={dg.id}>{dg.name}</option>
                             ))}
