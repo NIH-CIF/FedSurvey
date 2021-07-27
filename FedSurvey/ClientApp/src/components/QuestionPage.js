@@ -77,7 +77,8 @@ export class QuestionPage extends Component {
         );
 
         // prepare latest question text for header
-        const latestExecutionId = executions.reduce((prev, current) => (
+        // filtering probably better to be done in API
+        const latestExecutionId = executions.filter(e => questionExecutions.map(qe => qe.executionId).includes(e.id)).reduce((prev, current) => (
             prev.executionTime > current.executionTime ? prev : current
         )).id;
         const latestQuestionExecution = questionExecutions.find(qe => qe.executionId === latestExecutionId);

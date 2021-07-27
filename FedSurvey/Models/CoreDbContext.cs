@@ -202,7 +202,18 @@ namespace FedSurvey.Models
                     DataGroupStrings.""Name"" AS DataGroupName,
                     QuestionExecutions.QuestionId AS QuestionId,
                     QuestionExecutions.Position AS QuestionNumber
-                FROM Responses
+                FROM (
+                    SELECT
+                        SUM(Responses.Count) AS ""Count"",
+                        Responses.QuestionExecutionId,
+                        Responses.PossibleResponseId,
+                        Responses.DataGroupId
+                    FROM Responses
+                    GROUP BY
+                    Responses.QuestionExecutionId,
+                    Responses.PossibleResponseId,
+                    Responses.DataGroupId
+                ) Responses
                 JOIN PossibleResponses
                 ON PossibleResponses.Id = Responses.PossibleResponseId
                 JOIN PossibleResponseStrings
@@ -217,7 +228,7 @@ namespace FedSurvey.Models
                 JOIN DataGroupStrings
                 ON DataGroupStrings.DataGroupId = DataGroups.Id
                     AND DataGroupStrings.Preferred = 1
-                LEFT JOIN(
+                LEFT JOIN (
                     SELECT Responses.*
                     FROM Responses
                     JOIN PossibleResponses
