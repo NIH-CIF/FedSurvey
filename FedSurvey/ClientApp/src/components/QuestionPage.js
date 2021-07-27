@@ -37,42 +37,6 @@ export class QuestionPage extends Component {
 
                 <ResultsDataTable />
 
-                <Table>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            {this.state.executions.map(e => (
-                                <th key={e.id}>{e.key}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Question Number</th>
-                            {this.state.executions.map(e => {
-                                const qe = this.state.questionExecutions.find(qe => qe.executionId === e.id);
-
-                                return qe ? (
-                                    <td key={qe.id}>{qe.position}</td>
-                                ) : <td></td>;
-                            })}
-                        </tr>
-                        {this.state.possibleResponses.map(pr => (
-                            <tr key={pr.id}>
-                                <th scope="row">{pr.name}</th>
-                                {this.state.executions.map(e => {
-                                    const qes = this.state.questionExecutions.filter(qe => qe.executionId === e.id).map(qe => qe.id);
-                                    const r = this.state.responses.find(r => r.possibleResponseId === pr.id && qes.includes(r.questionExecutionId));
-
-                                    return r ? (
-                                        <td key={r.id}>{pr.partOfPercentage ? r.percentage.toFixed(1) : r.count}{pr.partOfPercentage && '%'}</td>
-                                    ) : <td></td>;
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-
                 {Object.keys(this.state.questionChanges).length > 0 && (
                     <div>
                         <h4>
