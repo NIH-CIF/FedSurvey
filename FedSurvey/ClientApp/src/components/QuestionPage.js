@@ -10,7 +10,12 @@ export class QuestionPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            questionExecutions: [], responses: [], possibleResponses: [], dataGroups: [], executions: [], latestQuestionExecution: {}, currentDataGroupName: 0, loading: true };
+            dataGroups: [],
+            latestQuestionBody: null,
+            questionChanges: {},
+            currentDataGroupName: null,
+            loading: true
+        };
     }
 
     componentDidMount() {
@@ -33,7 +38,7 @@ export class QuestionPage extends Component {
                     </div>
                 </div>
 
-                <h2>{this.state.latestQuestionExecution.body}</h2>
+                <h2>{this.state.latestQuestionBody}</h2>
 
                 <ResultsDataTable
                     filters={{
@@ -60,21 +65,25 @@ export class QuestionPage extends Component {
     }
 
     async populateQuestionData() {
-        let response = await Promise.all(
+        const response = await Promise.all(
             [
                 fetch('api/question-executions?' + new URLSearchParams({ 'question-ids': this.props.match.params.questionId })),
                 fetch('api/data-groups'),
-                // to-do filter executions by ids
                 fetch('api/executions')
             ]    
         );
-        const dataGroups = await response[1].json();
-        const questionExecutions = await response[0].json();
-        const executions = await response[2].json();
-        const latestExecutionId = Math.max(...questionExecutions.map(qe => qe.executionId));
-        const latestQuestionExecution = questionExecutions.find(qe => qe.executionId === latestExecutionId);
+        const [questionExecutions, dataGroups, executions] = await Promise.all(
+            response.map(r => r.json())
+        );
 
-        const currentDataGroupName = this.state.currentDataGroupName !== null ? dataGroups[0].name : this.state.currentDataGroupName;
+        // prepare latest question text for header
+        const latestExecutionId = executions.reduce((prev, current) => (
+            prev.executionTime > current.executionTime ? prev : current
+        )).id;
+        const latestQuestionExecution = questionExecutions.find(qe => qe.executionId === latestExecutionId);
+        const latestQuestionBody = latestQuestionExecution.body;
+
+        const currentDataGroupName = this.state.currentDataGroupName !== null ? this.state.currentDataGroupName : dataGroups[0].name;
 
         // prepare question text changes
         const questionTexts = [...new Set(questionExecutions.map(qe => qe.body))];
@@ -82,6 +91,12 @@ export class QuestionPage extends Component {
 
         const questionChanges = Object.keys(questionYears).length > 1 ? questionYears : {};
 
-        this.setState({ dataGroups: dataGroups, questionExecutions: questionExecutions, executions: executions, latestQuestionExecution: latestQuestionExecution, questionChanges: questionChanges, currentDataGroupName: currentDataGroupName, loading: false });
+        this.setState({
+            dataGroups: dataGroups,
+            latestQuestionBody: latestQuestionBody,
+            questionChanges: questionChanges,
+            currentDataGroupName: currentDataGroupName,
+            loading: false
+        });
     }
 }
