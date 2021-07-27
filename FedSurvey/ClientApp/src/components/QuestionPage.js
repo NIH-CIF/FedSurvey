@@ -10,7 +10,7 @@ export class QuestionPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            questionExecutions: [], responses: [], possibleResponses: [], dataGroups: [], executions: [], latestQuestionExecution: {}, currentDataGroupId: 0, loading: true };
+            questionExecutions: [], responses: [], possibleResponses: [], dataGroups: [], executions: [], latestQuestionExecution: {}, currentDataGroupName: 0, loading: true };
     }
 
     componentDidMount() {
@@ -25,9 +25,9 @@ export class QuestionPage extends Component {
 
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Label for="dataGroupSelect" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Organization</Label>
-                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupId: e.target.value }); this.populateQuestionData() }} value={this.state.currentDataGroupId} style={{ flexShrink: 2100 }}>
+                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupName: e.target.value }); this.populateQuestionData() }} value={this.state.currentDataGroupName} style={{ flexShrink: 2100 }}>
                             {this.state.dataGroups.map(dg => (
-                                <option value={dg.id} key={dg.id}>{dg.name}</option>
+                                <option value={dg.name} key={dg.id}>{dg.name}</option>
                             ))}
                         </Input>
                     </div>
@@ -35,7 +35,12 @@ export class QuestionPage extends Component {
 
                 <h2>{this.state.latestQuestionExecution.body}</h2>
 
-                <ResultsDataTable />
+                <ResultsDataTable
+                    filters={{
+                        'question-ids': [this.props.match.params.questionId],
+                        'data-group-names': [this.state.currentDataGroupName]
+                    }}
+                />
 
                 {Object.keys(this.state.questionChanges).length > 0 && (
                     <div>
@@ -69,15 +74,7 @@ export class QuestionPage extends Component {
         const latestExecutionId = Math.max(...questionExecutions.map(qe => qe.executionId));
         const latestQuestionExecution = questionExecutions.find(qe => qe.executionId === latestExecutionId);
 
-        // Later, this needs to be in state.
-        const currentDataGroupId = this.state.currentDataGroupId === 0 ? dataGroups[0].id : this.state.currentDataGroupId;
-
-        response = await fetch('api/responses?' + new URLSearchParams(questionExecutions.map(qe => ['question-execution-ids', qe.id]).concat([['data-group-ids', currentDataGroupId]])));
-        const responses = await response.json();
-
-        // uniqueness not working right
-        response = await fetch('api/possible-responses?' + new URLSearchParams([...new Set(responses.map(r => ['ids', r.possibleResponseId]))]));
-        const possibleResponses = await response.json();
+        const currentDataGroupName = this.state.currentDataGroupName !== null ? dataGroups[0].name : this.state.currentDataGroupName;
 
         // prepare question text changes
         const questionTexts = [...new Set(questionExecutions.map(qe => qe.body))];
@@ -85,6 +82,6 @@ export class QuestionPage extends Component {
 
         const questionChanges = Object.keys(questionYears).length > 1 ? questionYears : {};
 
-        this.setState({ dataGroups: dataGroups, questionExecutions: questionExecutions, responses: responses, executions: executions, possibleResponses: possibleResponses, latestQuestionExecution: latestQuestionExecution, questionChanges: questionChanges, currentDataGroupId: currentDataGroupId, loading: false });
+        this.setState({ dataGroups: dataGroups, questionExecutions: questionExecutions, executions: executions, latestQuestionExecution: latestQuestionExecution, questionChanges: questionChanges, currentDataGroupName: currentDataGroupName, loading: false });
     }
 }

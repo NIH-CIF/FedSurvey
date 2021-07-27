@@ -46,12 +46,10 @@ export class ResultsDataTable extends Component {
     }
 
     async populateResultsData() {
-        const response = await fetch('api/results?' + new URLSearchParams({ 'question-ids': [48], 'data-group-names': ['Dummy'] }));
+        const response = await fetch('api/results?' + new URLSearchParams(this.props.filters));
         const results = await response.json();
 
-        // future prop
-        const showQuestionNumber = true;
-        const startingObject = showQuestionNumber ? {
+        const startingObject = this.props.showQuestionNumber ? {
             'Question Number': []
         } : {};
 
@@ -66,8 +64,10 @@ export class ResultsDataTable extends Component {
         const sortGrouped = _.groupBy(results, r => r.executionTime);
         const headers = [];
 
+        // Open Q is force headers?
+
         Object.keys(sortGrouped).sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0))).forEach(key => {
-            if (showQuestionNumber) {
+            if (this.props.showQuestionNumber) {
                 grouped['Question Number'].push({
                     count: sortGrouped[key][0].questionNumber
                 });
