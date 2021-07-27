@@ -18,7 +18,7 @@ export class ResultsDataTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.filters !== this.props.filters) {
+        if (!_.isEqual(prevProps.filters, this.props.filters)) {
             this.populateResultsData();
         }
     }

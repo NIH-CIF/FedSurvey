@@ -24,6 +24,12 @@ namespace FedSurvey.Models
         [InverseProperty("DataGroup")]
         public virtual ICollection<DataGroupString> DataGroupStrings { get; set; }
 
+        [InverseProperty("Parent")]
+        public virtual ICollection<DataGroupLink> ParentLinks { get; set; }
+
+        [InverseProperty("Child")]
+        public virtual ICollection<DataGroupLink> ChildLinks { get; set; }
+
         public class DTO
         {
             public int Id { get; set; }
