@@ -43,6 +43,10 @@ namespace FedSurvey.Controllers
             {
                 return Ok();
             }
+            else if (UploadService.IsNewFormat(uploadModel.file) && UploadService.UploadNewFormat(_context, uploadModel.key, uploadModel.notes, executionDate, uploadModel.file))
+            {
+                return Ok();
+            }
             else if (UploadService.IsSurveyMonkeyFormat(uploadModel.file) && UploadService.UploadSurveyMonkeyFormat(_context, uploadModel.key, uploadModel.notes, executionDate, uploadModel.dataGroupName, uploadModel.file))
             {
                 return Ok();

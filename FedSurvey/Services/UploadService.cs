@@ -41,7 +41,10 @@ namespace FedSurvey.Services
                                 reader.GetString(2).Replace("\n", " ").Equals("Item") &&
                                 reader.GetString(3).Replace("\n", " ").Equals("Item Text") &&
                                 reader.GetString(4).Replace("\n", " ").Equals("Item Respondents N"))
-                                return headerRowExists = true;
+                            {
+                                headerRowExists = true;
+                                break;
+                            }
                         }
 
                         if (!headerRowExists)
@@ -443,6 +446,110 @@ namespace FedSurvey.Services
             }
 
             return execution;
+        }
+
+        private static bool IsNewItemSheet(IExcelDataReader reader)
+        {
+            return reader.GetString(0).Replace("\n", " ").Equals("Item") &&
+                reader.GetString(1).Replace("\n", " ").Equals("Item Text");
+        }
+
+        private static bool IsNewDataSheet(IExcelDataReader reader)
+        {
+            return reader.GetString(0).Replace("\n", " ").Equals("Agency & Subagency Name") &&
+                reader.GetString(1).Replace("\n", " ").Equals("Level Code") &&
+                reader.GetString(2).Replace("\n", " ").Equals("Reporting Level") &&
+                reader.GetString(3).Replace("\n", " ").Equals("Response Count");
+        }
+
+        public static bool IsNewFormat(IFormFile file)
+        {
+            string extension = System.IO.Path.GetExtension(file.FileName);
+
+            if (!extension.Equals(".xlsx"))
+            {
+                return false;
+            }
+
+            using (var stream = file.OpenReadStream())
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    do
+                    {
+                        // This approach is because the 2018 raw data has a header row that comes later than the first line
+                        // on one of the sheets.
+                        bool headerRowExists = false;
+
+                        while (reader.Read())
+                        {
+                            // Maybe more validation to do, but the upload should be able to handle bad data.
+                            if (IsNewDataSheet(reader) || IsNewItemSheet(reader))
+                            {
+                                headerRowExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!headerRowExists)
+                            return false;
+                    } while (reader.NextResult());
+                }
+            }
+
+            return true;
+        }
+
+        public static bool UploadNewFormat(CoreDbContext context, string key, string notes, DateTime date, IFormFile file)
+        {
+            using (var stream = file.OpenReadStream())
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    // We will store the execution we are attaching to far outside so
+                    // that we only load it once.
+                    Execution execution = null;
+                    Dictionary<int, string> numberToText = new Dictionary<int, string>();
+
+                    do
+                    {
+                        // Get header rows.
+                        reader.Read();
+
+                        if (IsNewItemSheet(reader))
+                        {
+                            while (reader.Read())
+                            {
+                                // 42a is a question number.
+                                // db needs to be adjusted to allow strings for question number, but for now
+                                // we will ignore it.
+                                if (reader.GetFieldType(0) != "".GetType())
+                                {
+                                    int position = (int) reader.GetDouble(0);
+                                    numberToText[position] = reader.GetString(1);
+                                }
+                            }
+                        }
+                        else if (IsNewDataSheet(reader))
+                        {
+                            QuestionTypeString savedString = context.QuestionTypeStrings.Where(qts => qts.Name.Equals(reader.Name)).Include(x => x.QuestionType).FirstOrDefault();
+                            QuestionType currentType = savedString != null ? savedString.QuestionType : null;
+
+                            if (currentType != null)
+                            {
+                                System.Diagnostics.Debug.WriteLine("Processing " + reader.Name);
+                            }
+                        }
+                    } while (reader.NextResult());
+
+                    System.Diagnostics.Debug.WriteLine(numberToText.Count);
+                }
+            }
+
+            // Might have to move up, but for now I want to see if associations work in this setup.
+            context.SaveChanges();
+
+            return true;
         }
     }
 }
