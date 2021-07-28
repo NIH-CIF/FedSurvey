@@ -509,7 +509,14 @@ namespace FedSurvey.Services
                     // We will store the execution we are attaching to far outside so
                     // that we only load it once.
                     Execution execution = null;
+
+                    // pull all data out of the file, then we will convert it to DB objects
                     Dictionary<int, string> numberToText = new Dictionary<int, string>();
+
+                    Dictionary<string, int> orgToResponseCount = new Dictionary<string, int>();
+                    Dictionary<int, int> colToQuestionNumber = new Dictionary<int, int>();
+                    Dictionary<int, string> colToPossibleResponseString = new Dictionary<int, string>();
+                    Dictionary<string, double[]> orgToCols = new Dictionary<string, double[]>();
 
                     do
                     {
