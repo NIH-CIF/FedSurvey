@@ -183,7 +183,7 @@ namespace FedSurvey.Models
                   Responses.QuestionExecutionId,
                   Responses.PossibleResponseId,
                   Responses.DataGroupId,
-                  CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 OR PossibleResponses.PartOfPercentage = 0 THEN 0 ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage
+                  CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 OR PossibleResponses.PartOfPercentage = 0 THEN 0 ELSE Responses.Count / (CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 THEN 1 ELSE SUM(QuestionExecutionResponses.Count) END) * 100 END AS Percentage
                 FROM Responses
                 JOIN PossibleResponses
                 ON PossibleResponses.Id = Responses.PossibleResponseId
@@ -214,7 +214,7 @@ namespace FedSurvey.Models
                         PossibleResponseStrings.Name AS PossibleResponseName,
                         PossibleResponses.PartOfPercentage AS PartOfPercentage,
                         Responses.Count,
-                        CASE WHEN PossibleResponses.PartOfPercentage = 0 THEN NULL ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage,
+                        CASE WHEN PossibleResponses.PartOfPercentage = 0 THEN NULL ELSE Responses.Count / (CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 THEN 1 ELSE SUM(QuestionExecutionResponses.Count) END) * 100 END AS Percentage,
                         QuestionExecutions.Body AS QuestionText,
                         DataGroups.Id AS DataGroupId,
                         DataGroupStrings.Name AS DataGroupName,
@@ -324,7 +324,7 @@ namespace FedSurvey.Models
                     MiddleLevel.ExecutionTime,
                     MiddleLevel.PossibleResponseName,
                     MiddleLevel.Count,
-                    CASE WHEN MiddleLevel.PartOfPercentage = 0 THEN NULL ELSE MiddleLevel.Count / ComputedTotals.Count * 100 END AS Percentage,
+                    CASE WHEN MiddleLevel.PartOfPercentage = 0 THEN NULL ELSE MiddleLevel.Count / (CASE WHEN ComputedTotals.Count = 0 THEN 1 ELSE ComputedTotals.Count END) * 100 END AS Percentage,
                     MiddleLevel.QuestionText,
                     DataGroupStrings.Name AS DataGroupName,
                     MiddleLevel.QuestionId,
