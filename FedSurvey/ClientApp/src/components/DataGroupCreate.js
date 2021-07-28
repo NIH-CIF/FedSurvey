@@ -5,7 +5,7 @@ import { Button, FormGroup, Input, Label } from 'reactstrap';
 // This is exclusive to computed groups for now, but it could become more generic.
 // This was copied from DataGroupMerge, so maybe similar code could be put into its own file.
 export class DataGroupCreate extends Component {
-    static displayName = DataGroupMerge.name;
+    static displayName = DataGroupCreate.name;
 
     constructor(props) {
         super(props);
@@ -30,6 +30,8 @@ export class DataGroupCreate extends Component {
                 <span>Name the new group</span>
 
                 <Input type="text" onChange={e => this.setState({ newGroupName: e.target.value })} />
+
+                <span>Check the organizations that will sum to the new group</span>
 
                 <FormGroup>
                     {this.state.dataGroups.filter(dg => !this.state.checked.map(dg => dg.id).includes(dg.id)).map(dg => (
@@ -77,7 +79,10 @@ export class DataGroupCreate extends Component {
 
         fetch('api/data-groups/create', {
             method: 'post',
-            body: JSON.stringify(ids),
+            body: JSON.stringify({
+                name: this.state.newGroupName,
+                linkIds: this.state.checked.map(dg => dg.id)
+            }),
             headers: {
                 'Content-Type': 'application/json'
             }
