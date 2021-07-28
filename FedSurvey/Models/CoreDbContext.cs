@@ -54,6 +54,22 @@ namespace FedSurvey.Models
             });
             modelBuilder.Entity<DataGroupString>().ToTable("DataGroupStrings");
 
+            modelBuilder.Entity<DataGroupLink>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.ParentLinks)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_DataGroupLinks_DataGroups_ParentId");
+
+                entity.HasOne(d => d.Child)
+                    .WithMany(p => p.ChildLinks)
+                    .HasForeignKey(d => d.ChildId)
+                    .HasConstraintName("FK_DataGroupLinks_DataGroups_ChildId");
+            });
+            modelBuilder.Entity<DataGroupLink>().ToTable("DataGroupLinks");
+
             modelBuilder.Entity<Execution>(entity =>
             {
                 entity.HasIndex(e => e.Key)
@@ -318,7 +334,7 @@ namespace FedSurvey.Models
                 ON ComputedTotals.QuestionId = MiddleLevel.QuestionId
                 AND ComputedTotals.ExecutionName = MiddleLevel.ExecutionName
                 JOIN DataGroupStrings
-                ON DataGroupStrings.Id = MiddleLevel.DataGroupId
+                ON DataGroupStrings.DataGroupId = MiddleLevel.DataGroupId
                 AND DataGroupStrings.Preferred = 1"
             );
             modelBuilder.Entity<ResultDTO>().HasNoKey();

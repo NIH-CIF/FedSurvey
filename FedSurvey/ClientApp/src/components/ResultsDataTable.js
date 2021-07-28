@@ -106,6 +106,7 @@ export class ResultsDataTable extends Component {
         });
 
         // This is a hack to force a sort order before a more official means.
+        // Once supporting different question types, this must change.
         const forcedGrouped = _.merge({
             'Positive': [],
             'Neutral': [],

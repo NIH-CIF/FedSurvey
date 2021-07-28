@@ -67,5 +67,54 @@ namespace FedSurvey.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        [Route("api/data-groups/create")]
+        public IActionResult Create([FromBody] CreateModel createModel)
+        {
+            if (createModel.name == null)
+            {
+                return UnprocessableEntity();
+            }
+
+            // future: ensure name is not already taken
+            DataGroup newOrganization = new DataGroup { };
+            DataGroupString newOrgString = new DataGroupString
+            {
+                DataGroup = newOrganization,
+                Name = createModel.name,
+                Preferred = true
+            };
+
+            _context.DataGroups.Add(newOrganization);
+            _context.DataGroupStrings.Add(newOrgString);
+
+            // future: ensure no children are parents
+            if (createModel.linkIds.Count > 0)
+            {
+                foreach (int id in createModel.linkIds)
+                {
+                    // future: ensure id is valid
+                    DataGroupLink newLink = new DataGroupLink
+                    {
+                        Parent = newOrganization,
+                        ChildId = id
+                    };
+
+                    _context.Add(newLink);
+                }
+            }
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        // Breaking C# capitalized class variable names because I want my API to use lower-case querying params etc.
+        public class CreateModel
+        {
+            public string name { get; set; }
+            public List<int> linkIds { get; set; }
+        }
     }
 }
