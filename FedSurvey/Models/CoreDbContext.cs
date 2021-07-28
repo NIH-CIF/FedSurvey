@@ -190,68 +190,137 @@ namespace FedSurvey.Models
             );
             modelBuilder.Entity<ResponseDTO>().ToTable(null);
 
-            // Percentage shold be NULL when not part of percentage, but this gave an error that was not worth dealing with.
             modelBuilder.Entity<ResultDTO>().ToSqlQuery(
-                @"SELECT
-                    Executions.""Key"" AS ExecutionName,
-                    Executions.OccurredTime AS ExecutionTime,
-                    PossibleResponseStrings.""Name"" AS PossibleResponseName,
-                    Responses.Count,
-                    CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 OR PossibleResponses.PartOfPercentage = 0 THEN NULL ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage,
-                    QuestionExecutions.Body AS QuestionText,
-                    DataGroupStrings.""Name"" AS DataGroupName,
-                    QuestionExecutions.QuestionId AS QuestionId,
-                    QuestionExecutions.Position AS QuestionNumber
-                FROM (
+                @"WITH BottomLevel AS (
                     SELECT
-                        SUM(Responses.Count) AS ""Count"",
+                        Executions.""Key"" AS ExecutionName,
+                        Executions.OccurredTime AS ExecutionTime,
+                        PossibleResponseStrings.Name AS PossibleResponseName,
+                        PossibleResponses.PartOfPercentage AS PartOfPercentage,
+                        Responses.Count,
+                        CASE WHEN PossibleResponses.PartOfPercentage = 0 THEN NULL ELSE Responses.Count / SUM(QuestionExecutionResponses.Count) * 100 END AS Percentage,
+                        QuestionExecutions.Body AS QuestionText,
+                        DataGroups.Id AS DataGroupId,
+                        DataGroupStrings.Name AS DataGroupName,
+                        QuestionExecutions.QuestionId AS QuestionId,
+                        QuestionExecutions.Position AS QuestionNumber
+                    FROM (
+                        SELECT
+                            SUM(Responses.Count) AS Count,
+                            Responses.QuestionExecutionId,
+                            Responses.PossibleResponseId,
+                            Responses.DataGroupId
+                        FROM Responses
+                        GROUP BY
                         Responses.QuestionExecutionId,
                         Responses.PossibleResponseId,
                         Responses.DataGroupId
-                    FROM Responses
-                    GROUP BY
-                    Responses.QuestionExecutionId,
-                    Responses.PossibleResponseId,
-                    Responses.DataGroupId
-                ) Responses
-                JOIN PossibleResponses
-                ON PossibleResponses.Id = Responses.PossibleResponseId
-                JOIN PossibleResponseStrings
-                ON PossibleResponseStrings.PossibleResponseId = PossibleResponses.Id
-                    AND PossibleResponseStrings.Preferred = 1
-                JOIN QuestionExecutions
-                ON QuestionExecutions.Id = Responses.QuestionExecutionId
-                JOIN Executions
-                ON Executions.Id = QuestionExecutions.ExecutionId
-                JOIN DataGroups
-                ON DataGroups.Id = Responses.DataGroupId
-                JOIN DataGroupStrings
-                ON DataGroupStrings.DataGroupId = DataGroups.Id
-                    AND DataGroupStrings.Preferred = 1
-                LEFT JOIN (
-                    SELECT Responses.*
-                    FROM Responses
+                    ) Responses
                     JOIN PossibleResponses
+                    ON PossibleResponses.Id = Responses.PossibleResponseId
+                    JOIN PossibleResponseStrings
+                    ON PossibleResponseStrings.PossibleResponseId = PossibleResponses.Id
+                        AND PossibleResponseStrings.Preferred = 1
+                    JOIN QuestionExecutions
+                    ON QuestionExecutions.Id = Responses.QuestionExecutionId
+                    JOIN Executions
+                    ON Executions.Id = QuestionExecutions.ExecutionId
+                    JOIN DataGroups
+                    ON DataGroups.Id = Responses.DataGroupId
+                    JOIN DataGroupStrings
+                    ON DataGroupStrings.DataGroupId = DataGroups.Id
+                        AND DataGroupStrings.Preferred = 1
+                    LEFT JOIN (
+                        SELECT Responses.*
+                        FROM Responses
+                        JOIN PossibleResponses
                         ON PossibleResponses.Id = Responses.PossibleResponseId
-                    WHERE PossibleResponses.PartOfPercentage = 1
-                ) QuestionExecutionResponses
-                ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
-                    AND QuestionExecutionResponses.DataGroupId = Responses.DataGroupId
-                GROUP BY
-                Executions.""Key"",
-                Executions.OccurredTime,
-                PossibleResponseStrings.""Name"",
-                Responses.Count,
-                PossibleResponses.PartOfPercentage,
-                QuestionExecutions.Body,
-                DataGroupStrings.""Name"",
-                QuestionExecutions.QuestionId,
-                QuestionExecutions.Position,
-                PossibleResponses.Id
-                ORDER BY
-                PossibleResponses.PartOfPercentage DESC,
-                PossibleResponses.Id ASC" // this is a hack due to my manual DB setup and
-                // should get replaced by a defined sort order
+                        WHERE PossibleResponses.PartOfPercentage = 1
+                    ) QuestionExecutionResponses
+                        ON QuestionExecutionResponses.QuestionExecutionId = Responses.QuestionExecutionId
+                            AND QuestionExecutionResponses.DataGroupId = Responses.DataGroupId
+                    GROUP BY
+                    Executions.""Key"",
+                    Executions.OccurredTime,
+                    PossibleResponseStrings.Name,
+                    Responses.Count,
+                    PossibleResponses.PartOfPercentage,
+                    QuestionExecutions.Body,
+                    DataGroups.Id,
+                    DataGroupStrings.Name,
+                    QuestionExecutions.QuestionId,
+                    QuestionExecutions.Position,
+                    PossibleResponses.Id
+                ),
+                MiddleLevel AS (
+                    SELECT
+                        BottomLevel.ExecutionName,
+                        BottomLevel.ExecutionTime,
+                        BottomLevel.PossibleResponseName,
+                        BottomLevel.PartOfPercentage,
+                        SUM(BottomLevel.Count) AS Count,
+                        BottomLevel.QuestionText,
+                        DataGroups.Id AS DataGroupId,
+                        BottomLevel.QuestionId,
+                        BottomLevel.QuestionNumber
+                    FROM DataGroups
+                    JOIN DataGroupLinks
+                    ON DataGroupLinks.ParentId = DataGroups.Id
+                    JOIN BottomLevel
+                    ON BottomLevel.DataGroupId = DataGroupLinks.ChildId
+                    GROUP BY
+                    BottomLevel.ExecutionName,
+                    BottomLevel.ExecutionTime,
+                    BottomLevel.PossibleResponseName,
+                    BottomLevel.PartOfPercentage,
+                    BottomLevel.QuestionText,
+                    DataGroups.Id,
+                    BottomLevel.QuestionId,
+                    BottomLevel.QuestionNumber
+                ),
+                ComputedTotals AS (
+                    SELECT
+                        MiddleLevel.QuestionId,
+                        MiddleLevel.ExecutionName,
+                        SUM(MiddleLevel.Count) AS Count
+                    FROM MiddleLevel
+                    WHERE MiddleLevel.PartOfPercentage = 1
+                    GROUP BY
+                    MiddleLevel.QuestionId,
+                    MiddleLevel.ExecutionName
+                )
+
+                SELECT
+                    ExecutionName,
+                    ExecutionTime,
+                    PossibleResponseName,
+                    Count,
+                    Percentage,
+                    QuestionText,
+                    DataGroupName,
+                    QuestionId,
+                    QuestionNumber
+                FROM BottomLevel
+
+                UNION
+
+                SELECT
+                    MiddleLevel.ExecutionName,
+                    MiddleLevel.ExecutionTime,
+                    MiddleLevel.PossibleResponseName,
+                    MiddleLevel.Count,
+                    CASE WHEN MiddleLevel.PartOfPercentage = 0 THEN NULL ELSE MiddleLevel.Count / ComputedTotals.Count * 100 END AS Percentage,
+                    MiddleLevel.QuestionText,
+                    DataGroupStrings.Name AS DataGroupName,
+                    MiddleLevel.QuestionId,
+                    MiddleLevel.QuestionNumber
+                FROM MiddleLevel
+                JOIN ComputedTotals
+                ON ComputedTotals.QuestionId = MiddleLevel.QuestionId
+                AND ComputedTotals.ExecutionName = MiddleLevel.ExecutionName
+                JOIN DataGroupStrings
+                ON DataGroupStrings.Id = MiddleLevel.DataGroupId
+                AND DataGroupStrings.Preferred = 1"
             );
             modelBuilder.Entity<ResultDTO>().HasNoKey();
             modelBuilder.Entity<ResultDTO>().ToTable(null);

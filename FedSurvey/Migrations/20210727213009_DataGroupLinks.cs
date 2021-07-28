@@ -15,8 +15,8 @@ namespace FedSurvey.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ParentId = table.Column<int>(type: "int", nullable: false),
                     ChildId = table.Column<int>(type: "int", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -27,7 +27,7 @@ namespace FedSurvey.Migrations
                         principalTable: "DataGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
-                    // only putting NoAction due to SQL error
+                    // only putting NoAction due to SQL error - reconsider later
                     table.ForeignKey(
                         name: "FK_DataGroupLinks_DataGroups_ParentId",
                         column: x => x.ParentId,
