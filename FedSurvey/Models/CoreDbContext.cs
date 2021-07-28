@@ -249,8 +249,7 @@ namespace FedSurvey.Models
                     DataGroups.Id,
                     DataGroupStrings.Name,
                     QuestionExecutions.QuestionId,
-                    QuestionExecutions.Position,
-                    PossibleResponses.Id
+                    QuestionExecutions.Position
                 ),
                 MiddleLevel AS (
                     SELECT

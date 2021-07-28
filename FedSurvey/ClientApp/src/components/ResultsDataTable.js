@@ -40,8 +40,10 @@ export class ResultsDataTable extends Component {
                         <tr key={key}>
                             <th scope="row">{key}</th>
                             {val.map((r, index) => {
-                                return r?.count ? (
-                                    <td key={index}>{r.percentage?.toFixed(1) || r.count}{r.percentage && '%'}</td>
+                                // undefined for r.count because it is not in object
+                                // null for r.percentage because it is in object
+                                return r.count !== undefined ? (
+                                    <td key={index}>{r.percentage?.toFixed(1) || r.count}{r.percentage !== null && '%'}</td>
                                 ) : <td key={index}>N/A</td>;
                             })}
                         </tr>
@@ -93,8 +95,6 @@ export class ResultsDataTable extends Component {
         };
         const headers = [];
 
-        // Open Q is force headers?
-
         Object.keys(combinedSortGrouped).sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0))).forEach(key => {
             if (this.props.showQuestionNumber) {
                 grouped['Question Number'].push({
@@ -105,8 +105,14 @@ export class ResultsDataTable extends Component {
             headers.push(combinedSortGrouped[key][0].executionName);
         });
 
-        // Other open Q is how best to allow reordering of rows, etc.
+        // This is a hack to force a sort order before a more official means.
+        const forcedGrouped = _.merge({
+            'Positive': [],
+            'Neutral': [],
+            'Negative': [],
+            'Do Not Know/ No Basis to Judge': []
+        }, grouped);
 
-        this.setState({ results: grouped, headers: headers, loading: false });
+        this.setState({ results: forcedGrouped, headers: headers, loading: false });
     }
 }
