@@ -114,6 +114,20 @@ export class ResultsDataTable extends Component {
             'Do Not Know/ No Basis to Judge': []
         }, grouped);
 
+        for (const key in forcedGrouped) {
+            if (forcedGrouped[key].length === 0) {
+                delete forcedGrouped[key];
+            } else if (forcedGrouped[key].length !== executions.length) {
+                executions.forEach((e, index) => {
+                    if (!forcedGrouped[key][index] || forcedGrouped[key][index].executionTime !== e.occurredTime) {
+                        forcedGrouped[key].splice(index, 0, {
+                            executionTime: e.occurredTime
+                        });
+                    }
+                });
+            }
+        }
+
         this.setState({ results: forcedGrouped, headers: headers, loading: false });
     }
 }
