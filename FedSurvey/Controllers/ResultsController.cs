@@ -25,11 +25,13 @@ namespace FedSurvey.Controllers
         // This is so ugly!
         // Not sure if it is just static typing in a method like this
         // or if I did some things wrong.
+        // Consider making all filters ID-based?
         [HttpGet]
         public IEnumerable<ResultDTO> Get(
             [FromQuery(Name = "question-ids")] List<int> questionIds,
             [FromQuery(Name = "data-group-names")] List<string> dataGroupNames,
-            [FromQuery(Name = "possible-response-names")] List<string> possibleResponseNames
+            [FromQuery(Name = "possible-response-names")] List<string> possibleResponseNames,
+            [FromQuery(Name = "execution-keys")] List<string> executionKeys
         ) {
             // {0} is BottomLevel query string,
             // {1} is MiddleLevel query string
@@ -194,6 +196,7 @@ namespace FedSurvey.Controllers
                     string[] questionIdParameters = new string[questionIds.Count];
                     string[] dataGroupNameParameters = new string[dataGroupNamesWithChildren.Count];
                     string[] possibleResponseNameParameters = new string[possibleResponseNames.Count];
+                    string[] executionKeyParameters = new string[executionKeys.Count];
 
                     for (int i = 0; i < questionIds.Count; i++)
                     {
@@ -213,6 +216,12 @@ namespace FedSurvey.Controllers
                         command.Parameters.AddWithValue(possibleResponseNameParameters[i], possibleResponseNames[i]);
                     }
 
+                    for (int i = 0; i < executionKeys.Count; i++)
+                    {
+                        executionKeyParameters[i] = string.Format("@ExecutionKeys{0}", i);
+                        command.Parameters.AddWithValue(executionKeyParameters[i], executionKeys[i]);
+                    }
+
                     // Horribly needs to be patternized.
                     string firstQuestionIdsQuery = questionIds.Count > 0 ? string.Format("QuestionExecutions.QuestionId IN ({0})", string.Join(", ", questionIdParameters)) : null;
                     string secondQuestionIdsQuery = questionIds.Count > 0 ? string.Format("BottomLevel.QuestionId IN ({0})", string.Join(", ", questionIdParameters)) : null;
@@ -220,10 +229,13 @@ namespace FedSurvey.Controllers
                     string firstDataGroupNamesQuery = dataGroupNamesWithChildren.Count > 0 ? string.Format("DataGroupStrings.Name IN ({0})", string.Join(", ", dataGroupNameParameters)) : null;
                     string secondDataGroupNamesQuery = firstDataGroupNamesQuery;
 
+                    string firstExecutionKeysQuery = executionKeys.Count > 0 ? string.Format("Executions.\"Key\" IN ({0})", string.Join(", ", executionKeys)) : null;
+                    string secondExecutionKeysQuery = executionKeys.Count > 0 ? string.Format("BottomLevel.ExecutionName IN ({0})", string.Join(", ", executionKeys)) : null;
+
                     string firstQuery = "";
                     string secondQuery = "";
 
-                    if (questionIds.Count > 0 || dataGroupNamesWithChildren.Count > 0 || possibleResponseNames.Count > 0)
+                    if (questionIds.Count > 0 || dataGroupNamesWithChildren.Count > 0 || possibleResponseNames.Count > 0 || executionKeys.Count > 0)
                     {
                         firstQuery = "WHERE ";
                         secondQuery = "WHERE ";
@@ -241,6 +253,11 @@ namespace FedSurvey.Controllers
                             firstQueries.Add(firstDataGroupNamesQuery);
                         }
 
+                        if (firstExecutionKeysQuery != null)
+                        {
+                            firstQueries.Add(firstExecutionKeysQuery);
+                        }
+
                         if (secondQuestionIdsQuery != null)
                         {
                             secondQueries.Add(secondQuestionIdsQuery);
@@ -249,6 +266,11 @@ namespace FedSurvey.Controllers
                         if (secondDataGroupNamesQuery != null)
                         {
                             secondQueries.Add(secondDataGroupNamesQuery);
+                        }
+
+                        if (secondExecutionKeysQuery != null)
+                        {
+                            secondQueries.Add(secondExecutionKeysQuery);
                         }
 
                         firstQuery += string.Join(" AND ", firstQueries);

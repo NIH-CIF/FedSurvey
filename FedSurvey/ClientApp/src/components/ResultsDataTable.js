@@ -105,7 +105,7 @@ export class ResultsDataTable extends Component {
                 });
             }
 
-            headers.push(combinedSortGrouped[key][0].executionName);
+            headers.push(this.props.sortingVariable === 'executionTime' ? combinedSortGrouped[key][0].executionName : combinedSortGrouped[key][0][this.props.sortingVariable]);
         });
 
         // This is a hack to force a sort order before a more official means.
