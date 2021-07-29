@@ -28,7 +28,8 @@ namespace FedSurvey.Controllers
         [HttpGet]
         public IEnumerable<ResultDTO> Get(
             [FromQuery(Name = "question-ids")] List<int> questionIds,
-            [FromQuery(Name = "data-group-names")] List<string> dataGroupNames
+            [FromQuery(Name = "data-group-names")] List<string> dataGroupNames,
+            [FromQuery(Name = "possible-response-names")] List<string> possibleResponseNames
         ) {
             // {0} is BottomLevel query string,
             // {1} is MiddleLevel query string
@@ -192,6 +193,7 @@ namespace FedSurvey.Controllers
 
                     string[] questionIdParameters = new string[questionIds.Count];
                     string[] dataGroupNameParameters = new string[dataGroupNamesWithChildren.Count];
+                    string[] possibleResponseNameParameters = new string[possibleResponseNames.Count];
 
                     for (int i = 0; i < questionIds.Count; i++)
                     {
@@ -205,12 +207,21 @@ namespace FedSurvey.Controllers
                         command.Parameters.AddWithValue(dataGroupNameParameters[i], dataGroupNamesWithChildren[i]);
                     }
 
+                    for (int i = 0; i < possibleResponseNames.Count; i++)
+                    {
+                        possibleResponseNameParameters[i] = string.Format("@PossibleResponseNames{0}", i);
+                        command.Parameters.AddWithValue(possibleResponseNameParameters[i], possibleResponseNames[i]);
+                    }
+
                     // Horribly needs to be patternized.
                     string firstQuestionIdsQuery = questionIds.Count > 0 ? string.Format("QuestionExecutions.QuestionId IN ({0})", string.Join(", ", questionIdParameters)) : null;
                     string secondQuestionIdsQuery = questionIds.Count > 0 ? string.Format("BottomLevel.QuestionId IN ({0})", string.Join(", ", questionIdParameters)) : null;
 
                     string firstDataGroupNamesQuery = dataGroupNamesWithChildren.Count > 0 ? string.Format("DataGroupStrings.Name IN ({0})", string.Join(", ", dataGroupNameParameters)) : null;
                     string secondDataGroupNamesQuery = firstDataGroupNamesQuery;
+
+                    string firstPossibleResponseNamesQuery = possibleResponseNames.Count > 0 ? string.Format("PossibleResponseStrings.Name IN ({0})", string.Join(", ", possibleResponseNameParameters)) : null;
+                    string secondPossibleResponseNamesQuery = possibleResponseNames.Count > 0 ? string.Format("BottomLevel.PossibleResponseName IN ({0})", string.Join(", ", possibleResponseNameParameters)) : null;
 
                     string firstQuery = "";
                     string secondQuery = "";
@@ -233,6 +244,11 @@ namespace FedSurvey.Controllers
                             firstQueries.Add(firstDataGroupNamesQuery);
                         }
 
+                        if (firstPossibleResponseNamesQuery != null)
+                        {
+                            firstQueries.Add(firstPossibleResponseNamesQuery);
+                        }
+
                         if (secondQuestionIdsQuery != null)
                         {
                             secondQueries.Add(secondQuestionIdsQuery);
@@ -241,6 +257,11 @@ namespace FedSurvey.Controllers
                         if (secondDataGroupNamesQuery != null)
                         {
                             secondQueries.Add(secondDataGroupNamesQuery);
+                        }
+
+                        if (secondPossibleResponseNamesQuery != null)
+                        {
+                            secondQueries.Add(secondPossibleResponseNamesQuery);
                         }
 
                         firstQuery += string.Join(" AND ", firstQueries);
