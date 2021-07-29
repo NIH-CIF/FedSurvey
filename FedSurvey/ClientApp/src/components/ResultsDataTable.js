@@ -70,27 +70,30 @@ export class ResultsDataTable extends Component {
 
         const grouped = {
             ...startingObject,
-            ..._.groupBy(results, r => r.possibleResponseName)
+            ..._.groupBy(results, r => r[this.props.groupingVariable])
         };
-        const sortGrouped = _.groupBy(results, r => r.executionTime);
+        const sortGrouped = _.groupBy(results, r => r[this.props.sortingVariable]);
 
         Object.keys(grouped).forEach(key => {
-            // future if on what is across in table
-            if (grouped[key].length !== executions.length) {
-                executions.forEach(e => {
-                    if (!Object.keys(sortGrouped).includes(e.occurredTime)) {
-                        grouped[key].push({
-                            executionTime: e.occurredTime
-                        });
-                    }
-                });
+            if (this.props.sortingVariable === 'executionTime') {
+                if (grouped[key].length !== executions.length) {
+                    executions.forEach(e => {
+                        if (!Object.keys(sortGrouped).includes(e.occurredTime)) {
+                            grouped[key].push({
+                                executionTime: e.occurredTime
+                            });
+                        }
+                    });
+                }
             }
 
             grouped[key] = grouped[key].sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0)));
         });
 
+        const executionKeys = this.props.sortingVariable === 'executionTime' ? Object.assign({}, ...executions.map(e => ({ [e.occurredTime]: [{ executionName: e.key }] }))) : {};
+
         const combinedSortGrouped = {
-            ...Object.assign({}, ...executions.map(e => ({ [e.occurredTime]: [{ executionName: e.key }] }))),
+            ...executionKeys,
             ...sortGrouped
         };
         const headers = [];
@@ -117,7 +120,7 @@ export class ResultsDataTable extends Component {
         for (const key in forcedGrouped) {
             if (forcedGrouped[key].length === 0) {
                 delete forcedGrouped[key];
-            } else if (forcedGrouped[key].length !== executions.length) {
+            } else if (this.props.sortingVariable === 'executionTime' && forcedGrouped[key].length !== executions.length) {
                 executions.forEach((e, index) => {
                     if (!forcedGrouped[key][index] || forcedGrouped[key][index].executionTime !== e.occurredTime) {
                         forcedGrouped[key].splice(index, 0, {

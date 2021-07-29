@@ -45,6 +45,8 @@ export class QuestionPage extends Component {
                         'question-ids': [this.props.match.params.questionId],
                         'data-group-names': [this.state.currentDataGroupName]
                     }}
+                    groupingVariable="possibleResponseName"
+                    sortingVariable="executionTime"
                 />
 
                 {Object.keys(this.state.questionChanges).length > 0 && (
