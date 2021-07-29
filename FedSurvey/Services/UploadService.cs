@@ -166,6 +166,10 @@ namespace FedSurvey.Services
                                 }
 
                                 string text = reader.GetString(3).Replace("\n", " ");
+
+                                // todo should detect the /Question/ without locking into the same execution
+                                // or rather, when making a new execution, should check the text overall first
+                                // but think about this
                                 QuestionExecution questionExecution = questionTextToObject.ContainsKey(text) ? questionTextToObject[text] : context.QuestionExecutions.Where(qe => qe.Body.Equals(text) && qe.ExecutionId == execution.Id).FirstOrDefault();
 
                                 if (questionExecution == null)

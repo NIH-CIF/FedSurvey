@@ -12,7 +12,7 @@ export class Test extends Component {
     }
 
     render() {
-        const CHOSEN_TABLE = 5;
+        const CHOSEN_TABLE = 4;
 
         return (
             <div>

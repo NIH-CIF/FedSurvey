@@ -129,6 +129,7 @@ export class ResultsDataTable extends Component {
                     }
                 });
             } else if (forcedGrouped[key].length !== headers.length) {
+                console.log(key);
                 headers.forEach((h, index) => {
                     if (!forcedGrouped[key][index] || forcedGrouped[key][index][this.props.sortingVariable] !== h) {
                         forcedGrouped[key].splice(index, 0, {
