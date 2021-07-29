@@ -220,13 +220,10 @@ namespace FedSurvey.Controllers
                     string firstDataGroupNamesQuery = dataGroupNamesWithChildren.Count > 0 ? string.Format("DataGroupStrings.Name IN ({0})", string.Join(", ", dataGroupNameParameters)) : null;
                     string secondDataGroupNamesQuery = firstDataGroupNamesQuery;
 
-                    string firstPossibleResponseNamesQuery = possibleResponseNames.Count > 0 ? string.Format("PossibleResponseStrings.Name IN ({0})", string.Join(", ", possibleResponseNameParameters)) : null;
-                    string secondPossibleResponseNamesQuery = possibleResponseNames.Count > 0 ? string.Format("BottomLevel.PossibleResponseName IN ({0})", string.Join(", ", possibleResponseNameParameters)) : null;
-
                     string firstQuery = "";
                     string secondQuery = "";
 
-                    if (questionIds.Count > 0 || dataGroupNamesWithChildren.Count > 0)
+                    if (questionIds.Count > 0 || dataGroupNamesWithChildren.Count > 0 || possibleResponseNames.Count > 0)
                     {
                         firstQuery = "WHERE ";
                         secondQuery = "WHERE ";
@@ -244,11 +241,6 @@ namespace FedSurvey.Controllers
                             firstQueries.Add(firstDataGroupNamesQuery);
                         }
 
-                        if (firstPossibleResponseNamesQuery != null)
-                        {
-                            firstQueries.Add(firstPossibleResponseNamesQuery);
-                        }
-
                         if (secondQuestionIdsQuery != null)
                         {
                             secondQueries.Add(secondQuestionIdsQuery);
@@ -257,11 +249,6 @@ namespace FedSurvey.Controllers
                         if (secondDataGroupNamesQuery != null)
                         {
                             secondQueries.Add(secondDataGroupNamesQuery);
-                        }
-
-                        if (secondPossibleResponseNamesQuery != null)
-                        {
-                            secondQueries.Add(secondPossibleResponseNamesQuery);
                         }
 
                         firstQuery += string.Join(" AND ", firstQueries);
@@ -276,8 +263,46 @@ namespace FedSurvey.Controllers
                         command.Parameters.AddWithValue(specificDataGroupNameParameters[i], dataGroupNames[i]);
                     }
 
-                    string thirdQuery = dataGroupNames.Count > 0 ? string.Format("WHERE DataGroupName IN ({0})", string.Join(", ", specificDataGroupNameParameters)) : "";
-                    string fourthQuery = dataGroupNames.Count > 0 ? string.Format("WHERE DataGroupStrings.Name IN ({0})", string.Join(", ", specificDataGroupNameParameters)) : "";
+                    string thirdQuery = "";
+                    string fourthQuery = "";
+
+                    string thirdDataGroupsQuery = dataGroupNames.Count > 0 ? string.Format("DataGroupName IN ({0})", string.Join(", ", specificDataGroupNameParameters)) : null;
+                    string fourthDataGroupsQuery = dataGroupNames.Count > 0 ? string.Format("DataGroupStrings.Name IN ({0})", string.Join(", ", specificDataGroupNameParameters)) : null;
+
+                    string thirdPossibleResponseNamesQuery = possibleResponseNames.Count > 0 ? string.Format("PossibleResponseName IN ({0})", string.Join(", ", possibleResponseNameParameters)) : null;
+                    string fourthPossibleResponseNamesQuery = possibleResponseNames.Count > 0 ? string.Format("MiddleLevel.PossibleResponseName IN ({0})", string.Join(", ", possibleResponseNameParameters)) : null;
+
+                    if (dataGroupNames.Count > 0 || possibleResponseNames.Count > 0)
+                    {
+                        thirdQuery = "WHERE ";
+                        fourthQuery = "WHERE ";
+
+                        List<string> thirdQueries = new List<string>();
+                        List<string> fourthQueries = new List<string>();
+
+                        if (thirdDataGroupsQuery != null)
+                        {
+                            thirdQueries.Add(thirdDataGroupsQuery);
+                        }
+
+                        if (thirdPossibleResponseNamesQuery != null)
+                        {
+                            thirdQueries.Add(thirdPossibleResponseNamesQuery);
+                        }
+
+                        if (fourthDataGroupsQuery != null)
+                        {
+                            fourthQueries.Add(fourthDataGroupsQuery);
+                        }
+
+                        if (fourthPossibleResponseNamesQuery != null)
+                        {
+                            fourthQueries.Add(fourthPossibleResponseNamesQuery);
+                        }
+
+                        thirdQuery += string.Join(" AND ", thirdQueries);
+                        fourthQuery += string.Join(" AND ", fourthQueries);
+                    }
 
                     command.CommandText = string.Format(queryFormatString, firstQuery, secondQuery, thirdQuery, fourthQuery);
 
