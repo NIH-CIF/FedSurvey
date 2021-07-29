@@ -35,6 +35,9 @@ namespace FedSurvey.Services
 
                         while (reader.Read())
                         {
+                            if (reader.FieldCount < 5 || reader.IsDBNull(0))
+                                continue;
+
                             // Maybe more validation to do, but the upload should be able to handle bad data.
                             if (reader.GetString(0).Replace("\n", " ").Equals("Sorting Level") &&
                                 reader.GetString(1).Replace("\n", " ").Equals("Organization") &&

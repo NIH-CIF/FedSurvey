@@ -146,6 +146,7 @@ namespace FedSurvey.Controllers
                 QuestionId,
                 QuestionNumber
             FROM BottomLevel
+            {2}
 
             UNION
 
@@ -165,11 +166,21 @@ namespace FedSurvey.Controllers
             AND ComputedTotals.ExecutionName = MiddleLevel.ExecutionName
             JOIN DataGroupStrings
             ON DataGroupStrings.DataGroupId = MiddleLevel.DataGroupId
-            AND DataGroupStrings.Preferred = 1";
+            AND DataGroupStrings.Preferred = 1
+            {3}";
 
             string connectionString = _configuration.GetConnectionString("Database");
 
             List<ResultDTO> results = new List<ResultDTO>();
+
+            // Need to add in children data group names.
+            // This can be optimized to one SQL query, but SQL in C# has proven to be a major pain.
+            List<int> dgIds = _context.DataGroupStrings.Where(dgs => dataGroupNames.Contains(dgs.Name)).Select(dgs => dgs.DataGroupId).ToList();
+            List<int> childIds = _context.DataGroupLinks.Where(dgl => dgIds.Contains(dgl.ParentId)).Select(dgl => dgl.ChildId).ToList();
+            List<string> childNames = _context.DataGroupStrings.Where(dgs => childIds.Contains(dgs.DataGroupId) && dgs.Preferred).Select(dgs => dgs.Name).ToList();
+
+            // Need this for the sublist queries then need to query the overall queries back to normal.
+            List<string> dataGroupNamesWithChildren = dataGroupNames.Concat(childNames).ToList();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -180,7 +191,7 @@ namespace FedSurvey.Controllers
                     command.Connection = connection;
 
                     string[] questionIdParameters = new string[questionIds.Count];
-                    string[] dataGroupNameParameters = new string[dataGroupNames.Count];
+                    string[] dataGroupNameParameters = new string[dataGroupNamesWithChildren.Count];
 
                     for (int i = 0; i < questionIds.Count; i++)
                     {
@@ -188,23 +199,23 @@ namespace FedSurvey.Controllers
                         command.Parameters.AddWithValue(questionIdParameters[i], questionIds[i]);
                     }
 
-                    for (int i = 0; i < dataGroupNames.Count; i++)
+                    for (int i = 0; i < dataGroupNamesWithChildren.Count; i++)
                     {
                         dataGroupNameParameters[i] = string.Format("@DataGroupNames{0}", i);
-                        command.Parameters.AddWithValue(dataGroupNameParameters[i], dataGroupNames[i]);
+                        command.Parameters.AddWithValue(dataGroupNameParameters[i], dataGroupNamesWithChildren[i]);
                     }
 
                     // Horribly needs to be patternized.
                     string firstQuestionIdsQuery = questionIds.Count > 0 ? string.Format("QuestionExecutions.QuestionId IN ({0})", string.Join(", ", questionIdParameters)) : null;
                     string secondQuestionIdsQuery = questionIds.Count > 0 ? string.Format("BottomLevel.QuestionId IN ({0})", string.Join(", ", questionIdParameters)) : null;
 
-                    string firstDataGroupNamesQuery = dataGroupNames.Count > 0 ? string.Format("DataGroupStrings.Name IN ({0})", string.Join(", ", dataGroupNameParameters)) : null;
+                    string firstDataGroupNamesQuery = dataGroupNamesWithChildren.Count > 0 ? string.Format("DataGroupStrings.Name IN ({0})", string.Join(", ", dataGroupNameParameters)) : null;
                     string secondDataGroupNamesQuery = firstDataGroupNamesQuery;
 
                     string firstQuery = "";
                     string secondQuery = "";
 
-                    if (questionIds.Count > 0 || dataGroupNames.Count > 0)
+                    if (questionIds.Count > 0 || dataGroupNamesWithChildren.Count > 0)
                     {
                         firstQuery = "WHERE ";
                         secondQuery = "WHERE ";
@@ -236,7 +247,18 @@ namespace FedSurvey.Controllers
                         secondQuery += string.Join(" AND ", secondQueries);
                     }
 
-                    command.CommandText = string.Format(queryFormatString, firstQuery, secondQuery);
+                    string[] specificDataGroupNameParameters = new string[dataGroupNames.Count];
+
+                    for (int i = 0; i < dataGroupNames.Count; i++)
+                    {
+                        specificDataGroupNameParameters[i] = string.Format("@DataGroupSpecificNames{0}", i);
+                        command.Parameters.AddWithValue(specificDataGroupNameParameters[i], dataGroupNames[i]);
+                    }
+
+                    string thirdQuery = dataGroupNames.Count > 0 ? string.Format("WHERE DataGroupName IN ({0})", string.Join(", ", specificDataGroupNameParameters)) : "";
+                    string fourthQuery = dataGroupNames.Count > 0 ? string.Format("WHERE DataGroupStrings.Name IN ({0})", string.Join(", ", specificDataGroupNameParameters)) : "";
+
+                    command.CommandText = string.Format(queryFormatString, firstQuery, secondQuery, thirdQuery, fourthQuery);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
