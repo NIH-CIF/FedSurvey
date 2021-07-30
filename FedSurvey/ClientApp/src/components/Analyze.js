@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { ResultsDataTable } from './ResultsDataTable';
 import { Dropdown } from 'bootstrap';
+import Select from 'react-select';
 
 export class Analyze extends Component {
     static displayName = Analyze.name;
@@ -34,6 +35,7 @@ export class Analyze extends Component {
         const rowCols = [this.state.groupingVariable, this.state.sortingVariable];
         const notRowCols = totalVariables.filter(v => !rowCols.includes(v));
 
+        // need to redo naming thru
         const totalExpandedVariables = totalVariables.map(v => {
             if (v === 'dataGroupName') {
                 return {
@@ -74,6 +76,7 @@ export class Analyze extends Component {
             }
         });
         const dropdownFilterVariables = totalExpandedVariables.filter(tv => notRowCols.includes(tv.tableName));
+        const dropdownSelectVariables = totalExpandedVariables.filter(tv => rowCols.includes(tv.tableName));
 
         return (
             <div>
@@ -139,17 +142,31 @@ export class Analyze extends Component {
                             <Label for={dv.tableName}>
                                 {dv.displayName}
                             </Label>
-                            <Input
-                                type="select"
+                            <Select
                                 name={dv.tableName}
                                 id={dv.tableName}
-                                onChange={e => this.updateFilters(dv, e.target.value)}
-                                value={this.state.filters[dv.filterKey][0]}
-                            >
-                                {this.state[dv.listName].map(dvi => (
-                                    <option value={dvi[dv.storeValue]} key={dv.tableName + dvi.id}>{dvi[dv.displayValue]}</option>
-                                ))}
-                            </Input>
+                                onChange={val => this.updateFilters(dv, val)}
+                                value={this.getFiltersForSelect(dv)}
+                                options={this.state[dv.listName].map(item => ({ label: item[dv.displayValue], value: item[dv.storeValue] }))}
+                            />
+                        </div>
+                    ))}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {dropdownSelectVariables.map(dv => (
+                        <div key={'div' + dv.tableName} style={{ flex: 1 }}>
+                            <Label for={dv.tableName}>
+                                {dv.displayName}
+                            </Label>
+                            <Select
+                                name={dv.tableName}
+                                isMulti
+                                id={dv.tableName}
+                                onChange={val => this.updateFilters(dv, val)}
+                                value={this.getFiltersForSelect(dv)}
+                                options={this.state[dv.listName].map(item => ({label: item[dv.displayValue], value: item[dv.storeValue]}))}
+                            />
                         </div>
                     ))}
                 </div>
@@ -165,16 +182,26 @@ export class Analyze extends Component {
         );
     }
 
+    getFilters(dropdownFilterVariable) {
+        return this.state.filters[dropdownFilterVariable.filterKey] ? this.state.filters[dropdownFilterVariable.filterKey] : null;
+    }
+
+    getFiltersForSelect(dropdownFilterVariable) {
+        return this.state[dropdownFilterVariable.listName].map(item => ({ label: item[dropdownFilterVariable.displayValue], value: item[dropdownFilterVariable.storeValue] })).filter(o => this.getFilters(dropdownFilterVariable)?.includes(o.value));
+    }
+
     updateFilters(dropdownFilterVariable, value) {
-        this.setState(prevState => ({ filters: { ...prevState.filters, [dropdownFilterVariable.filterKey]: [value] } }));
+        const setValue = Array.isArray(value) ? value.map(v => v.value) : [value.value];
+
+        this.setState(prevState => ({ filters: { ...prevState.filters, [dropdownFilterVariable.filterKey]: setValue } }));
     }
 
     updateTableVariable(variableName, currentDropdownVariable, dropdownFilterVariable, value) {
-        const filters = this.state.filters;
-        delete filters[dropdownFilterVariable.filterKey];
-
         this.setState(prevState => ({
-            filters,
+            filters: {
+                ...prevState.filters,
+                [dropdownFilterVariable.filterKey]: []
+            },
             [variableName]: value,
         }));
         this.updateFilters(currentDropdownVariable, this.state[currentDropdownVariable.listName][0][currentDropdownVariable.storeValue]);

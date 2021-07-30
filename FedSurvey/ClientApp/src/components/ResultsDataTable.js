@@ -54,9 +54,21 @@ export class ResultsDataTable extends Component {
     }
 
     async populateResultsData() {
+        // move elsewhere?
+        Object.filter = (obj, predicate) =>
+            Object.fromEntries(Object.entries(obj).filter(predicate));
+
+        const searchPairs = [];
+
+        Object.keys(Object.filter(this.props.filters, ([key, value]) => value.length > 0)).forEach(key => {
+            this.props.filters[key].forEach(item => {
+                searchPairs.push([key, item]);
+            });
+        });
+
         const response = await Promise.all(
             [
-                fetch('api/results?' + new URLSearchParams(this.props.filters)),
+                fetch('api/results?' + new URLSearchParams(searchPairs)),
                 fetch('api/executions') // later will be an if to be included based on config
             ]
         );
