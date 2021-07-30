@@ -41,7 +41,8 @@ export class Analyze extends Component {
                     listName: 'dataGroups',
                     displayName: 'Organization',
                     displayValue: 'name',
-                    storeValue: 'name'
+                    storeValue: 'name',
+                    filterKey: 'data-group-names'
                 };
             } else if (v === 'executionTime') {
                 return {
@@ -49,7 +50,8 @@ export class Analyze extends Component {
                     listName: 'executions',
                     displayName: 'Year',
                     displayValue: 'key',
-                    storeValue: 'key'
+                    storeValue: 'key',
+                    filterKey: 'execution-times'
                 };
             } else if (v === 'possibleResponseName') {
                 return {
@@ -57,7 +59,8 @@ export class Analyze extends Component {
                     listName: 'possibleResponses',
                     displayName: 'Response',
                     displayValue: 'name',
-                    storeValue: 'name'
+                    storeValue: 'name',
+                    filterKey: 'possible-response-names'
                 };
             } else if (v === 'questionText') {
                 return {
@@ -65,7 +68,8 @@ export class Analyze extends Component {
                     listName: 'questions',
                     displayName: 'Question',
                     displayValue: 'body',
-                    storeValue: 'id'
+                    storeValue: 'id',
+                    filterKey: 'question-ids'
                 };
             }
         });
@@ -80,8 +84,8 @@ export class Analyze extends Component {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div>
                         <Label for="acrossVariable" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Across Variable</Label>
-                        <Input type="select" name="acrossVariable" id="acrossVariable" onChange={e => { this.updateSortingVariable(totalExpandedVariables.find(dv => dv.tableName === this.state.sortingVariable), e.target.value) }} value={this.state.sortingVariable} style={{ flexShrink: 2100 }}>
-                            {notRowCols.concat(this.state.sortingVariable).map(v => (
+                        <Input type="select" name="acrossVariable" id="acrossVariable" onChange={e => { this.updateTableVariable('sortingVariable', totalExpandedVariables.find(dv => dv.tableName === this.state.sortingVariable), totalExpandedVariables.find(dv => dv.tableName === e.target.value), e.target.value) }} value={this.state.sortingVariable} style={{ flexShrink: 2100 }}>
+                            {notRowCols.concat(this.state.sortingVariable).filter(v => v !== 'questionText').map(v => (
                                 <option value={v} key={v}>{totalExpandedVariables.find(dv => dv.tableName === v).displayName}</option>
                             ))}
                         </Input>
@@ -89,8 +93,8 @@ export class Analyze extends Component {
 
                     <div>
                         <Label for="downVariable" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Down Variable</Label>
-                        <Input type="select" name="downVariable" id="downVariable" onChange={e => { this.setState({ groupingVariable: e.target.value }) }} value={this.state.groupingVariable} style={{ flexShrink: 2100 }}>
-                            {notRowCols.concat(this.state.groupingVariable).map(v => (
+                        <Input type="select" name="downVariable" id="downVariable" onChange={e => { this.updateTableVariable('groupingVariable', totalExpandedVariables.find(dv => dv.tableName === this.state.groupingVariable), totalExpandedVariables.find(dv => dv.tableName === e.target.value), e.target.value) }} value={this.state.groupingVariable} style={{ flexShrink: 2100 }}>
+                            {notRowCols.concat(this.state.groupingVariable).filter(v => v !== 'executionTime').map(v => (
                                 <option value={v} key={v}>{totalExpandedVariables.find(dv => dv.tableName === v).displayName}</option>
                             ))}
                         </Input>
@@ -225,14 +229,15 @@ export class Analyze extends Component {
         }
     }
 
-    updateSortingVariable(dropdownVariable, value) {
+    updateTableVariable(variableName, currentDropdownVariable, dropdownVariable, value) {
+        const filters = this.state.filters;
+        delete filters[dropdownVariable.filterKey];
+
         this.setState(prevState => ({
-            filters: {
-                ...prevState.filters[this.state.groupingVariable]
-            },
-            sortingVariable: value,
+            filters,
+            [variableName]: value,
         }));
-        this.updateFilters(dropdownVariable, this.state[dropdownVariable.listName][0]);
+        this.updateFilters(currentDropdownVariable, this.state[currentDropdownVariable.listName][0][currentDropdownVariable.storeValue]);
     }
 
     async populateDropdownData() {
