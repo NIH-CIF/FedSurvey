@@ -18,7 +18,7 @@ export class Analyze extends Component {
                 'question-ids': [1],
                 'possible-response-names': ['Positive']
             },
-            questions: [],
+            questionExecutions: [],
             dataGroups: [],
             executions: [],
             possibleResponses: []
@@ -51,7 +51,7 @@ export class Analyze extends Component {
                     displayName: 'Year',
                     displayValue: 'key',
                     storeValue: 'key',
-                    filterKey: 'execution-times'
+                    filterKey: 'execution-keys'
                 };
             } else if (v === 'possibleResponseName') {
                 return {
@@ -65,15 +65,15 @@ export class Analyze extends Component {
             } else if (v === 'questionText') {
                 return {
                     tableName: 'questionText',
-                    listName: 'questions',
+                    listName: 'questionExecutions',
                     displayName: 'Question',
                     displayValue: 'body',
-                    storeValue: 'id',
+                    storeValue: 'questionId',
                     filterKey: 'question-ids'
                 };
             }
         });
-        const dropdownVariables = totalExpandedVariables.filter(tv => notRowCols.includes(tv.tableName));
+        const dropdownFilterVariables = totalExpandedVariables.filter(tv => notRowCols.includes(tv.tableName));
 
         return (
             <div>
@@ -82,19 +82,51 @@ export class Analyze extends Component {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div>
-                        <Label for="acrossVariable" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Across Variable</Label>
-                        <Input type="select" name="acrossVariable" id="acrossVariable" onChange={e => { this.updateTableVariable('sortingVariable', totalExpandedVariables.find(dv => dv.tableName === this.state.sortingVariable), totalExpandedVariables.find(dv => dv.tableName === e.target.value), e.target.value) }} value={this.state.sortingVariable} style={{ flexShrink: 2100 }}>
-                            {notRowCols.concat(this.state.sortingVariable).filter(v => v !== 'questionText').map(v => (
+                    <div style={{ flex: 1 }}>
+                        <Label for="acrossVariable">
+                            Across Variable
+                        </Label>
+                        <Input
+                            type="select"
+                            name="acrossVariable"
+                            id="acrossVariable"
+                            onChange={e => this.updateTableVariable(
+                                'sortingVariable',
+                                totalExpandedVariables.find(dv => dv.tableName === this.state.sortingVariable),
+                                totalExpandedVariables.find(dv => dv.tableName === e.target.value),
+                                e.target.value
+                            )}
+                            value={this.state.sortingVariable}
+                        >
+                            {notRowCols
+                                .concat(this.state.sortingVariable)
+                                .filter(v => v !== 'questionText')
+                                .map(v => (
                                 <option value={v} key={v}>{totalExpandedVariables.find(dv => dv.tableName === v).displayName}</option>
                             ))}
                         </Input>
                     </div>
 
-                    <div>
-                        <Label for="downVariable" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Down Variable</Label>
-                        <Input type="select" name="downVariable" id="downVariable" onChange={e => { this.updateTableVariable('groupingVariable', totalExpandedVariables.find(dv => dv.tableName === this.state.groupingVariable), totalExpandedVariables.find(dv => dv.tableName === e.target.value), e.target.value) }} value={this.state.groupingVariable} style={{ flexShrink: 2100 }}>
-                            {notRowCols.concat(this.state.groupingVariable).filter(v => v !== 'executionTime').map(v => (
+                    <div style={{ flex: 1 }}>
+                        <Label for="downVariable">
+                            Down Variable
+                        </Label>
+                        <Input
+                            type="select"
+                            name="downVariable"
+                            id="downVariable"
+                            onChange={e => this.updateTableVariable(
+                                'groupingVariable',
+                                totalExpandedVariables.find(dv => dv.tableName === this.state.groupingVariable),
+                                totalExpandedVariables.find(dv => dv.tableName === e.target.value),
+                                e.target.value
+                            )}
+                            value={this.state.groupingVariable}
+                        >
+                            {notRowCols
+                                .concat(this.state.groupingVariable)
+                                .filter(v => v !== 'executionTime')
+                                .map(v => (
                                 <option value={v} key={v}>{totalExpandedVariables.find(dv => dv.tableName === v).displayName}</option>
                             ))}
                         </Input>
@@ -102,12 +134,20 @@ export class Analyze extends Component {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {dropdownVariables.map(dv => (
-                        <div id={dv.tableName}>
-                            <Label for={dv.tableName} style={{ marginRight: '0.5rem', marginBottom: 0 }}>{dv.displayName}</Label>
-                            <Input type="select" name={dv.tableName} id={dv.tableName} onChange={e => { this.updateFilters(dv, e.target.value) }} value={this.getFilters(dv)} style={{ flexShrink: 2100 }}>
+                    {dropdownFilterVariables.map(dv => (
+                        <div key={'div' + dv.tableName} style={{ flex: 1 }}>
+                            <Label for={dv.tableName}>
+                                {dv.displayName}
+                            </Label>
+                            <Input
+                                type="select"
+                                name={dv.tableName}
+                                id={dv.tableName}
+                                onChange={e => this.updateFilters(dv, e.target.value)}
+                                value={this.state.filters[dv.filterKey][0]}
+                            >
                                 {this.state[dv.listName].map(dvi => (
-                                    <option value={dvi[dv.storeValue]} key={dv.tableName + dvi[dv.storeValue]}>{dvi[dv.displayValue]}</option>
+                                    <option value={dvi[dv.storeValue]} key={dv.tableName + dvi.id}>{dvi[dv.displayValue]}</option>
                                 ))}
                             </Input>
                         </div>
@@ -123,115 +163,15 @@ export class Analyze extends Component {
                 </div>
             </div>
         );
-
-        /*return (
-            <div>
-                {CHOSEN_TABLE === 2 && (
-                    <div>
-                        <p>Table 2</p>
-
-                        <ResultsDataTable
-                            filters={{
-                                'question-ids': [1],
-                                'possible-response-names': ['Positive'],
-                            }}
-                            groupingVariable="dataGroupName"
-                            sortingVariable="executionTime"
-                        />
-                    </div>
-                )}
-
-                {CHOSEN_TABLE === 3 && (
-                    <div>
-                        <p>Table 3</p>
-
-                        <ResultsDataTable
-                            filters={{
-                                'data-group-names': ['OFC STRATEGIC COORDINATION'],
-                                'possible-response-names': ['Positive']
-                            }}
-                            groupingVariable="questionText"
-                            sortingVariable="executionTime"
-                        />
-                    </div>
-                )}
-
-                {CHOSEN_TABLE === 4 && (
-                    <div>
-                        <p>Table 4</p>
-
-                        <ResultsDataTable
-                            filters={{
-                                'execution-keys': ['2019'],
-                                'possible-response-names': ['Positive']
-                            }}
-                            groupingVariable="questionText"
-                            sortingVariable="dataGroupName"
-                        />
-                    </div>
-                )}
-
-                {CHOSEN_TABLE === 5 && (
-                    <div>
-                        <p>Table 5</p>
-
-                        <ResultsDataTable
-                            filters={{
-                                'execution-keys': ['2019'],
-                                'question-ids': [1]
-                            }}
-                            groupingVariable="possibleResponseName"
-                            sortingVariable="dataGroupName"
-                        />
-                    </div>
-                )}
-
-                {CHOSEN_TABLE === 6 && (
-                    <div>
-                        <p>Table 6</p>
-
-                        <ResultsDataTable
-                            filters={{
-                                'execution-keys': ['2019'],
-                                'data-group-names': ['OFC STRATEGIC COORDINATION']
-                            }}
-                            groupingVariable="questionText"
-                            sortingVariable="possibleResponseName"
-                        />
-                    </div>
-                )}
-            </div>
-        );*/
     }
 
-    // combine translation for next two functions - maybe store it in dropdownVariable
-    getFilters(dropdownVariable) {
-        if (dropdownVariable.tableName === 'dataGroupName') {
-            return this.state.filters['data-group-names'];
-        } else if (dropdownVariable.tableName === 'executionTime') {
-            return this.state.filters['execution-keys'];
-        } else if (dropdownVariable.tableName === 'questionText') {
-            return this.state.filters['question-ids'];
-        } else if (dropdownVariable.tableName === 'possibleResponseName') {
-            return this.state.filters['possible-response-names'];
-        }
+    updateFilters(dropdownFilterVariable, value) {
+        this.setState(prevState => ({ filters: { ...prevState.filters, [dropdownFilterVariable.filterKey]: [value] } }));
     }
 
-    updateFilters(dropdownVariable, value) {
-        if (dropdownVariable.tableName === 'dataGroupName') {
-            this.setState(prevState => ({ filters: { ...prevState.filters, 'data-group-names': [value] } }));
-        } else if (dropdownVariable.tableName === 'executionTime') {
-            this.setState(prevState => ({ filters: { ...prevState.filters, 'execution-keys': [value] } }));
-        } else if (dropdownVariable.tableName === 'questionText') {
-            this.setState(prevState => ({ filters: { ...prevState.filters, 'question-ids': [value] } }));
-        } else if (dropdownVariable.tableName === 'possibleResponseName') {
-            this.setState(prevState => ({ filters: { ...prevState.filters, 'possible-response-names': [value] } }));
-        }
-    }
-
-    updateTableVariable(variableName, currentDropdownVariable, dropdownVariable, value) {
+    updateTableVariable(variableName, currentDropdownVariable, dropdownFilterVariable, value) {
         const filters = this.state.filters;
-        delete filters[dropdownVariable.filterKey];
+        delete filters[dropdownFilterVariable.filterKey];
 
         this.setState(prevState => ({
             filters,
@@ -255,13 +195,14 @@ export class Analyze extends Component {
             response.map(r => r.json())
         );
 
-        const questions = Object.entries(_.groupBy(questionExecutions, qe => qe.body)).map(([key, value]) => ({
+        const groupedQuestionExecutions = Object.entries(_.groupBy(questionExecutions, qe => qe.body)).map(([key, value]) => ({
             body: key,
-            id: value[0].questionId
+            questionId: value[0].questionId,
+            id: value[0].id
         }));
 
         this.setState({
-            questions,
+            questionExecutions: groupedQuestionExecutions,
             executions,
             dataGroups,
             possibleResponses
