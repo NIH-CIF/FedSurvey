@@ -5,7 +5,7 @@ import { Home } from './components/Home';
 import { QuestionPage } from './components/QuestionPage';
 import { DataGroupMerge } from './components/DataGroupMerge';
 import { DataGroupCreate } from './components/DataGroupCreate';
-import { Test } from './components/Test';
+import { Analyze } from './components/Analyze';
 
 import './custom.css'
 
@@ -19,7 +19,7 @@ export default class App extends Component {
             <Route path='/questions/:questionId' component={QuestionPage} />
             <Route path='/data-groups/merge' component={DataGroupMerge} />
             <Route path='/data-groups/create' component={DataGroupCreate} />
-            <Route path='/test' component={Test} />
+            <Route path='/analyze' component={Analyze} />
       </Layout>
     );
   }
