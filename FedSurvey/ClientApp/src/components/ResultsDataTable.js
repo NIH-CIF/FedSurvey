@@ -87,7 +87,7 @@ export class ResultsDataTable extends Component {
                 }
             }
 
-            grouped[key] = grouped[key].sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0)));
+            grouped[key] = grouped[key].sort((a, b) => (a[this.props.sortingVariable] < b[this.props.sortingVariable]) ? -1 : ((a[this.props.sortingVariable] > b[this.props.sortingVariable] ? 1 : 0)));
         });
 
         const executionKeys = this.props.sortingVariable === 'executionTime' ? Object.assign({}, ...executions.map(e => ({ [e.occurredTime]: [{ executionName: e.key }] }))) : {};
@@ -98,7 +98,7 @@ export class ResultsDataTable extends Component {
         };
         const headers = [];
 
-        Object.keys(combinedSortGrouped).sort((a, b) => (a.executionTime < b.executionTime) ? -1 : ((a.executionTime > b.executionTime ? 1 : 0))).forEach(key => {
+        Object.keys(combinedSortGrouped).sort((a, b) => (a < b) ? -1 : ((a > b ? 1 : 0))).forEach(key => {
             if (this.props.showQuestionNumber) {
                 grouped['Question Number'].push({
                     count: combinedSortGrouped[key][0].questionNumber
@@ -129,7 +129,6 @@ export class ResultsDataTable extends Component {
                     }
                 });
             } else if (forcedGrouped[key].length !== headers.length) {
-                console.log(key);
                 headers.forEach((h, index) => {
                     if (!forcedGrouped[key][index] || forcedGrouped[key][index][this.props.sortingVariable] !== h) {
                         forcedGrouped[key].splice(index, 0, {
