@@ -200,11 +200,11 @@ export class Analyze extends Component {
         this.setState(prevState => ({
             filters: {
                 ...prevState.filters,
-                [dropdownFilterVariable.filterKey]: []
+                [dropdownFilterVariable.filterKey]: [],
+                [currentDropdownVariable.filterKey]: [this.state[currentDropdownVariable.listName][0][currentDropdownVariable.storeValue]]
             },
             [variableName]: value,
         }));
-        this.updateFilters(currentDropdownVariable, this.state[currentDropdownVariable.listName][0][currentDropdownVariable.storeValue]);
     }
 
     async populateDropdownData() {

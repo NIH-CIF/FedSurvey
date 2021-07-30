@@ -86,8 +86,10 @@ export class ResultsDataTable extends Component {
         };
         const sortGrouped = _.groupBy(results, r => r[this.props.sortingVariable]);
 
+        const showAllExecutions = this.props.sortingVariable === 'executionTime' && (this.props.filters['execution-keys'] === undefined || this.props.filters['execution-keys']?.length === 0);
+
         Object.keys(grouped).forEach(key => {
-            if (this.props.sortingVariable === 'executionTime') {
+            if (showAllExecutions) {
                 if (grouped[key].length !== executions.length) {
                     executions.forEach(e => {
                         if (!Object.keys(sortGrouped).includes(e.occurredTime)) {
@@ -102,7 +104,7 @@ export class ResultsDataTable extends Component {
             grouped[key] = grouped[key].sort((a, b) => (a[this.props.sortingVariable] < b[this.props.sortingVariable]) ? -1 : ((a[this.props.sortingVariable] > b[this.props.sortingVariable] ? 1 : 0)));
         });
 
-        const executionKeys = this.props.sortingVariable === 'executionTime' ? Object.assign({}, ...executions.map(e => ({ [e.occurredTime]: [{ executionName: e.key }] }))) : {};
+        const executionKeys = showAllExecutions ? Object.assign({}, ...executions.map(e => ({ [e.occurredTime]: [{ executionName: e.key }] }))) : {};
 
         const combinedSortGrouped = {
             ...executionKeys,
@@ -132,7 +134,7 @@ export class ResultsDataTable extends Component {
         for (const key in forcedGrouped) {
             if (forcedGrouped[key].length === 0) {
                 delete forcedGrouped[key];
-            } else if (this.props.sortingVariable === 'executionTime' && forcedGrouped[key].length !== executions.length) {
+            } else if (showAllExecutions && forcedGrouped[key].length !== executions.length) {
                 executions.forEach((e, index) => {
                     if (!forcedGrouped[key][index] || forcedGrouped[key][index].executionTime !== e.occurredTime) {
                         forcedGrouped[key].splice(index, 0, {
@@ -142,7 +144,7 @@ export class ResultsDataTable extends Component {
                 });
             } else if (forcedGrouped[key].length !== headers.length) {
                 headers.forEach((h, index) => {
-                    if (!forcedGrouped[key][index] || forcedGrouped[key][index][this.props.sortingVariable] !== h) {
+                    if (!forcedGrouped[key][index] || forcedGrouped[key][index][this.props.sortingVariable === 'executionTime' ? 'executionName' : this.props.sortingVariable] !== h) {
                         forcedGrouped[key].splice(index, 0, {
                             [this.props.sortingVariable]: h
                         });
