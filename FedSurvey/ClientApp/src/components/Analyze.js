@@ -1,10 +1,8 @@
 ﻿import React, { Component } from 'react';
-import { Table } from 'reactstrap';
 import { Input, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { ResultsDataTable } from './ResultsDataTable';
-import { Dropdown } from 'bootstrap';
 import Select from 'react-select';
 
 export class Analyze extends Component {
@@ -73,6 +71,9 @@ export class Analyze extends Component {
                     storeValue: 'questionId',
                     filterKey: 'question-ids'
                 };
+            } else {
+                // just to quiet the console
+                return {};
             }
         });
         const dropdownFilterVariables = totalExpandedVariables.filter(tv => notRowCols.includes(tv.tableName));

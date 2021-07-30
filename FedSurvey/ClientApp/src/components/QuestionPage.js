@@ -1,5 +1,4 @@
 ﻿import React, { Component } from 'react';
-import { Table } from 'reactstrap';
 import { Input, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { ResultsDataTable } from './ResultsDataTable';
