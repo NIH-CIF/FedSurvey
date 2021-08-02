@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Input, Label } from 'reactstrap';
 import { QuestionList } from './QuestionList';
+import { Upload } from './Upload';
 import { Link } from 'react-router-dom';
 
 export class Home extends Component {
@@ -19,6 +20,10 @@ export class Home extends Component {
         return !this.state.loading && (
             <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ flex: 0, alignSelf: 'flex-end' }}>
+                        <Upload />
+                    </div>
+
                     <div style={{ flex: 1 }}>
                         <Label for="executionSelect">Year</Label>
                         <Input type="select" name="executionSelect" id="executionSelect" onChange={e => this.setState({ currentExecutionId: e.target.value })} value={this.state.currentExecutionId}>
@@ -28,7 +33,7 @@ export class Home extends Component {
                         </Input>
                     </div>
 
-                    <div style={{ flex: 1, alignSelf: 'flex-end' }}>
+                    <div style={{ flex: 0, alignSelf: 'flex-end' }}>
                         <Link to='/analyze'>
                             <Button outline block color="secondary">
                                 Analyze
