@@ -457,16 +457,16 @@ namespace FedSurvey.Services
 
         private static bool IsNewItemSheet(IExcelDataReader reader)
         {
-            return reader.GetString(0).Replace("\n", " ").Equals("Item") &&
-                reader.GetString(1).Replace("\n", " ").Equals("Item Text");
+            return !reader.IsDBNull(0) && reader.GetString(0).Replace("\n", " ").Equals("Item") &&
+                !reader.IsDBNull(1) && reader.GetString(1).Replace("\n", " ").Equals("Item Text");
         }
 
         private static bool IsNewDataSheet(IExcelDataReader reader)
         {
-            return reader.GetString(0).Replace("\n", " ").Equals("Agency & Subagency Name") &&
-                reader.GetString(1).Replace("\n", " ").Equals("Level Code") &&
-                reader.GetString(2).Replace("\n", " ").Equals("Reporting Level") &&
-                reader.GetString(3).Replace("\n", " ").Equals("Response Count");
+            return !reader.IsDBNull(0) && reader.GetString(0).Replace("\n", " ").Equals("Agency & Subagency Name") &&
+                !reader.IsDBNull(1) && reader.GetString(1).Replace("\n", " ").Equals("Level Code") &&
+                !reader.IsDBNull(2) && reader.GetString(2).Replace("\n", " ").Equals("Reporting Level") &&
+                !reader.IsDBNull(3) && reader.GetString(3).Replace("\n", " ").Equals("Response Count");
         }
 
         public static bool IsNewFormat(IFormFile file)

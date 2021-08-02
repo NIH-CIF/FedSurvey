@@ -22,6 +22,33 @@ namespace FedSurvey.Controllers
             _context = context;
         }
 
+        [Route("api/[controller]/format")]
+        [HttpPost]
+        public IActionResult GetFormat([FromForm] IFormFile file)
+        {
+            if (file == null)
+            {
+                return UnprocessableEntity();
+            }
+
+            if (UploadService.IsFEVSFormat(file))
+            {
+                return new JsonResult(new { format = "fevs" });
+            }
+            else if (UploadService.IsNewFormat(file))
+            {
+                return new JsonResult(new { format = "new" });
+            }
+            else if (UploadService.IsSurveyMonkeyFormat(file))
+            {
+                return new JsonResult(new { format = "survey-monkey" });
+            }
+            else
+            {
+                return new JsonResult(new { format = "unknown" });
+            }
+        }
+
         [Route("api/[controller]")]
         [HttpPost]
         public IActionResult Upload([FromForm] UploadModel uploadModel)
