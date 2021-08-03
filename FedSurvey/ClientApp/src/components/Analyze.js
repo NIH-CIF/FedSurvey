@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { Label } from 'reactstrap';
+import { Button, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { ResultsDataTable } from './ResultsDataTable';
@@ -147,7 +147,13 @@ export class Analyze extends Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Link to='/'>Home</Link>
 
-                    <a href="#" onClick={e => { e.preventDefault(); this.reset() }}>Reset</a>
+                    <Button
+                        color="link"
+                        onClick={e => { e.preventDefault(); this.reset() }}
+                        style={{ padding: 0, border: 0 }}
+                    >
+                        Reset
+                    </Button>
                 </div>
 
                 {this.instructionalRow()}
@@ -199,6 +205,7 @@ export class Analyze extends Component {
                             filters={this.state.filters}
                             groupingVariable={this.state.groupingVariable}
                             sortingVariable={this.state.sortingVariable}
+                            sortable
                         />
                     </div>
                 )}

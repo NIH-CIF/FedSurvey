@@ -45,13 +45,13 @@ export class ResultsDataTable extends Component {
                             <th
                                 key={h}
                                 onClick={e => this.sortBy(h)}
-                                style={{ cursor: 'pointer' }}
+                                style={this.props.sortable && { cursor: 'pointer' }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <span style={{ marginRight: 4 }}>
                                         {h}
                                     </span>
-                                    {this.iconForSortStatus(this.state.headerLastSort[h])}
+                                    {this.props.sortable && this.iconForSortStatus(this.state.headerLastSort[h])}
                                 </div>
                             </th>
                         ))}
@@ -76,10 +76,12 @@ export class ResultsDataTable extends Component {
     }
 
     sortBy(header) {
+        if (!this.props.sortable)
+            return;
+
         const newSort = this.state.headerLastSort[header] === 'asc' ? 'desc' : 'asc';
 
         const index = this.state.headers.indexOf(header);
-        console.log(this.state.results);
         const sortedResults = this.state.results.sort(([ak, av], [bk, bv]) => {
             if (av[index] === undefined) {
                 return -1;
