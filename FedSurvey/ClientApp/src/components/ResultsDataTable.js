@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Table } from 'reactstrap';
 import _ from 'lodash';
-import { CSVDownload } from 'react-csv';
+import { CSVLink } from 'react-csv';
 
 export class ResultsDataTable extends Component {
     static displayName = ResultsDataTable.name;
@@ -13,6 +13,14 @@ export class ResultsDataTable extends Component {
             headers: [],
             headerLastSort: {},
             loading: true
+        };
+
+        // I really do not like that this is here.
+        this.CSV_NAMES = {
+            dataGroupName: 'Organization',
+            executionTime: 'Year',
+            possibleResponseName: 'Response',
+            questionText: 'Question'
         };
     }
 
@@ -39,9 +47,6 @@ export class ResultsDataTable extends Component {
     render() {
         return !this.state.loading && (
             <Table>
-                {this.props.download && (
-                    <CSVDownload data={this.getCsv()} filename="data.csv" target="_blank" />
-                )}
                 <thead>
                     <tr>
                         <th></th>
@@ -59,6 +64,13 @@ export class ResultsDataTable extends Component {
                                 </div>
                             </th>
                         ))}
+                        {this.props.downloadable && (
+                            <th style={{ borderBottom: 'none' }}>
+                                <CSVLink data={this.getCsv()} filename="data.csv">
+                                    <i className="fas fa-download"></i>
+                                </CSVLink>
+                            </th>
+                        )}
                     </tr>
                 </thead>
                 <tbody>
@@ -80,7 +92,7 @@ export class ResultsDataTable extends Component {
     }
 
     getCsv() {
-        return [[this.props.groupingVariable, ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage)]));
+        return [[this.CSV_NAMES[this.props.groupingVariable], ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage)]));
     }
 
     sortBy(header) {
