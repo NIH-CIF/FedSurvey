@@ -8,7 +8,11 @@ export class ResultsDataTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            results: [], headers: [], loading: true };
+            results: [],
+            headers: [],
+            headerLastSort: {},
+            loading: true
+        };
     }
 
     componentDidMount() {
@@ -21,20 +25,40 @@ export class ResultsDataTable extends Component {
         }
     }
 
-    render() {
+    iconForSortStatus(status) {
+        if (status === 'asc') {
+            return <i className="fas fa-sort-up"></i>;
+        } else if (status === 'desc') {
+            return <i className="fas fa-sort-down"></i>;
+        } else {
+            return <i className="fas fa-sort"></i>;
+        }
+    }
 
+    render() {
         return !this.state.loading && (
             <Table>
                 <thead>
                     <tr>
                         <th></th>
                         {this.state.headers.map(h => (
-                            <th key={h}>{h}</th>
+                            <th
+                                key={h}
+                                onClick={e => this.sortBy(h)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <span style={{ marginRight: 4 }}>
+                                        {h}
+                                    </span>
+                                    {this.iconForSortStatus(this.state.headerLastSort[h])}
+                                </div>
+                            </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.entries(this.state.results).map(([key, val]) => (
+                    {this.state.results.map(([key, val]) => (
                         <tr key={key}>
                             <th scope="row">{key}</th>
                             {val.map((r, index) => {
@@ -49,6 +73,30 @@ export class ResultsDataTable extends Component {
                 </tbody>
             </Table>
         );
+    }
+
+    sortBy(header) {
+        const newSort = this.state.headerLastSort[header] === 'asc' ? 'desc' : 'asc';
+
+        const index = this.state.headers.indexOf(header);
+        console.log(this.state.results);
+        const sortedResults = this.state.results.sort(([ak, av], [bk, bv]) => {
+            if (av[index] === undefined) {
+                return -1;
+            } else if (bv[index] === undefined) {
+                return 1;
+            } else {
+                const ascSort = (av[index].percentage < bv[index].percentage) ? -1 : ((av[index].percentage > bv[index].percentage) ? 1 : 0);
+
+                if (newSort === 'desc') {
+                    return ascSort * -1;
+                } else {
+                    return ascSort;
+                }
+            }
+        });
+
+        this.setState({ headerLastSort: { [header]: newSort }, results: sortedResults });
     }
 
     async populateResultsData() {
@@ -151,6 +199,6 @@ export class ResultsDataTable extends Component {
             }
         }
 
-        this.setState({ results: forcedGrouped, headers: headers, loading: false });
+        this.setState({ results: Object.entries(forcedGrouped), headers: headers, loading: false });
     }
 }
