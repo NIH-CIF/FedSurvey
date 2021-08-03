@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { Button, Label } from 'reactstrap';
+import { Button, Label, Input } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { ResultsDataTable } from './ResultsDataTable';
@@ -14,6 +14,7 @@ export class Analyze extends Component {
             groupingVariable: null,
             sortingVariable: null,
             filters: {},
+            showDifference: false,
             questionExecutions: [],
             dataGroups: [],
             executions: [],
@@ -178,21 +179,38 @@ export class Analyze extends Component {
                     </div>
 
                     <div style={{ flex: 1 }}>
-                        <Label for="acrossVariable">
-                            Across Variable
-                        </Label>
-                        <Select
-                            name="acrossVariable"
-                            id="acrossVariable"
-                            onChange={val => this.updateTableVariable(
-                                'sortingVariable',
-                                totalExpandedVariables.find(dv => dv.tableName === this.state.sortingVariable),
-                                totalExpandedVariables.find(dv => dv.tableName === val.value),
-                                val.value
+                        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                            <div style={{ flex: 1 }}>
+                                <Label for="acrossVariable">
+                                    Across Variable
+                                </Label>
+                                <Select
+                                    name="acrossVariable"
+                                    id="acrossVariable"
+                                    onChange={val => this.updateTableVariable(
+                                        'sortingVariable',
+                                        totalExpandedVariables.find(dv => dv.tableName === this.state.sortingVariable),
+                                        totalExpandedVariables.find(dv => dv.tableName === val.value),
+                                        val.value
+                                    )}
+                                    value={acrossOptions.find(ao => ao.value === this.state.sortingVariable)}
+                                    options={acrossOptions}
+                                />
+                            </div>
+
+                            {this.state.sortingVariable === 'executionTime' && (
+                                <div style={{ flex: 0, display: 'flex', flexDirection: 'column', marginLeft: 4 }}>
+                                    &Delta;?
+
+                                    <Input
+                                        type="checkbox"
+                                        style={{ margin: 0, position: 'static' }}
+                                        onClick={e => this.setState({ showDifference: e.target.checked })}
+                                        value={this.state.showDifference}
+                                    />
+                                </div>
                             )}
-                            value={acrossOptions.find(ao => ao.value === this.state.sortingVariable)}
-                            options={acrossOptions}
-                        />
+                        </div>
                     </div>
                 </div>
 
@@ -205,6 +223,7 @@ export class Analyze extends Component {
                             filters={this.state.filters}
                             groupingVariable={this.state.groupingVariable}
                             sortingVariable={this.state.sortingVariable}
+                            showDifference={this.state.showDifference}
                             sortable
                             downloadable
                         />

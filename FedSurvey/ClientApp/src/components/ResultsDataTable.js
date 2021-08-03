@@ -50,17 +50,17 @@ export class ResultsDataTable extends Component {
                 <thead>
                     <tr>
                         <th></th>
-                        {this.state.headers.map(h => (
+                        {this.state.headers.map((h, i) => (
                             <th
-                                key={h}
-                                onClick={e => this.sortBy(h)}
+                                key={i}
+                                onClick={e => this.sortBy(i)}
                                 style={this.props.sortable && { cursor: 'pointer' }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <span style={{ marginRight: 4 }}>
                                         {h}
                                     </span>
-                                    {this.props.sortable && this.iconForSortStatus(this.state.headerLastSort[h])}
+                                    {this.props.sortable && this.iconForSortStatus(this.state.headerLastSort[i])}
                                 </div>
                             </th>
                         ))}
@@ -80,7 +80,7 @@ export class ResultsDataTable extends Component {
                             {val.map((r, index) => {
                                 // undefined for r.count because it is not in object
                                 // null for r.percentage because it is in object
-                                return r.count !== undefined ? (
+                                return (r.count !== undefined || r.percentage !== undefined) ? (
                                     <td key={index}>{r.percentage?.toFixed(1) || r.count}{r.percentage !== null && '%'}</td>
                                 ) : <td key={index}>N/A</td>;
                             })}
@@ -95,20 +95,19 @@ export class ResultsDataTable extends Component {
         return [[this.CSV_NAMES[this.props.groupingVariable], ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage)]));
     }
 
-    sortBy(header) {
+    sortBy(index) {
         if (!this.props.sortable)
             return;
 
-        const newSort = this.state.headerLastSort[header] === 'asc' ? 'desc' : 'asc';
+        const newSort = this.state.headerLastSort[index] === 'asc' ? 'desc' : 'asc';
 
-        const index = this.state.headers.indexOf(header);
         const sortedResults = this.state.results.sort(([ak, av], [bk, bv]) => {
             if (av[index] === undefined) {
                 return -1;
             } else if (bv[index] === undefined) {
                 return 1;
             } else {
-                const ascSort = (av[index].percentage < bv[index].percentage) ? -1 : ((av[index].percentage > bv[index].percentage) ? 1 : 0);
+                const ascSort = ((av[index].percentage || av[index].count) < (bv[index].percentage || bv[index].count)) ? -1 : (((av[index].percentage || av[index].count) > (bv[index].percentage || bv[index].count)) ? 1 : 0);
 
                 if (newSort === 'desc') {
                     return ascSort * -1;
@@ -118,7 +117,7 @@ export class ResultsDataTable extends Component {
             }
         });
 
-        this.setState({ headerLastSort: { [header]: newSort }, results: sortedResults });
+        this.setState({ headerLastSort: { [index]: newSort }, results: sortedResults });
     }
 
     async populateResultsData() {
@@ -221,6 +220,26 @@ export class ResultsDataTable extends Component {
             }
         }
 
-        this.setState({ results: Object.entries(forcedGrouped), headers: headers, loading: false });
+        if (this.props.showDifference) {
+            const newHeaders = this.state.headers.map(h => ([h, 'Δ'])).flat();
+            const forcedGroupedEntries = Object.entries(forcedGrouped);
+            const newResults = forcedGroupedEntries.map(([key, value]) => {
+                const newValue = value.map((v, index) => {
+                    const prev = value[index - 1];
+
+                    if (prev === undefined || prev.percentage === undefined || v.percentage === undefined) {
+                        return [v, {}];
+                    } else {
+                        return [v, { percentage: v.percentage - prev.percentage }];
+                    }
+                }).flat();
+
+                return [key, newValue];
+            });
+
+            this.setState({ results: newResults, headers: newHeaders, loading: false });
+        } else {
+            this.setState({ results: Object.entries(forcedGrouped), headers: headers, loading: false });
+        }
     }
 }
