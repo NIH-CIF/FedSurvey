@@ -18,6 +18,7 @@ export class Analyze extends Component {
             dataGroups: [],
             executions: [],
             possibleResponses: [],
+            download: false,
             setupComplete: false
         };
     }
@@ -149,7 +150,16 @@ export class Analyze extends Component {
 
                     <Button
                         color="link"
-                        onClick={e => { e.preventDefault(); this.reset() }}
+                        onClick={this.exportCsv.bind(this)}
+                        style={{ padding: 0, border: 0 }}
+                        disabled={this.state.sortingVariable === null || this.state.groupingVariable === null || this.getNonEmptyFiltersCount() < 2}
+                    >
+                        Export
+                    </Button>
+
+                    <Button
+                        color="link"
+                        onClick={this.reset.bind(this)}
                         style={{ padding: 0, border: 0 }}
                     >
                         Reset
@@ -206,11 +216,21 @@ export class Analyze extends Component {
                             groupingVariable={this.state.groupingVariable}
                             sortingVariable={this.state.sortingVariable}
                             sortable
+                            download={this.state.download}
                         />
                     </div>
                 )}
             </div>
         );
+    }
+
+    exportCsv() {
+        if (this.state.groupingVariable === null || this.state.sortingVariable === null || this.getNonEmptyFiltersCount() < 2)
+            return;
+
+        this.setState({ download: true });
+
+        setTimeout(() => this.setState({ download: false }), 500);
     }
 
     reset() {

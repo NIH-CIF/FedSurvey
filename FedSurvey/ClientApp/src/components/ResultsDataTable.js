@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Table } from 'reactstrap';
 import _ from 'lodash';
+import { CSVDownload } from 'react-csv';
 
 export class ResultsDataTable extends Component {
     static displayName = ResultsDataTable.name;
@@ -38,6 +39,9 @@ export class ResultsDataTable extends Component {
     render() {
         return !this.state.loading && (
             <Table>
+                {this.props.download && (
+                    <CSVDownload data={this.getCsv()} filename="data.csv" target="_blank" />
+                )}
                 <thead>
                     <tr>
                         <th></th>
@@ -73,6 +77,10 @@ export class ResultsDataTable extends Component {
                 </tbody>
             </Table>
         );
+    }
+
+    getCsv() {
+        return [[this.props.groupingVariable, ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage)]));
     }
 
     sortBy(header) {
