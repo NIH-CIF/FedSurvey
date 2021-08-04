@@ -82,7 +82,7 @@ export class Analyze extends Component {
     }
 
     render() {
-        const totalVariables = ['dataGroupName', 'questionText', 'possibleResponseName', 'executionTime'];
+        const totalVariables = ['dataGroupName', 'questionId', 'possibleResponseName', 'executionTime'];
         const rowCols = [this.state.groupingVariable, this.state.sortingVariable];
         const notRowCols = totalVariables.filter(v => !rowCols.includes(v));
 
@@ -115,9 +115,9 @@ export class Analyze extends Component {
                     storeValue: 'name',
                     filterKey: 'possible-response-names'
                 };
-            } else if (v === 'questionText') {
+            } else if (v === 'questionId') {
                 return {
-                    tableName: 'questionText',
+                    tableName: 'questionId',
                     listName: 'questionExecutions',
                     displayName: 'Question',
                     displayValue: 'body',
@@ -138,7 +138,7 @@ export class Analyze extends Component {
             ));
         const acrossOptions = notRowCols
             .concat(this.state.sortingVariable || [])
-            .filter(v => v !== 'questionText')
+            .filter(v => v !== 'questionId')
             .map(v => (
                 { label: totalExpandedVariables.find(dv => dv.tableName === v).displayName, value: v }
             ));
@@ -293,8 +293,8 @@ export class Analyze extends Component {
             response.map(r => r.json())
         );
 
-        const groupedQuestionExecutions = Object.entries(_.groupBy(questionExecutions, qe => qe.body)).map(([key, value]) => ({
-            body: key,
+        const groupedQuestionExecutions = Object.entries(_.groupBy(questionExecutions, qe => qe.questionId)).map(([key, value]) => ({
+            body: value[0].body,
             questionId: value[0].questionId,
             id: value[0].id
         }));

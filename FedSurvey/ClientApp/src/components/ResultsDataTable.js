@@ -220,9 +220,15 @@ export class ResultsDataTable extends Component {
             }
         }
 
+        const forcedGroupedEntries = Object.entries(forcedGrouped).map(([key, value]) => {
+            if (this.props.groupingVariable === 'questionId')
+                return [value[value.length - 1]['questionText'], value];
+            else
+                return [key, value];
+        });
+
         if (this.props.showDifference) {
             const newHeaders = [headers[0]].concat(headers.slice(1).map(h => ([h, 'Δ']))).flat();
-            const forcedGroupedEntries = Object.entries(forcedGrouped);
             const newResults = forcedGroupedEntries.map(([key, value]) => {
                 const newValue = value.map((v, index) => {
                     const prev = value[index - 1];
@@ -243,7 +249,7 @@ export class ResultsDataTable extends Component {
 
             this.setState({ results: newResults, headers: newHeaders, loading: false });
         } else {
-            this.setState({ results: Object.entries(forcedGrouped), headers: headers, loading: false });
+            this.setState({ results: forcedGroupedEntries, headers: headers, loading: false });
         }
     }
 }
