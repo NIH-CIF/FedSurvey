@@ -205,8 +205,8 @@ export class Analyze extends Component {
                                     <Input
                                         type="checkbox"
                                         style={{ margin: 0, position: 'static' }}
-                                        onClick={e => this.setState({ showDifference: e.target.checked })}
-                                        value={this.state.showDifference}
+                                        onChange={e => this.setState({ showDifference: e.target.checked })}
+                                        checked={this.state.showDifference}
                                     />
                                 </div>
                             )}
@@ -238,6 +238,7 @@ export class Analyze extends Component {
             setupComplete: false,
             sortingVariable: null,
             groupingVariable: null,
+            showDifference: false,
             filters: {}
         });
     }

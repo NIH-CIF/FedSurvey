@@ -81,7 +81,7 @@ export class ResultsDataTable extends Component {
                                 // undefined for r.count because it is not in object
                                 // null for r.percentage because it is in object
                                 return (r.count !== undefined || r.percentage !== undefined) ? (
-                                    <td key={index}>{r.percentage?.toFixed(1) || r.count}{r.percentage !== null && '%'}</td>
+                                    <td key={index}>{r.percentage?.toFixed(1) || r.count}{r.percentage !== null && r.percentage !== undefined && '%'}</td>
                                 ) : <td key={index}>N/A</td>;
                             })}
                         </tr>
@@ -92,7 +92,7 @@ export class ResultsDataTable extends Component {
     }
 
     getCsv() {
-        return [[this.CSV_NAMES[this.props.groupingVariable], ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage)]));
+        return [[this.CSV_NAMES[this.props.groupingVariable], ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage ? v.percentage + '%' : v.count)]));
     }
 
     sortBy(index) {
@@ -107,7 +107,7 @@ export class ResultsDataTable extends Component {
             } else if (bv[index] === undefined) {
                 return 1;
             } else {
-                const ascSort = ((av[index].percentage || av[index].count) < (bv[index].percentage || bv[index].count)) ? -1 : (((av[index].percentage || av[index].count) > (bv[index].percentage || bv[index].count)) ? 1 : 0);
+                const ascSort = ((av[index].percentage !== null ? av[index].percentage : av[index].count) < (bv[index].percentage !== null ? bv[index].percentage : bv[index].count)) ? -1 : (((av[index].percentage !== null ? av[index].percentage : av[index].count) > (bv[index].percentage !== null ? bv[index].percentage : bv[index].count)) ? 1 : 0);
 
                 if (newSort === 'desc') {
                     return ascSort * -1;
@@ -231,6 +231,8 @@ export class ResultsDataTable extends Component {
                         return [v];
                     } else if (prev === undefined || prev.percentage === undefined || v.percentage === undefined) {
                         return [v, {}];
+                    } else if (v.percentage === null) {
+                        return [v, { count: v.count - prev.count }];
                     } else {
                         return [v, { percentage: v.percentage - prev.percentage }];
                     }
