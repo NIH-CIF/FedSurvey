@@ -139,7 +139,7 @@ namespace FedSurvey.Services
                                 // 3 Item Text - this is the question text in this year
                                 // 4 Item Respondents - this is the number that will be multiplied by the percentage to get Count
                                 // 5-n Options - each column becomes a possible response option
-                                string rowOrgName = reader.GetString(1);
+                                string rowOrgName = reader.GetString(1).Replace("\n", " ");
                                 DataGroupString organizationName = organizationStringToObject.ContainsKey(rowOrgName) ? organizationStringToObject[rowOrgName] : context.DataGroupStrings.Where(dgs => dgs.Name.Equals(rowOrgName)).Include(x => x.DataGroup).FirstOrDefault();
                                 DataGroup organization = organizationName != null ? organizationName.DataGroup : null;
 
@@ -618,7 +618,7 @@ namespace FedSurvey.Services
                             while (reader.Read())
                             {
                                 // Get data group set up.
-                                string rowOrgName = reader.GetString(0);
+                                string rowOrgName = reader.GetString(0).Replace("\n", " ");
                                 DataGroupString organizationName = context.DataGroupStrings.Where(dgs => dgs.Name.Equals(rowOrgName)).Include(x => x.DataGroup).FirstOrDefault();
                                 DataGroup organization = organizationName != null ? organizationName.DataGroup : null;
 
