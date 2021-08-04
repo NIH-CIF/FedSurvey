@@ -30,6 +30,7 @@ export class ResultsDataTable extends Component {
 
     componentDidUpdate(prevProps) {
         if (!_.isEqual(prevProps, this.props)) {
+            this.setState({ loading: true });
             this.populateResultsData();
         }
     }
@@ -45,7 +46,7 @@ export class ResultsDataTable extends Component {
     }
 
     render() {
-        return !this.state.loading && (
+        return !this.state.loading ? (
             <Table>
                 <thead>
                     <tr>
@@ -88,7 +89,7 @@ export class ResultsDataTable extends Component {
                     ))}
                 </tbody>
             </Table>
-        );
+        ) : 'Loading...';
     }
 
     getCsv() {
