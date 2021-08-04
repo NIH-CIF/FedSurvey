@@ -222,10 +222,13 @@ export class ResultsDataTable extends Component {
         }
 
         const forcedGroupedEntries = Object.entries(forcedGrouped).map(([key, value]) => {
-            if (this.props.groupingVariable === 'questionId')
-                return [value[value.length - 1]['questionText'], value];
-            else
+            if (this.props.groupingVariable === 'questionId') {
+                const valueWithQuestionText = value.filter(v => v.questionText !== undefined);
+
+                return [valueWithQuestionText[valueWithQuestionText.length - 1].questionText, value];
+            } else {
                 return [key, value];
+            }
         });
 
         if (this.props.showDifference) {

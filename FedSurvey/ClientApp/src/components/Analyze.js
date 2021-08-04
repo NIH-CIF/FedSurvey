@@ -1,7 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Button, Row, Col } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
 import { Advanced } from './Advanced';
 import { ResultsDataTable } from './ResultsDataTable';
 
@@ -16,14 +15,16 @@ export class Analyze extends Component {
             filters: {},
             showDifference: false,
             sort: {},
-            mode: null
+            mode: null,
+            latestExecutionNames: null
         };
     }
 
     componentDidMount() {
-        this.populateDropdownData();
+        this.populateExecutionData();
     }
 
+    // Maybe the hardcoded strings should just be in a file for changes to be made.
     render() {
         return (
             <div style={{ height: '100%' }}>
@@ -39,16 +40,16 @@ export class Analyze extends Component {
                     </Button>
                 </div>
 
-                {this.state.mode === null ? (
+                {this.state.mode === null && (
                     <Row xs="3" style={{ height: '100%' }}>
                         <Col onClick={e => this.setState(
                             {
-                                mode: 'top-pos-org',
+                                mode: 'no-component',
                                 sortingVariable: 'dataGroupName',
                                 groupingVariable: 'questionId',
                                 filters: {
                                     'possible-response-names': ['Positive'],
-                                    'execution-keys': ['2020'],
+                                    'execution-keys': [this.state.latestExecutionNames[0]],
                                     'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
                                 },
                                 sort: {
@@ -61,12 +62,12 @@ export class Analyze extends Component {
                         </Col>
                         <Col onClick={e => this.setState(
                             {
-                                mode: 'top-neu-org',
+                                mode: 'no-component',
                                 sortingVariable: 'dataGroupName',
                                 groupingVariable: 'questionId',
                                 filters: {
                                     'possible-response-names': ['Neutral'],
-                                    'execution-keys': ['2020'],
+                                    'execution-keys': [this.state.latestExecutionNames[0]],
                                     'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
                                 },
                                 sort: {
@@ -79,12 +80,12 @@ export class Analyze extends Component {
                         </Col>
                         <Col onClick={e => this.setState(
                             {
-                                mode: 'top-neg-org',
+                                mode: 'no-component',
                                 sortingVariable: 'dataGroupName',
                                 groupingVariable: 'questionId',
                                 filters: {
                                     'possible-response-names': ['Negative'],
-                                    'execution-keys': ['2020'],
+                                    'execution-keys': [this.state.latestExecutionNames[0]],
                                     'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
                                 },
                                 sort: {
@@ -95,23 +96,40 @@ export class Analyze extends Component {
                         )}>
                             Top Negative Responses
                         </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'no-component',
+                                sortingVariable: 'executionName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Positive'],
+                                    'data-group-names': ['OSC TOTAL']
+                                },
+                                showDifference: true,
+                                sort: {
+                                    header: this.state.latestExecutionNames[0],
+                                    direction: 'desc'
+                                }
+                            }
+                        )}>
+                            Top Positive Responses Compared to 2016 on
+                        </Col>
                         <Col onClick={e => this.setState({ mode: 'advanced' })}>
                             Advanced
                         </Col>
                     </Row>
-                ) : (
-                    this.state.mode === 'advanced' && (
-                        <Advanced
-                            groupingVariable={this.state.groupingVariable}
-                            sortingVariable={this.state.sortingVariable}
-                            filters={this.state.filters}
-                            showDifference={this.state.showDifference}
-                            nonEmptyFiltersCount={this.getNonEmptyFiltersCount()}
-                            updateFilters={this.updateFilters.bind(this)}
-                            updateTableVariable={this.updateTableVariable.bind(this)}
-                            updateShowDifference={this.updateShowDifference.bind(this)}
-                        />
-                    )
+                )}
+                {this.state.mode === 'advanced' && (
+                    <Advanced
+                        groupingVariable={this.state.groupingVariable}
+                        sortingVariable={this.state.sortingVariable}
+                        filters={this.state.filters}
+                        showDifference={this.state.showDifference}
+                        nonEmptyFiltersCount={this.getNonEmptyFiltersCount()}
+                        updateFilters={this.updateFilters.bind(this)}
+                        updateTableVariable={this.updateTableVariable.bind(this)}
+                        updateShowDifference={this.updateShowDifference.bind(this)}
+                    />
                 )}
 
                 {this.state.groupingVariable && this.state.sortingVariable && this.getNonEmptyFiltersCount() > 1 && (
@@ -171,32 +189,21 @@ export class Analyze extends Component {
         this.setState({ showDifference: val });
     }
 
-    async populateDropdownData() {
+    async populateExecutionData() {
         // get questions, data groups, executions, possible responses
         // maybe a questions API route for easier processing later
         const response = await Promise.all(
             [
-                fetch('api/question-executions'),
-                fetch('api/executions'), // later will be an if to be included based on config
-                fetch('api/data-groups'),
-                fetch('api/possible-responses')
+                fetch('api/executions'),
             ]
         );
-        const [questionExecutions, executions, dataGroups, possibleResponses] = await Promise.all(
+        const [executions] = await Promise.all(
             response.map(r => r.json())
         );
-
-        const groupedQuestionExecutions = Object.entries(_.groupBy(questionExecutions, qe => qe.questionId)).map(([key, value]) => ({
-            body: value[0].body,
-            questionId: value[0].questionId,
-            id: value[0].id
-        }));
+        const sortedExecutions = executions.sort((a, b) => (a.occurredTime < b.occurredTime) ? 1 : ((a.occurredTime > b.occurredTime ? -1 : 0)));
 
         this.setState({
-            questionExecutions: groupedQuestionExecutions,
-            executions,
-            dataGroups,
-            possibleResponses
+            latestExecutionNames: sortedExecutions.map(se => se.key)
         });
     }
 }

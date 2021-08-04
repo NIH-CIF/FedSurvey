@@ -174,10 +174,12 @@ namespace FedSurvey.Services
 
                                 if (questionExecution == null)
                                 {
-                                    Question newQuestion = new Question
+                                    QuestionExecution oldExecution = context.QuestionExecutions.Where(qe => qe.Body.Equals(text)).Include(qe => qe.Question).FirstOrDefault();
+
+                                    Question newQuestion = oldExecution == null ? new Question
                                     {
                                         QuestionType = currentType
-                                    };
+                                    } : oldExecution.Question;
                                     QuestionExecution newQuestionExecution = new QuestionExecution
                                     {
                                         Position = Int32.Parse(reader.GetString(2).Replace("Q", "")),
@@ -186,7 +188,9 @@ namespace FedSurvey.Services
                                         Question = newQuestion
                                     };
 
-                                    context.Questions.Add(newQuestion);
+                                    if (oldExecution == null)
+                                        context.Questions.Add(newQuestion);
+
                                     context.QuestionExecutions.Add(newQuestionExecution);
 
                                     questionExecution = newQuestionExecution;
@@ -374,10 +378,12 @@ namespace FedSurvey.Services
 
                     if (questionExecution == null)
                     {
-                        Question newQuestion = new Question
+                        QuestionExecution oldExecution = context.QuestionExecutions.Where(qe => qe.Body.Equals(title)).Include(qe => qe.Question).FirstOrDefault();
+
+                        Question newQuestion = oldExecution == null ? new Question
                         {
                             QuestionType = currentType
-                        };
+                        } : oldExecution.Question;
                         QuestionExecution newQuestionExecution = new QuestionExecution
                         {
                             Position = position,
@@ -386,7 +392,9 @@ namespace FedSurvey.Services
                             Question = newQuestion
                         };
 
-                        context.Questions.Add(newQuestion);
+                        if (oldExecution == null)
+                            context.Questions.Add(newQuestion);
+
                         context.QuestionExecutions.Add(newQuestionExecution);
 
                         questionExecution = newQuestionExecution;
@@ -594,10 +602,12 @@ namespace FedSurvey.Services
 
                                 if (questionExecution == null)
                                 {
-                                    Question newQuestion = new Question
+                                    QuestionExecution oldExecution = context.QuestionExecutions.Where(qe => qe.Body.Equals(questionText)).Include(qe => qe.Question).FirstOrDefault();
+
+                                    Question newQuestion = oldExecution == null ? new Question
                                     {
                                         QuestionType = currentType
-                                    };
+                                    } : oldExecution.Question;
                                     QuestionExecution newQuestionExecution = new QuestionExecution
                                     {
                                         Position = questionNumber,
@@ -606,7 +616,9 @@ namespace FedSurvey.Services
                                         Question = newQuestion
                                     };
 
-                                    context.Questions.Add(newQuestion);
+                                    if (oldExecution == null)
+                                        context.Questions.Add(newQuestion);
+
                                     context.QuestionExecutions.Add(newQuestionExecution);
 
                                     questionExecution = newQuestionExecution;
