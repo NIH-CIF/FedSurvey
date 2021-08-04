@@ -48,11 +48,39 @@ export class Analyze extends Component {
                                 filters: {
                                     'possible-response-names': ['Positive'],
                                     'execution-keys': ['2020'],
-                                    'data-group-names': ['OSC TOTAL']
+                                    'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
                                 }
                             }
                         )}>
                             Top Positive Responses
+                        </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'top-pos-org',
+                                sortingVariable: 'dataGroupName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Neutral'],
+                                    'execution-keys': ['2020'],
+                                    'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                }
+                            }
+                        )}>
+                            Top Neutral Responses
+                        </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'top-pos-org',
+                                sortingVariable: 'dataGroupName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Negative'],
+                                    'execution-keys': ['2020'],
+                                    'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                }
+                            }
+                        )}>
+                            Top Negative Responses
                         </Col>
                         <Col onClick={e => this.setState({ mode: 'advanced' })}>
                             Advanced
