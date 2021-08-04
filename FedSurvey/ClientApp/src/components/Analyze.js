@@ -114,6 +114,104 @@ export class Analyze extends Component {
                         )}>
                             Top Positive Responses Compared to 2016 on
                         </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'no-component',
+                                sortingVariable: 'executionName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Negative'],
+                                    'data-group-names': ['OSC TOTAL']
+                                },
+                                showDifference: true,
+                                sort: {
+                                    header: this.state.latestExecutionNames[0],
+                                    direction: 'desc'
+                                }
+                            }
+                        )}>
+                            Top Negative Responses Compared to 2016 on
+                        </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'no-component',
+                                sortingVariable: 'executionName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Positive'],
+                                    'data-group-names': ['OSC TOTAL'],
+                                    'execution-keys': this.state.latestExecutionNames.slice(0, 2)
+                                },
+                                showDifference: true,
+                                sort: {
+                                    // show two orgs + delta = last index
+                                    index: 2,
+                                    direction: 'desc'
+                                }
+                            }
+                        )}>
+                            Top Positive Response Increases
+                        </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'no-component',
+                                sortingVariable: 'executionName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Positive'],
+                                    'data-group-names': ['OSC TOTAL'],
+                                    'execution-keys': this.state.latestExecutionNames.slice(0, 2)
+                                },
+                                showDifference: true,
+                                sort: {
+                                    // show two orgs + delta = last index
+                                    index: 2,
+                                    direction: 'asc'
+                                }
+                            }
+                        )}>
+                            Top Positive Response Decreases
+                        </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'no-component',
+                                sortingVariable: 'dataGroupName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Positive'],
+                                    'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES'],
+                                    'execution-keys': [this.state.latestExecutionNames[0]]
+                                },
+                                showDifference: true,
+                                sort: {
+                                    // show two orgs + delta = last index
+                                    index: 2,
+                                    direction: 'desc'
+                                }
+                            }
+                        )}>
+                            Top Positive Response Strengths Relative to DPCPSI
+                        </Col>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'no-component',
+                                sortingVariable: 'dataGroupName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Positive'],
+                                    'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES'],
+                                    'execution-keys': [this.state.latestExecutionNames[0]]
+                                },
+                                showDifference: true,
+                                sort: {
+                                    // show two orgs + delta = last index
+                                    index: 2,
+                                    direction: 'asc'
+                                }
+                            }
+                        )}>
+                            Top Positive Response Weaknesses Relative to DPCPSI
+                        </Col>
                         <Col onClick={e => this.setState({ mode: 'advanced' })}>
                             Advanced
                         </Col>
