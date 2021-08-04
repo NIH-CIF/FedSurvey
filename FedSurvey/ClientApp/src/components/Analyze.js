@@ -15,6 +15,7 @@ export class Analyze extends Component {
             sortingVariable: null,
             filters: {},
             showDifference: false,
+            sort: {},
             mode: null
         };
     }
@@ -49,6 +50,10 @@ export class Analyze extends Component {
                                     'possible-response-names': ['Positive'],
                                     'execution-keys': ['2020'],
                                     'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                },
+                                sort: {
+                                    header: 'OSC TOTAL',
+                                    direction: 'desc'
                                 }
                             }
                         )}>
@@ -63,6 +68,10 @@ export class Analyze extends Component {
                                     'possible-response-names': ['Neutral'],
                                     'execution-keys': ['2020'],
                                     'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                },
+                                sort: {
+                                    header: 'OSC TOTAL',
+                                    direction: 'desc'
                                 }
                             }
                         )}>
@@ -77,6 +86,10 @@ export class Analyze extends Component {
                                     'possible-response-names': ['Negative'],
                                     'execution-keys': ['2020'],
                                     'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                },
+                                sort: {
+                                    header: 'OSC TOTAL',
+                                    direction: 'desc'
                                 }
                             }
                         )}>
@@ -108,6 +121,7 @@ export class Analyze extends Component {
                             groupingVariable={this.state.groupingVariable}
                             sortingVariable={this.state.sortingVariable}
                             showDifference={this.state.showDifference}
+                            sort={this.state.sort}
                             sortable
                             downloadable
                         />

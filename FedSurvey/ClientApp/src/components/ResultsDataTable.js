@@ -96,11 +96,11 @@ export class ResultsDataTable extends Component {
         return [[this.CSV_NAMES[this.props.groupingVariable], ...this.state.headers]].concat(this.state.results.map(([key, value]) => [key, ...value.map(v => v.percentage ? v.percentage + '%' : v.count)]));
     }
 
-    sortBy(index) {
+    sortBy(index, givenNewSort = null) {
         if (!this.props.sortable)
             return;
 
-        const newSort = this.state.headerLastSort[index] === 'asc' ? 'desc' : 'asc';
+        const newSort = givenNewSort || (this.state.headerLastSort[index] === 'asc' ? 'desc' : 'asc');
 
         const sortedResults = this.state.results.sort(([ak, av], [bk, bv]) => {
             if (av[index] === undefined) {
@@ -251,6 +251,13 @@ export class ResultsDataTable extends Component {
             this.setState({ results: newResults, headers: newHeaders, loading: false });
         } else {
             this.setState({ results: forcedGroupedEntries, headers: headers, loading: false });
+        }
+
+        // Bad and should only setState once.
+        if (this.props.sort) {
+            const index = this.state.headers.indexOf(this.props.sort.header);
+
+            this.sortBy(index, this.props.sort.direction);
         }
     }
 }
