@@ -43,7 +43,6 @@ namespace FedSurvey.Controllers
                     PossibleResponses.PartOfPercentage AS PartOfPercentage,
                     Responses.Count,
                     CASE WHEN PossibleResponses.PartOfPercentage = 0 THEN NULL ELSE Responses.Count / (CASE WHEN SUM(QuestionExecutionResponses.Count) = 0 THEN 1 ELSE SUM(QuestionExecutionResponses.Count) END) * 100 END AS Percentage,
-                    QuestionExecutions.Body AS QuestionText,
                     DataGroups.Id AS DataGroupId,
                     DataGroupStrings.Name AS DataGroupName,
                     QuestionExecutions.QuestionId AS QuestionId,
@@ -90,7 +89,6 @@ namespace FedSurvey.Controllers
                 PossibleResponseStrings.Name,
                 Responses.Count,
                 PossibleResponses.PartOfPercentage,
-                QuestionExecutions.Body,
                 DataGroups.Id,
                 DataGroupStrings.Name,
                 QuestionExecutions.QuestionId,
@@ -103,7 +101,6 @@ namespace FedSurvey.Controllers
                     BottomLevel.PossibleResponseName,
                     BottomLevel.PartOfPercentage,
                     SUM(BottomLevel.Count) AS Count,
-                    BottomLevel.QuestionText,
                     DataGroups.Id AS DataGroupId,
                     BottomLevel.QuestionId,
                     BottomLevel.QuestionNumber
@@ -121,7 +118,6 @@ namespace FedSurvey.Controllers
                 BottomLevel.ExecutionTime,
                 BottomLevel.PossibleResponseName,
                 BottomLevel.PartOfPercentage,
-                BottomLevel.QuestionText,
                 DataGroups.Id,
                 BottomLevel.QuestionId,
                 BottomLevel.QuestionNumber
@@ -136,19 +132,30 @@ namespace FedSurvey.Controllers
                 GROUP BY
                 MiddleLevel.QuestionId,
                 MiddleLevel.ExecutionName
+            ),
+            -- Possible it would be better to have a different solution that better takes the latest
+            -- question text.
+            QuestionTexts AS (
+                SELECT
+                    MAX(QuestionExecutions.Body) AS Body,
+                    QuestionExecutions.QuestionId
+                FROM QuestionExecutions
+                GROUP BY QuestionExecutions.QuestionId
             )
 
             SELECT
-                ExecutionName,
-                ExecutionTime,
-                PossibleResponseName,
-                Count,
-                Percentage,
-                QuestionText,
-                DataGroupName,
-                QuestionId,
-                QuestionNumber
+                BottomLevel.ExecutionName,
+                BottomLevel.ExecutionTime,
+                BottomLevel.PossibleResponseName,
+                BottomLevel.Count,
+                BottomLevel.Percentage,
+                QuestionTexts.Body,
+                BottomLevel.DataGroupName,
+                BottomLevel.QuestionId,
+                BottomLevel.QuestionNumber
             FROM BottomLevel
+            JOIN QuestionTexts
+            ON QuestionTexts.QuestionId = BottomLevel.QuestionId
             {2}
 
             UNION
@@ -159,7 +166,7 @@ namespace FedSurvey.Controllers
                 MiddleLevel.PossibleResponseName,
                 MiddleLevel.Count,
                 CASE WHEN MiddleLevel.PartOfPercentage = 0 THEN NULL ELSE MiddleLevel.Count / (CASE WHEN ComputedTotals.Count = 0 THEN 1 ELSE ComputedTotals.Count END) * 100 END AS Percentage,
-                MiddleLevel.QuestionText,
+                QuestionTexts.Body,
                 DataGroupStrings.Name AS DataGroupName,
                 MiddleLevel.QuestionId,
                 MiddleLevel.QuestionNumber
@@ -170,6 +177,8 @@ namespace FedSurvey.Controllers
             JOIN DataGroupStrings
             ON DataGroupStrings.DataGroupId = MiddleLevel.DataGroupId
             AND DataGroupStrings.Preferred = 1
+            JOIN QuestionTexts
+            ON QuestionTexts.QuestionId = MiddleLevel.QuestionId
             {3}";
 
             string connectionString = _configuration.GetConnectionString("Database");
