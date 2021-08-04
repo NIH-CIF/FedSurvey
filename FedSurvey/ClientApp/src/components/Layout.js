@@ -6,11 +6,11 @@ export class Layout extends Component {
 
   render () {
     return (
-      <div>
-        <Container>
-          {this.props.children}
-        </Container>
-      </div>
+        <div style={{ height: '100%' }}>
+            <Container style={{ height: '100%' }}>
+                {this.props.children}
+            </Container>
+        </div>
     );
   }
 }

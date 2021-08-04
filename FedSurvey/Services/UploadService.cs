@@ -88,7 +88,7 @@ namespace FedSurvey.Services
 
                             for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount; i++)
                             {
-                                string responseWithSuffix = reader.GetString(i).Replace("\n", " ");
+                                string responseWithSuffix = reader.GetString(i).Replace("\n", " ").Replace("\u00A0", " ");
                                 isPercent[i] = responseWithSuffix.EndsWith('%');
 
                                 string response = Regex.Replace(responseWithSuffix, @"[%|N]$", "").Trim();
@@ -139,7 +139,7 @@ namespace FedSurvey.Services
                                 // 3 Item Text - this is the question text in this year
                                 // 4 Item Respondents - this is the number that will be multiplied by the percentage to get Count
                                 // 5-n Options - each column becomes a possible response option
-                                string rowOrgName = reader.GetString(1).Replace("\n", " ");
+                                string rowOrgName = reader.GetString(1).Replace("\n", " ").Replace("\u00A0", " ");
                                 DataGroupString organizationName = organizationStringToObject.ContainsKey(rowOrgName) ? organizationStringToObject[rowOrgName] : context.DataGroupStrings.Where(dgs => dgs.Name.Equals(rowOrgName)).Include(x => x.DataGroup).FirstOrDefault();
                                 DataGroup organization = organizationName != null ? organizationName.DataGroup : null;
 
@@ -165,7 +165,7 @@ namespace FedSurvey.Services
                                     organizationStringToObject[rowOrgName] = organizationName;
                                 }
 
-                                string text = reader.GetString(3).Replace("\n", " ");
+                                string text = reader.GetString(3).Replace("\n", " ").Replace("\u00A0", " ");
 
                                 // todo should detect the /Question/ without locking into the same execution
                                 // or rather, when making a new execution, should check the text overall first
@@ -305,7 +305,7 @@ namespace FedSurvey.Services
                     Match match = Regex.Match(titleLine, regex);
 
                     int position = Int32.Parse(match.Groups[1].Captures[0].Value);
-                    string title = Regex.Replace(titleLine, regex, "");
+                    string title = Regex.Replace(titleLine, regex, "").Replace("\n", "").Replace("\u00A0", " ");
 
                     Dictionary<string, int> possibleResponseStringToCount = new Dictionary<string, int>();
                     
@@ -531,7 +531,7 @@ namespace FedSurvey.Services
                                 if (reader.GetFieldType(0) != "".GetType())
                                 {
                                     int position = (int)reader.GetDouble(0);
-                                    numberToText[position] = reader.GetString(1);
+                                    numberToText[position] = reader.GetString(1).Replace("\n", "").Replace("\u00A0", " ");
                                 }
                             }
                         }
@@ -618,7 +618,7 @@ namespace FedSurvey.Services
                             while (reader.Read())
                             {
                                 // Get data group set up.
-                                string rowOrgName = reader.GetString(0).Replace("\n", " ");
+                                string rowOrgName = reader.GetString(0).Replace("\n", " ").Replace("\u00A0", " ");
                                 DataGroupString organizationName = context.DataGroupStrings.Where(dgs => dgs.Name.Equals(rowOrgName)).Include(x => x.DataGroup).FirstOrDefault();
                                 DataGroup organization = organizationName != null ? organizationName.DataGroup : null;
 

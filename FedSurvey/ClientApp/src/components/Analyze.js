@@ -26,7 +26,7 @@ export class Analyze extends Component {
 
     render() {
         return (
-            <div>
+            <div style={{ height: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Link to='/'>Home</Link>
 
@@ -40,7 +40,7 @@ export class Analyze extends Component {
                 </div>
 
                 {this.state.mode === null ? (
-                    <Row>
+                    <Row xs="3" style={{ height: '100%' }}>
                         <Col onClick={e => this.setState(
                             {
                                 mode: 'top-pos-org',
@@ -61,7 +61,7 @@ export class Analyze extends Component {
                         </Col>
                         <Col onClick={e => this.setState(
                             {
-                                mode: 'top-pos-org',
+                                mode: 'top-neu-org',
                                 sortingVariable: 'dataGroupName',
                                 groupingVariable: 'questionId',
                                 filters: {
@@ -79,7 +79,7 @@ export class Analyze extends Component {
                         </Col>
                         <Col onClick={e => this.setState(
                             {
-                                mode: 'top-pos-org',
+                                mode: 'top-neg-org',
                                 sortingVariable: 'dataGroupName',
                                 groupingVariable: 'questionId',
                                 filters: {

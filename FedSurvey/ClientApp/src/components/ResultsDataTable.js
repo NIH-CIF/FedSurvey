@@ -255,6 +255,7 @@ export class ResultsDataTable extends Component {
 
         // Bad and should only setState once.
         if (this.props.sort) {
+            // allow index passed in too
             const index = this.state.headers.indexOf(this.props.sort.header);
 
             this.sortBy(index, this.props.sort.direction);
