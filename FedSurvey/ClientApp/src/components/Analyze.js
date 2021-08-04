@@ -198,7 +198,7 @@ export class Analyze extends Component {
                                 />
                             </div>
 
-                            {this.state.sortingVariable === 'executionTime' && (
+                            {(this.state.sortingVariable === 'executionTime' || this.state.sortingVariable === 'dataGroupName') && (
                                 <div style={{ flex: 0, display: 'flex', flexDirection: 'column', marginLeft: 4 }}>
                                     &Delta;?
 
