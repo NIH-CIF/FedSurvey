@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Row, Col } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { Advanced } from './Advanced';
@@ -14,7 +14,8 @@ export class Analyze extends Component {
             groupingVariable: null,
             sortingVariable: null,
             filters: {},
-            showDifference: false
+            showDifference: false,
+            mode: null
         };
     }
 
@@ -37,16 +38,40 @@ export class Analyze extends Component {
                     </Button>
                 </div>
 
-                <Advanced
-                    groupingVariable={this.state.groupingVariable}
-                    sortingVariable={this.state.sortingVariable}
-                    filters={this.state.filters}
-                    showDifference={this.state.showDifference}
-                    nonEmptyFiltersCount={this.getNonEmptyFiltersCount()}
-                    updateFilters={this.updateFilters.bind(this)}
-                    updateTableVariable={this.updateTableVariable.bind(this)}
-                    updateShowDifference={val => this.setState({ showDifference: val })}
-                />
+                {this.state.mode === null ? (
+                    <Row>
+                        <Col onClick={e => this.setState(
+                            {
+                                mode: 'top-pos-org',
+                                sortingVariable: 'dataGroupName',
+                                groupingVariable: 'questionId',
+                                filters: {
+                                    'possible-response-names': ['Positive'],
+                                    'execution-keys': ['2020'],
+                                    'data-group-names': ['OSC TOTAL']
+                                }
+                            }
+                        )}>
+                            Top Positive Responses
+                        </Col>
+                        <Col onClick={e => this.setState({ mode: 'advanced' })}>
+                            Advanced
+                        </Col>
+                    </Row>
+                ) : (
+                    this.state.mode === 'advanced' && (
+                        <Advanced
+                            groupingVariable={this.state.groupingVariable}
+                            sortingVariable={this.state.sortingVariable}
+                            filters={this.state.filters}
+                            showDifference={this.state.showDifference}
+                            nonEmptyFiltersCount={this.getNonEmptyFiltersCount()}
+                            updateFilters={this.updateFilters.bind(this)}
+                            updateTableVariable={this.updateTableVariable.bind(this)}
+                            updateShowDifference={this.updateShowDifference.bind(this)}
+                        />
+                    )
+                )}
 
                 {this.state.groupingVariable && this.state.sortingVariable && this.getNonEmptyFiltersCount() > 1 && (
                     <div>
@@ -69,7 +94,8 @@ export class Analyze extends Component {
             sortingVariable: null,
             groupingVariable: null,
             showDifference: false,
-            filters: {}
+            filters: {},
+            mode: null
         });
     }
 
@@ -97,6 +123,10 @@ export class Analyze extends Component {
             } : prevState.filters,
             [variableName]: value,
         }));
+    }
+
+    updateShowDifference(val) {
+        this.setState({ showDifference: val });
     }
 
     async populateDropdownData() {
