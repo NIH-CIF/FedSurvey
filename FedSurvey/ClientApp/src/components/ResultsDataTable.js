@@ -221,13 +221,15 @@ export class ResultsDataTable extends Component {
         }
 
         if (this.props.showDifference) {
-            const newHeaders = this.state.headers.map(h => ([h, 'Δ'])).flat();
+            const newHeaders = [headers[0]].concat(headers.slice(1).map(h => ([h, 'Δ']))).flat();
             const forcedGroupedEntries = Object.entries(forcedGrouped);
             const newResults = forcedGroupedEntries.map(([key, value]) => {
                 const newValue = value.map((v, index) => {
                     const prev = value[index - 1];
 
-                    if (prev === undefined || prev.percentage === undefined || v.percentage === undefined) {
+                    if (index === 0) {
+                        return [v];
+                    } else if (prev === undefined || prev.percentage === undefined || v.percentage === undefined) {
                         return [v, {}];
                     } else {
                         return [v, { percentage: v.percentage - prev.percentage }];
