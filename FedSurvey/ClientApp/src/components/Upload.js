@@ -72,7 +72,7 @@ export class Upload extends Component {
                                     You may need to
                                     <Link to='/data-groups/merge' style={{ marginLeft: 4 }}>merge data groups</Link>,
                                     <Link to='/data-groups/create' style={{ marginLeft: 4 }}>create a computed data group</Link>,
-                                    or <span>merge questions</span>.
+                                    or <Link to='/questions/merge'>merge questions</Link>.
                                 </p>
                             )}
                         </ModalBody>
