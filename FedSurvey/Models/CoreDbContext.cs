@@ -21,6 +21,8 @@ namespace FedSurvey.Models
         public virtual DbSet<QuestionTypeString> QuestionTypeStrings { get; set; }
         public virtual DbSet<QuestionType> QuestionTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<QuestionLink> QuestionLinks { get; set; }
+        public virtual DbSet<QuestionGroup> QuestionGroups { get; set; }
         public virtual DbSet<Response> Responses { get; set; }
         public virtual DbSet<ResponseDTO> ResponseDTOs { get; set; }
         public virtual DbSet<ResultDTO> ResultDTOs { get; set; }
@@ -152,6 +154,28 @@ namespace FedSurvey.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Questions_QuestionTypes");
             });
+
+            modelBuilder.Entity<QuestionLink>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.HasOne(d => d.QuestionGroup)
+                    .WithMany(p => p.QuestionLinks)
+                    .HasForeignKey(d => d.QuestionGroupId)
+                    .HasConstraintName("FK_QuestionLinks_QuestionGroups_QuestionGroupId");
+
+                entity.HasOne(d => d.Question)
+                    .WithMany(p => p.QuestionLinks)
+                    .HasForeignKey(d => d.QuestionId)
+                    .HasConstraintName("FK_QuestionLinks_Questions_QuestionId");
+            });
+            modelBuilder.Entity<QuestionLink>().ToTable("QuestionLinks");
+
+            modelBuilder.Entity<QuestionGroup>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+            modelBuilder.Entity<QuestionGroup>().ToTable("QuestionGroups");
 
             modelBuilder.Entity<Response>(entity =>
             {

@@ -12,6 +12,9 @@ namespace FedSurvey.Models
         public DataGroup()
         {
             Responses = new HashSet<Response>();
+            DataGroupStrings = new HashSet<DataGroupString>();
+            ParentLinks = new HashSet<DataGroupLink>();
+            ChildLinks = new HashSet<DataGroupLink>();
         }
 
         [Key]

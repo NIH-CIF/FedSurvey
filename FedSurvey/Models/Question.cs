@@ -11,6 +11,7 @@ namespace FedSurvey.Models
         public Question()
         {
             QuestionExecutions = new HashSet<QuestionExecution>();
+            QuestionLinks = new HashSet<QuestionLink>();
         }
 
         [Key]
@@ -23,5 +24,7 @@ namespace FedSurvey.Models
         public virtual QuestionType QuestionType { get; set; }
         [InverseProperty("Question")]
         public virtual ICollection<QuestionExecution> QuestionExecutions { get; set; }
+        [InverseProperty("Question")]
+        public virtual ICollection<QuestionLink> QuestionLinks { get; set; }
     }
 }
