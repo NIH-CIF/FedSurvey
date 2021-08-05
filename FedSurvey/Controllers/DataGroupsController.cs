@@ -21,9 +21,22 @@ namespace FedSurvey.Controllers
         // One guide recommended using async more often here.
         [HttpGet]
         [Route("api/data-groups")]
-        public IEnumerable<DataGroup.DTO> Get()
-        {
-            return _context.DataGroups.Include(x => x.DataGroupStrings).Select(x => DataGroup.ToDTO(x)).ToList();
+        public IEnumerable<DataGroup.DTO> Get(
+            [FromQuery] bool computed
+        ) {
+            IEnumerable<DataGroup> dataGroups = _context.DataGroups.Include(x => x.DataGroupStrings).Include(x => x.ParentLinks);
+
+            if (computed)
+            {
+                dataGroups = dataGroups.Where(x => x.ParentLinks.Count > 0);
+            }
+            // Note that this will break if multiple filters are enacted.
+            else if (!string.IsNullOrEmpty(Request.QueryString.Value))
+            {
+                dataGroups = dataGroups.Where(x => x.ParentLinks.Count == 0);
+            }
+
+            return dataGroups.Select(x => DataGroup.ToDTO(x)).ToList().OrderBy(x => x.Name);
         }
 
         // Accepts list of ids like "[2,6]" as JSON body and merges them.

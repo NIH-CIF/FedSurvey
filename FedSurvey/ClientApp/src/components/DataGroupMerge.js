@@ -49,8 +49,8 @@ export class DataGroupMerge extends Component {
                 {this.state.success === true && (
                     <p>
                         Merge success!
-                        Press "Home" above to view modified data or refresh the page
-                        to merge again.
+                        Press "Home" above to view modified data or
+                        click <span style={{ cursor: 'pointer', color: 'blue' }} onClick={this.reset.bind(this)}>here</span> to perform another merge.
                     </p>
                 )}
                 {this.state.success === false && (
@@ -61,6 +61,13 @@ export class DataGroupMerge extends Component {
                 )}
             </div>
         );
+    }
+
+    reset() {
+        this.setState({
+            dataGroups: [], checked: [], mergeTo: null, step: 0, loading: true, processing: false, success: null
+        });
+        this.populateDataGroups();
     }
 
     getTextForStep() {

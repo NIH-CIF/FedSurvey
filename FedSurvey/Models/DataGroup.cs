@@ -34,6 +34,7 @@ namespace FedSurvey.Models
         {
             public int Id { get; set; }
             public string Name { get; set; }
+            public bool Computed { get; set; }
         }
 
         public static DTO ToDTO(DataGroup dataGroup)
@@ -43,7 +44,8 @@ namespace FedSurvey.Models
             return new DTO
             {
                 Id = dataGroup.Id,
-                Name = name
+                Name = name,
+                Computed = dataGroup.ParentLinks.Count > 0
             };
         }
     }

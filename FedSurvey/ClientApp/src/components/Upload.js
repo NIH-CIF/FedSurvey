@@ -52,13 +52,15 @@ export class Upload extends Component {
                             {this.state.uploadSuccess && (
                                 <p>
                                     Upload success!
-                                    Close and reopen the modal to upload more.
+                                    Click <span>here</span> to upload more.
+                                    You may need to <span>merge data groups</span>, <span>create a computed data group</span>,
+                                    or <span>merge questions</span>.
                                 </p>
                             )}
                         </ModalBody>
                         <ModalFooter>
                             <Button color="danger" disabled={this.state.uploading || !this.state.file || !this.state.key || (this.state.format === 'survey-monkey' && !this.state.dataGroupName)}  onClick={this.submitUpload.bind(this)}>Upload</Button>
-                            <Button color="secondary" onClick={toggle}>Cancel</Button>
+                            <Button color="secondary" disabled={this.state.uploading} onClick={toggle}>Cancel</Button>
                         </ModalFooter>
                     </Form>
                 </Modal>
