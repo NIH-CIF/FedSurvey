@@ -7,7 +7,7 @@ export class Layout extends Component {
   render () {
     return (
         <div style={{ height: '100%' }}>
-            <Container style={{ height: '100%' }}>
+            <Container style={{ height: '100%', padding: 0 }}>
                 {this.props.children}
             </Container>
         </div>
