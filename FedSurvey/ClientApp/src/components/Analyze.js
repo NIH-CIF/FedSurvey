@@ -1,8 +1,9 @@
 ﻿import React, { Component } from 'react';
 import { Button, Row, Col } from 'reactstrap';
-import { Link } from 'react-router-dom';
 import { Advanced } from './Advanced';
 import { ResultsDataTable } from './ResultsDataTable';
+import { Upload } from './Upload';
+import { Link } from 'react-router-dom';
 
 export class Analyze extends Component {
     static displayName = Analyze.name;
@@ -28,17 +29,23 @@ export class Analyze extends Component {
     render() {
         return (
             <div style={{ height: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Link to='/'>Home</Link>
-
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Button
-                        color="link"
+                        outline
+                        color="secondary"
                         onClick={this.reset.bind(this)}
-                        style={{ padding: 0, border: 0 }}
                     >
                         Reset
                     </Button>
+
+                    <span>
+                        Survey Data Aggregator
+                    </span>
+
+                    <Upload />
                 </div>
+
+                <hr style={{ margin: 0 }} />
 
                 {this.state.mode === null && (
                     <Row xs="3" style={{ height: '100%' }}>
@@ -212,6 +219,11 @@ export class Analyze extends Component {
                         )}>
                             Top Positive Response Weaknesses Relative to DPCPSI
                         </Col>
+                        <Link to="/history">
+                            <Col>
+                                History
+                            </Col>
+                        </Link>
                         <Col onClick={e => this.setState({ mode: 'advanced' })}>
                             Advanced
                         </Col>

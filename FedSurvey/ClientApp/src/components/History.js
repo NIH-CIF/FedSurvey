@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Button, Input, Label } from 'reactstrap';
 import { QuestionList } from './QuestionList';
-import { Upload } from './Upload';
 import { Link } from 'react-router-dom';
 
-export class Home extends Component {
-    static displayName = Home.name;
+export class History extends Component {
+    static displayName = History.name;
 
     constructor(props) {
         super(props);
@@ -21,7 +20,11 @@ export class Home extends Component {
             <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ flex: 0, alignSelf: 'flex-end' }}>
-                        <Upload />
+                        <Link to='/'>
+                            <Button outline block color="secondary">
+                                Home
+                            </Button>
+                        </Link>
                     </div>
 
                     <div style={{ flex: 1 }}>
@@ -31,14 +34,6 @@ export class Home extends Component {
                                 <option value={e.id} key={e.id}>{e.key}</option>
                             ))}
                         </Input>
-                    </div>
-
-                    <div style={{ flex: 0, alignSelf: 'flex-end' }}>
-                        <Link to='/analyze'>
-                            <Button outline block color="secondary">
-                                Analyze
-                            </Button>
-                        </Link>
                     </div>
                 </div>
 
@@ -52,6 +47,6 @@ export class Home extends Component {
     async populateExecutionData() {
         const response = await fetch('api/executions');
         const data = await response.json();
-        this.setState({ executions: data, currentExecutionId: data[0].id, loading: false });
+        this.setState({ executions: data, currentExecutionId: data[data.length - 1].id, loading: false });
     }
 }

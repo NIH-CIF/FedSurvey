@@ -25,11 +25,12 @@ export class QuestionPage extends Component {
         return !this.state.loading && (
             <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Link to='/'>Home</Link>
+                    <Link to='/history' style={{ flex: 0.15 }}>History</Link>
+                    <Link to='/' style={{ flex: 0.15 }}>Home</Link>
 
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 0.7 }}>
                         <Label for="dataGroupSelect" style={{ marginRight: '0.5rem', marginBottom: 0 }}>Organization</Label>
-                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupName: e.target.value }) }} value={this.state.currentDataGroupName} style={{ flexShrink: 2100 }}>
+                        <Input type="select" name="dataGroupSelect" id="dataGroupSelect" onChange={e => { this.setState({ currentDataGroupName: e.target.value }) }} value={this.state.currentDataGroupName}>
                             {this.state.dataGroups.map(dg => (
                                 <option value={dg.name} key={dg.id}>{dg.name}</option>
                             ))}
