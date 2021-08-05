@@ -103,9 +103,9 @@ export class ResultsDataTable extends Component {
         const newSort = givenNewSort || (this.state.headerLastSort[index] === 'asc' ? 'desc' : 'asc');
 
         const sortedResults = this.state.results.sort(([ak, av], [bk, bv]) => {
-            if (av[index].percentage === undefined && av[index].count === undefined) {
+            if (av[index] === undefined || (av[index].percentage === undefined && av[index].count === undefined)) {
                 return 1;
-            } else if (bv[index].percentage === undefined && bv[index].count === undefined) {
+            } else if (bv[index] === undefined || (bv[index].percentage === undefined && bv[index].count === undefined)) {
                 return -1;
             } else {
                 const ascSort = ((av[index].percentage !== null ? av[index].percentage : av[index].count) < (bv[index].percentage !== null ? bv[index].percentage : bv[index].count)) ? -1 : (((av[index].percentage !== null ? av[index].percentage : av[index].count) > (bv[index].percentage !== null ? bv[index].percentage : bv[index].count)) ? 1 : 0);
