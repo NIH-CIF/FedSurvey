@@ -189,7 +189,15 @@ namespace FedSurvey.Services
                                     };
 
                                     if (oldExecution == null)
+                                    {
                                         context.Questions.Add(newQuestion);
+
+                                        context.QuestionLinks.Add(new QuestionLink
+                                        {
+                                            QuestionGroupId = 1, // seed data to "Core Survey", but should probably be looked up
+                                            Question = newQuestion
+                                        });
+                                    }
 
                                     context.QuestionExecutions.Add(newQuestionExecution);
 
@@ -566,7 +574,8 @@ namespace FedSurvey.Services
                             // Get headers.
                             reader.Read();
 
-                            Dictionary<int, QuestionExecution> colToQuestionExecution = new Dictionary<int, QuestionExecution>();
+                            Dictionary<int, QuestionExecution> qNumToQuestionExecution = new Dictionary<int, QuestionExecution>();
+                            Dictionary<int, int> colToQNum = new Dictionary<int, int>();
                             Dictionary<int, PossibleResponse> colToPossibleResponse = new Dictionary<int, PossibleResponse>();
 
                             if (execution == null)
@@ -586,6 +595,8 @@ namespace FedSurvey.Services
 
                                 string questionText = numberToText[questionNumber];
 
+                                colToQNum[i] = questionNumber;
+
                                 PossibleResponseString responseName = context.PossibleResponseStrings.Where(prs => prs.Name.Equals(possibleResponseString)).Include(x => x.PossibleResponse).FirstOrDefault();
 
                                 if (responseName == null)
@@ -598,7 +609,7 @@ namespace FedSurvey.Services
                                     colToPossibleResponse[i] = responseName.PossibleResponse;
                                 }
 
-                                QuestionExecution questionExecution = context.QuestionExecutions.Where(qe => qe.Body.Equals(questionText) && qe.ExecutionId == execution.Id).FirstOrDefault();
+                                QuestionExecution questionExecution = qNumToQuestionExecution.ContainsKey(questionNumber) ? qNumToQuestionExecution[questionNumber] : context.QuestionExecutions.Where(qe => qe.Body.Equals(questionText) && qe.ExecutionId == execution.Id).FirstOrDefault();
 
                                 if (questionExecution == null)
                                 {
@@ -617,14 +628,22 @@ namespace FedSurvey.Services
                                     };
 
                                     if (oldExecution == null)
+                                    {
                                         context.Questions.Add(newQuestion);
+
+                                        context.QuestionLinks.Add(new QuestionLink
+                                        {
+                                            QuestionGroupId = 1, // seed data to "Core Survey", but should probably be looked up
+                                            Question = newQuestion
+                                        });
+                                    }
 
                                     context.QuestionExecutions.Add(newQuestionExecution);
 
                                     questionExecution = newQuestionExecution;
                                 }
 
-                                colToQuestionExecution[i] = questionExecution;
+                                qNumToQuestionExecution[questionNumber] = questionExecution;
                             }
 
                             while (reader.Read())
@@ -662,7 +681,7 @@ namespace FedSurvey.Services
                                     context.Responses.Add(new Models.Response
                                     {
                                         Count = count,
-                                        QuestionExecution = colToQuestionExecution[i],
+                                        QuestionExecution = qNumToQuestionExecution[colToQNum[i]],
                                         PossibleResponse = colToPossibleResponse[i],
                                         DataGroup = organization
                                     });
