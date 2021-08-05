@@ -101,7 +101,7 @@ export class DataGroupMerge extends Component {
 
     async populateDataGroups() {
         // would be good to show all strings for each data group listed here
-        const dataGroups = await (await fetch('api/data-groups')).json();
+        const dataGroups = await (await fetch('api/data-groups?computed=false')).json();
 
         this.setState({ dataGroups: dataGroups, loading: false });
     }

@@ -18,6 +18,11 @@ export class Advanced extends Component {
     }
 
     componentDidMount() {
+        this.props.addButton({
+            onClick: this.props.reset,
+            text: 'Reset'
+        });
+
         this.populateDropdownData();
     }
 

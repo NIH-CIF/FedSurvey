@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, FormText, Label, Input } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 export class Upload extends Component {
     static displayName = Upload.name;
@@ -9,9 +10,10 @@ export class Upload extends Component {
         this.state = {
             isOpen: false,
             format: null,
+            fileInputKey: Date.now(),
             file: null,
-            key: null,
-            dataGroupName: null,
+            key: '',
+            dataGroupName: '',
             uploadSuccess: null,
             uploading: false
         };
@@ -21,15 +23,21 @@ export class Upload extends Component {
         const toggle = this.toggle.bind(this);
 
         return (
-            <div>
-                <Button outline block color="danger" onClick={toggle}>Upload</Button>
+            <Button outline block color="danger" onClick={toggle}>
+                Upload
                 <Modal isOpen={this.state.isOpen} toggle={toggle}>
                     <ModalHeader toggle={toggle}>Upload</ModalHeader>
                     <Form>
                         <ModalBody>
                             <FormGroup>
                                 <Label for="file">File</Label>
-                                <Input type="file" name="file" id="file" onChange={e => this.handleFileChange(e.target)} />
+                                <Input
+                                    type="file"
+                                    name="file"
+                                    id="file"
+                                    onChange={e => this.handleFileChange(e.target)}
+                                    key={this.state.fileInputKey}
+                                />
                                 {this.state.format === 'unknown' && (
                                     <FormText>
                                         This file cannot be uploaded.
@@ -39,21 +47,31 @@ export class Upload extends Component {
 
                             <FormGroup>
                                 <Label for="key">Year</Label>
-                                <Input type="text" name="key" id="key" disabled={!this.state.format || this.state.format === 'unknown'} onChange={e => this.setState({ key: e.target.value })} />
+                                <Input type="text" name="key" id="key" disabled={!this.state.format || this.state.format === 'unknown'} onChange={e => this.setState({ key: e.target.value })} value={this.state.key} />
                             </FormGroup>
 
                             {this.state.format === 'survey-monkey' && (
                                 <FormGroup>
                                     <Label for="key">Organization Name</Label>
-                                    <Input type="text" name="dataGroupName" id="dataGroupName" onChange={e => this.setState({ dataGroupName: e.target.value })} />
+                                    <Input
+                                        type="text"
+                                        name="dataGroupName"
+                                        id="dataGroupName"
+                                        onChange={e => this.setState({ dataGroupName: e.target.value })}
+                                        value={this.state.dataGroupName}
+                                    />
                                 </FormGroup>
                             )}
 
                             {this.state.uploadSuccess && (
                                 <p>
                                     Upload success!
-                                    Click <span>here</span> to upload more.
-                                    You may need to <span>merge data groups</span>, <span>create a computed data group</span>,
+                                    Click
+                                    <span style={{ cursor: 'pointer', color: 'blue', marginLeft: 4, marginRight: 4 }} onClick={this.reset.bind(this)}>here</span>
+                                    to upload more.
+                                    You may need to
+                                    <Link to='/data-groups/merge' style={{ marginLeft: 4 }}>merge data groups</Link>,
+                                    <Link to='/data-groups/create' style={{ marginLeft: 4 }}>create a computed data group</Link>,
                                     or <span>merge questions</span>.
                                 </p>
                             )}
@@ -63,26 +81,25 @@ export class Upload extends Component {
                             <Button color="secondary" disabled={this.state.uploading} onClick={toggle}>Cancel</Button>
                         </ModalFooter>
                     </Form>
-                </Modal>
-            </div>
+                    </Modal>
+                </Button>
         );
     }
 
+    reset() {
+        this.setState({
+            format: null,
+            fileInputKey: Date.now(),
+            file: '',
+            key: '',
+            dataGroupName: '',
+            uploadSuccess: null,
+            uploading: false
+        });
+    }
+
     toggle() {
-        // State not seem to be held through, so possibly useless code.
-        if (this.state.uploadSuccess && this.state.isOpen) {
-            this.setState({
-                isOpen: false,
-                format: null,
-                file: null,
-                key: null,
-                dataGroupName: null,
-                uploadSuccess: null,
-                uploading: false
-            });
-        } else {
-            this.setState(prevState => ({ isOpen: !prevState.isOpen }));
-        }
+        this.setState(prevState => ({ isOpen: !prevState.isOpen }));
     }
 
     async handleFileChange(target) {

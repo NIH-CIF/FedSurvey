@@ -25,6 +25,13 @@ export class ResultsDataTable extends Component {
     }
 
     componentDidMount() {
+        if (this.props.addButton && this.props.downloadable) {
+            this.props.addButton({
+                onClick: e => this.link.link.click(),
+                text: 'Export'
+            });
+        }
+
         this.populateResultsData();
     }
 
@@ -66,8 +73,8 @@ export class ResultsDataTable extends Component {
                             </th>
                         ))}
                         {this.props.downloadable && (
-                            <th style={{ borderBottom: 'none' }}>
-                                <CSVLink data={this.getCsv()} filename="data.csv">
+                            <th style={{ borderBottom: 'none', display: this.props.addButton ? 'none' : 'table-cell' }}>
+                                <CSVLink data={this.getCsv()} filename="data.csv" ref={link => this.link = link}>
                                     <i className="fas fa-download"></i>
                                 </CSVLink>
                             </th>

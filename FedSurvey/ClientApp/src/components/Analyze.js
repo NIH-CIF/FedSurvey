@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { Button, Row, Col } from 'reactstrap';
+import { Button, ButtonGroup, Row, Col } from 'reactstrap';
 import { Advanced } from './Advanced';
 import { ResultsDataTable } from './ResultsDataTable';
 import { Upload } from './Upload';
@@ -18,7 +18,9 @@ export class Analyze extends Component {
             sort: {},
             mode: null,
             loading: true,
-            latestExecutionNames: null
+            latestExecutionNames: null,
+            leftButtons: [],
+            rightButtons: []
         };
     }
 
@@ -45,19 +47,45 @@ export class Analyze extends Component {
         return !this.state.loading && (
             <div style={{ height: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Button
-                        outline
-                        color="secondary"
-                        onClick={this.reset.bind(this)}
-                    >
-                        Reset
-                    </Button>
+                    <ButtonGroup>
+                        <Button
+                            outline
+                            color="secondary"
+                            onClick={this.home.bind(this)}
+                        >
+                            Home
+                        </Button>
+
+                        {this.state.leftButtons.map(lb => (
+                            <Button
+                                key={lb.text}
+                                outline
+                                color="secondary"
+                                onClick={lb.onClick}
+                            >
+                                {lb.text}
+                            </Button>
+                        ))}
+                    </ButtonGroup>
 
                     <span>
                         Survey Data Aggregator
                     </span>
 
-                    <Upload />
+                    <ButtonGroup>
+                        <Upload />
+
+                        {this.state.rightButtons.map(rb => (
+                            <Button
+                                key={rb.text}
+                                outline
+                                color="primary"
+                                onClick={rb.onClick}
+                            >
+                                {rb.text}
+                            </Button>
+                        ))}
+                    </ButtonGroup>
                 </div>
 
                 <hr style={{ margin: 0 }} />
@@ -212,6 +240,8 @@ export class Analyze extends Component {
                         updateFilters={this.updateFilters.bind(this)}
                         updateTableVariable={this.updateTableVariable.bind(this)}
                         updateShowDifference={this.updateShowDifference.bind(this)}
+                        reset={this.reset.bind(this)}
+                        addButton={this.addLeftButton.bind(this)}
                     />
                 )}
                 {this.state.mode !== null && this.state.mode !== 'advanced' && this.state.mode !== 'no-component' && (
@@ -228,6 +258,7 @@ export class Analyze extends Component {
                             sort={this.state.sort}
                             sortable
                             downloadable
+                            addButton={this.addRightButton.bind(this)}
                         />
                     </div>
                 )}
@@ -235,14 +266,33 @@ export class Analyze extends Component {
         );
     }
 
-    reset() {
+    home() {
         this.setState({
             sortingVariable: null,
             groupingVariable: null,
             showDifference: false,
             filters: {},
+            leftButtons: [],
+            rightButtons: [],
             mode: null
         });
+    }
+
+    reset() {
+        this.setState({
+            sortingVariable: null,
+            groupingVariable: null,
+            showDifference: false,
+            filters: {}
+        });
+    }
+
+    addLeftButton(lb) {
+        this.setState(prevState => ({ leftButtons: [...prevState.leftButtons, lb] }));
+    }
+
+    addRightButton(rb) {
+        this.setState(prevState => ({ rightButtons: [...prevState.rightButtons, rb] }));
     }
 
     getNonEmptyFiltersCount() {

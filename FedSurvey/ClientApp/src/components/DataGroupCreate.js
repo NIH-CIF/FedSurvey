@@ -10,7 +10,12 @@ export class DataGroupCreate extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataGroups: [], checked: [], newGroupName: null, loading: true, processing: false, success: null
+            dataGroups: [],
+            checked: [],
+            newGroupName: null,
+            loading: true,
+            processing: false,
+            success: null
         };
     }
 
@@ -46,7 +51,7 @@ export class DataGroupCreate extends Component {
 
                 <p>
                     Defining {this.state.newGroupName || '?'} as
-                    {(this.state.checked.map(checked => checked.name).join(' + ') + ' ') || '? '}
+                    {' ' + (this.state.checked.length > 0 ? this.state.checked.map(checked => checked.name).join(' + ') : '?')}
                 </p>
 
                 <Button onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Create</Button>
@@ -55,7 +60,8 @@ export class DataGroupCreate extends Component {
                 {this.state.success === true && (
                     <p>
                         Creation success!
-                        Press "Home" above to view data with this new group or refresh the page
+                        Press "Home" above to view data with this new group or click
+                        <span style={{ cursor: 'pointer', color: 'blue', marginLeft: 4, marginRight: 4 }} onClick={this.reset.bind(this)}>here</span>
                         to create a new group.
                     </p>
                 )}
@@ -67,6 +73,18 @@ export class DataGroupCreate extends Component {
                 )}
             </div>
         );
+    }
+
+    reset() {
+        this.setState({
+            dataGroups: [],
+            checked: [],
+            newGroupName: null,
+            loading: true,
+            processing: false,
+            success: null
+        });
+        this.populateDataGroups();
     }
 
     handleCheck(dataGroup) {
@@ -92,7 +110,7 @@ export class DataGroupCreate extends Component {
 
     async populateDataGroups() {
         // would be good to show all strings for each data group listed here
-        const dataGroups = await (await fetch('api/data-groups')).json();
+        const dataGroups = await (await fetch('api/data-groups?computed=false')).json();
 
         this.setState({ dataGroups: dataGroups, loading: false });
     }
