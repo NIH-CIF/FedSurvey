@@ -24,7 +24,7 @@ namespace FedSurvey.Controllers
             [FromQuery(Name = "execution-ids")] List<int> executionIds,
             [FromQuery(Name = "question-ids")] List<int> questionIds
         ) {
-            IEnumerable<QuestionExecution> questionExecutions = _context.QuestionExecutions;
+            IEnumerable<QuestionExecution> questionExecutions = _context.QuestionExecutions.OrderBy(qe => qe.Position);
 
             if (executionIds.Count > 0)
             {
