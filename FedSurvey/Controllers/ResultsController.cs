@@ -29,6 +29,7 @@ namespace FedSurvey.Controllers
         [HttpGet]
         public IEnumerable<ResultDTO> Get(
             [FromQuery(Name = "question-ids")] List<int> questionIds,
+            [FromQuery(Name = "question-group-ids")] List<int> questionGroupIds,
             [FromQuery(Name = "data-group-names")] List<string> dataGroupNames,
             [FromQuery(Name = "possible-response-names")] List<string> possibleResponseNames,
             [FromQuery(Name = "execution-keys")] List<string> executionKeys
@@ -193,6 +194,10 @@ namespace FedSurvey.Controllers
 
             // Need this for the sublist queries then need to query the overall queries back to normal.
             List<string> dataGroupNamesWithChildren = dataGroupNames.Concat(childNames).ToList();
+
+            // Need to translate a question group into its question ids.
+            List<int> questionGroupQuestionIds = _context.QuestionLinks.Where(ql => questionGroupIds.Contains(ql.QuestionGroupId)).Select(ql => ql.QuestionId).ToList();
+            questionIds = questionIds.Concat(questionGroupQuestionIds).ToList();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {

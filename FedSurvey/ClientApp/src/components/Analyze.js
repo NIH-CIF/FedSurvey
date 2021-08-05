@@ -99,7 +99,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Positive'],
                                 'execution-keys': [this.state.latestExecutionNames[0]],
-                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)'],
+                                'question-group-ids': [1]
                             },
                             sort: {
                                 header: 'OSC TOTAL',
@@ -113,7 +114,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Neutral'],
                                 'execution-keys': [this.state.latestExecutionNames[0]],
-                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)'],
+                                'question-group-ids': [1]
                             },
                             sort: {
                                 header: 'OSC TOTAL',
@@ -127,7 +129,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Negative'],
                                 'execution-keys': [this.state.latestExecutionNames[0]],
-                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)']
+                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)'],
+                                'question-group-ids': [1]
                             },
                             sort: {
                                 header: 'OSC TOTAL',
@@ -140,7 +143,8 @@ export class Analyze extends Component {
                             groupingVariable: 'questionId',
                             filters: {
                                 'possible-response-names': ['Positive'],
-                                'data-group-names': ['OSC TOTAL']
+                                'data-group-names': ['OSC TOTAL'],
+                                'question-group-ids': [1]
                             },
                             showDifference: true,
                             sort: {
@@ -154,7 +158,8 @@ export class Analyze extends Component {
                             groupingVariable: 'questionId',
                             filters: {
                                 'possible-response-names': ['Negative'],
-                                'data-group-names': ['OSC TOTAL']
+                                'data-group-names': ['OSC TOTAL'],
+                                'question-group-ids': [1]
                             },
                             showDifference: true,
                             sort: {
@@ -169,7 +174,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Positive'],
                                 'data-group-names': ['OSC TOTAL'],
-                                'execution-keys': this.state.latestExecutionNames.slice(0, 2)
+                                'execution-keys': this.state.latestExecutionNames.slice(0, 2),
+                                'question-group-ids': [1]
                             },
                             showDifference: true,
                             sort: {
@@ -185,7 +191,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Positive'],
                                 'data-group-names': ['OSC TOTAL'],
-                                'execution-keys': this.state.latestExecutionNames.slice(0, 2)
+                                'execution-keys': this.state.latestExecutionNames.slice(0, 2),
+                                'question-group-ids': [1]
                             },
                             showDifference: true,
                             sort: {
@@ -201,7 +208,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Positive'],
                                 'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES'],
-                                'execution-keys': [this.state.latestExecutionNames[0]]
+                                'execution-keys': [this.state.latestExecutionNames[0]],
+                                'question-group-ids': [1]
                             },
                             showDifference: true,
                             sort: {
@@ -217,7 +225,8 @@ export class Analyze extends Component {
                             filters: {
                                 'possible-response-names': ['Positive'],
                                 'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES'],
-                                'execution-keys': [this.state.latestExecutionNames[0]]
+                                'execution-keys': [this.state.latestExecutionNames[0]],
+                                'question-group-ids': [1]
                             },
                             showDifference: true,
                             sort: {
