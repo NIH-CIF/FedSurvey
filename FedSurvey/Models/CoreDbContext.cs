@@ -15,6 +15,7 @@ namespace FedSurvey.Models
         public virtual DbSet<DataGroupString> DataGroupStrings { get; set; }
         public virtual DbSet<DataGroupLink> DataGroupLinks { get; set; }
         public virtual DbSet<Execution> Executions { get; set; }
+        public virtual DbSet<MergeCandidateDTO> MergeCandidateDTOs { get; set; }
         public virtual DbSet<PossibleResponseString> PossibleResponseStrings { get; set; }
         public virtual DbSet<PossibleResponse> PossibleResponses { get; set; }
         public virtual DbSet<QuestionExecution> QuestionExecutions { get; set; }
@@ -262,6 +263,38 @@ namespace FedSurvey.Models
                 Questions.Id"
             );
             modelBuilder.Entity<QuestionDTO>().ToTable(null);
+
+            modelBuilder.Entity<MergeCandidateDTO>().ToSqlQuery(
+                @"WITH LatestOccurredTime AS (
+	                SELECT
+		                Questions.Id,
+		                MAX(Executions.OccurredTime) AS Latest
+	                FROM Questions
+	                JOIN QuestionExecutions
+	                ON QuestionExecutions.QuestionId = Questions.Id
+	                JOIN Executions
+	                ON Executions.Id = QuestionExecutions.ExecutionId
+	                GROUP BY Questions.Id
+                )
+                SELECT
+	                Questions.Id,
+	                MAX(QuestionExecutions.Body) AS Body,
+                    MAX(QuestionExecutions.Position) AS Position
+                FROM Questions
+                JOIN LatestOccurredTime
+                ON LatestOccurredTime.Id = Questions.Id
+                JOIN Executions
+                ON Executions.OccurredTime = LatestOccurredTime.Latest
+                JOIN QuestionExecutions
+                ON QuestionExecutions.QuestionId = Questions.Id
+                AND QuestionExecutions.ExecutionId = Executions.Id
+                LEFT JOIN QuestionExecutions OverallExecutions
+                ON OverallExecutions.QuestionId = Questions.Id
+                GROUP BY
+                Questions.Id
+                HAVING COUNT(OverallExecutions.Id) = 1"
+            );
+            modelBuilder.Entity<MergeCandidateDTO>().ToTable(null);
 
             OnModelCreatingPartial(modelBuilder);
         }

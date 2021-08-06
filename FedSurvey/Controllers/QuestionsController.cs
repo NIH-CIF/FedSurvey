@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 namespace FedSurvey.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class QuestionsController : ControllerBase
     {
         private readonly CoreDbContext _context;
@@ -21,22 +20,22 @@ namespace FedSurvey.Controllers
 
         // One guide recommended using async more often here.
         [HttpGet]
-        public IEnumerable<QuestionDTO> Get(
-            [FromQuery(Name = "merge-candidate")] bool mergeCandidate
-        ) {
+        [Route("api/[controller]")]
+        public IEnumerable<QuestionDTO> Get() {
             IEnumerable<QuestionDTO> questions = _context.QuestionDTOs;
 
-            //if (mergeCandidate)
-            //{
-            //    dataGroups = dataGroups.Where(x => x.ParentLinks.Count > 0);
-            //}
-            // Note that this will break if multiple filters are enacted.
-            //else if (!string.IsNullOrEmpty(Request.QueryString.Value))
-            //{
-            //    dataGroups = dataGroups.Where(x => x.ParentLinks.Count == 0);
-            //}
-
             return questions.ToList();
+        }
+
+        // Use QuestionDTO for this too, then just have a boolean change the query?
+        // Would be better API design.
+        [HttpGet]
+        [Route("api/[controller]/merge-candidates")]
+        public IEnumerable<MergeCandidateDTO> GetMergeCandidates()
+        {
+            IEnumerable<MergeCandidateDTO> mergeCandidates = _context.MergeCandidateDTOs;
+
+            return mergeCandidates.ToList();
         }
     }
 }
