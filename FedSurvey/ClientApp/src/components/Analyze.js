@@ -282,6 +282,7 @@ export class Analyze extends Component {
             groupingVariable: null,
             showDifference: false,
             filters: {},
+            sort: {},
             leftButtons: [],
             rightButtons: [],
             mode: null
@@ -293,7 +294,8 @@ export class Analyze extends Component {
             sortingVariable: null,
             groupingVariable: null,
             showDifference: false,
-            filters: {}
+            filters: {},
+            sort: {}
         });
     }
 
