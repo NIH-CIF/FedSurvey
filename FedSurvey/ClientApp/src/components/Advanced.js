@@ -160,7 +160,7 @@ export class Advanced extends Component {
                                 totalExpandedVariables.find(dv => dv.tableName === val.value),
                                 val.value
                             )}
-                            value={downOptions.find(dop => dop.value === this.props.groupingVariable)}
+                            value={downOptions.find(dop => dop.value === this.props.groupingVariable) || ''}
                             options={downOptions}
                         />
                     </div>
@@ -180,7 +180,7 @@ export class Advanced extends Component {
                                         totalExpandedVariables.find(dv => dv.tableName === val.value),
                                         val.value
                                     )}
-                                    value={acrossOptions.find(ao => ao.value === this.props.sortingVariable)}
+                                    value={acrossOptions.find(ao => ao.value === this.props.sortingVariable) || ''}
                                     options={acrossOptions}
                                 />
                             </div>

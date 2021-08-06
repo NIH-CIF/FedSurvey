@@ -52,6 +52,7 @@ export class Analyze extends Component {
                             outline
                             color="secondary"
                             onClick={this.home.bind(this)}
+                            disabled={this.state.mode === null}
                         >
                             Home
                         </Button>
@@ -297,11 +298,23 @@ export class Analyze extends Component {
     }
 
     addLeftButton(lb) {
-        this.setState(prevState => ({ leftButtons: [...prevState.leftButtons, lb] }));
+        const existingButtons = this.state.leftButtons;
+
+        if (this.state.leftButtons.map(lb => lb.text).includes(lb.text)) {
+            existingButtons.splice(existingButtons.findIndex(l => l.text === lb.text), 1);
+        }
+
+        this.setState(prevState => ({ leftButtons: [...existingButtons, lb] }));
     }
 
     addRightButton(rb) {
-        this.setState(prevState => ({ rightButtons: [...prevState.rightButtons, rb] }));
+        const existingButtons = this.state.rightButtons;
+
+        if (this.state.rightButtons.map(rb => rb.text).includes(rb.text)) {
+            existingButtons.splice(existingButtons.findIndex(r => r.text === rb.text), 1);
+        }
+
+        this.setState(prevState => ({ rightButtons: [...existingButtons, rb] }));
     }
 
     getNonEmptyFiltersCount() {
