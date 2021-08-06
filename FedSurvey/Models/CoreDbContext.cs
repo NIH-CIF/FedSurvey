@@ -23,6 +23,7 @@ namespace FedSurvey.Models
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<QuestionLink> QuestionLinks { get; set; }
         public virtual DbSet<QuestionGroup> QuestionGroups { get; set; }
+        public virtual DbSet<QuestionDTO> QuestionDTOs { get; set; }
         public virtual DbSet<Response> Responses { get; set; }
         public virtual DbSet<ResponseDTO> ResponseDTOs { get; set; }
         public virtual DbSet<ResultDTO> ResultDTOs { get; set; }
@@ -233,6 +234,34 @@ namespace FedSurvey.Models
 
             modelBuilder.Entity<ResultDTO>().HasNoKey();
             modelBuilder.Entity<ResultDTO>().ToTable(null);
+
+            modelBuilder.Entity<QuestionDTO>().ToSqlQuery(
+                @"WITH LatestOccurredTime AS (
+	                SELECT
+		                Questions.Id,
+		                MAX(Executions.OccurredTime) AS Latest
+	                FROM Questions
+	                JOIN QuestionExecutions
+	                ON QuestionExecutions.QuestionId = Questions.Id
+	                JOIN Executions
+	                ON Executions.Id = QuestionExecutions.ExecutionId
+	                GROUP BY Questions.Id
+                )
+                SELECT
+	                Questions.Id,
+	                MAX(QuestionExecutions.Body) AS Body
+                FROM Questions
+                JOIN LatestOccurredTime
+                ON LatestOccurredTime.Id = Questions.Id
+                JOIN Executions
+                ON Executions.OccurredTime = LatestOccurredTime.Latest
+                JOIN QuestionExecutions
+                ON QuestionExecutions.QuestionId = Questions.Id
+                AND QuestionExecutions.ExecutionId = Executions.Id
+                GROUP BY
+                Questions.Id"
+            );
+            modelBuilder.Entity<QuestionDTO>().ToTable(null);
 
             OnModelCreatingPartial(modelBuilder);
         }

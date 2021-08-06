@@ -34,6 +34,7 @@ namespace FedSurvey.Controllers
             [FromQuery(Name = "possible-response-names")] List<string> possibleResponseNames,
             [FromQuery(Name = "execution-keys")] List<string> executionKeys
         ) {
+            // Consider using Question query as another subquery to establish latest question text.
             // {0} is BottomLevel query string,
             // {1} is MiddleLevel query string
             string queryFormatString = @"WITH BottomLevel AS (
