@@ -9,7 +9,8 @@ namespace FedSurvey.Models
     [NotMapped]
     public partial class MergeCandidateDTO
     {
-        public int Id { get; set; }
+        public int QuestionId { get; set; }
+        public string ExecutionKey { get; set; }
         public string Body { get; set; }
         public int Position { get; set; }
     }

@@ -277,7 +277,8 @@ namespace FedSurvey.Models
 	                GROUP BY Questions.Id
                 )
                 SELECT
-	                Questions.Id,
+	                Questions.Id AS QuestionId,
+                    Executions.""Key"" AS ExecutionKey,
 	                MAX(QuestionExecutions.Body) AS Body,
                     MAX(QuestionExecutions.Position) AS Position
                 FROM Questions
@@ -291,10 +292,12 @@ namespace FedSurvey.Models
                 LEFT JOIN QuestionExecutions OverallExecutions
                 ON OverallExecutions.QuestionId = Questions.Id
                 GROUP BY
-                Questions.Id
+                Questions.Id,
+                Executions.""Key""
                 HAVING COUNT(OverallExecutions.Id) = 1"
             );
             modelBuilder.Entity<MergeCandidateDTO>().ToTable(null);
+            modelBuilder.Entity<MergeCandidateDTO>().HasNoKey();
 
             OnModelCreatingPartial(modelBuilder);
         }
