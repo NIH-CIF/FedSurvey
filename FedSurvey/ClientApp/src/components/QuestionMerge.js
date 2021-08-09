@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, FormGroup } from 'reactstrap';
+import { Button, ButtonGroup, FormGroup } from 'reactstrap';
 import Select from 'react-select';
 import _ from 'lodash';
 
@@ -27,7 +27,13 @@ export class QuestionMerge extends Component {
         return !this.state.loading && (
             <div>
                 <div>
-                    <Link to='/'>Home</Link>
+                    <Link to="/" style={{ marginRight: 40 }}>Home</Link>
+
+                    <Link to="/data-groups/merge" style={{ marginRight: 40 }}>Merge Organizations</Link>
+
+                    <Link to="/data-groups/create" style={{ marginRight: 40 }}>Create Computed Organizations</Link>
+
+                    <Link to="/admin">Admin</Link>
                 </div>
 
                 <h4>Merge questions</h4>
@@ -45,7 +51,11 @@ export class QuestionMerge extends Component {
                     />
                 </FormGroup>
 
-                <Button onClick={this.submit.bind(this)} disabled={this.state.toMerge.length < 2}>Merge</Button>
+                <ButtonGroup>
+                    <Button color="primary" onClick={this.submit.bind(this)} disabled={this.state.toMerge.length < 2}>Merge</Button>
+
+                    <Button onClick={this.reset.bind(this)}>Reset</Button>
+                </ButtonGroup>
 
                 {this.state.processing && (<p>Processing merge...</p>)}
                 {this.state.success === true && (
@@ -66,7 +76,10 @@ export class QuestionMerge extends Component {
                     <>
                         <h5>Merge Candidates</h5>
 
-                        <p>This follows a simple algorithm to guess which questions might need to be merged with others.</p>
+                        <p>
+                            These are questions that have only occurred in a single year so far.
+                            It is possible that they have a slight text variation that led to this.
+                        </p>
                     </>
                 )}
 

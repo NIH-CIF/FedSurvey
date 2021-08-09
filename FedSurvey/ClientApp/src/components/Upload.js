@@ -23,7 +23,7 @@ export class Upload extends Component {
         const toggle = this.toggle.bind(this);
 
         return (
-            <Button outline block color="danger" onClick={toggle}>
+            <Button outline block color="danger" onClick={toggle} style={this.props.style}>
                 Upload
                 <Modal isOpen={this.state.isOpen} toggle={toggle}>
                     <ModalHeader toggle={toggle}>Upload</ModalHeader>

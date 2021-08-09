@@ -20,10 +20,16 @@ export class DataGroupMerge extends Component {
         return !this.state.loading && (
             <div>
                 <div>
-                    <Link to='/'>Home</Link>
+                    <Link to="/" style={{ marginRight: 40 }}>Home</Link>
+
+                    <Link to="/data-groups/create" style={{ marginRight: 40 }}>Create Computed Organization</Link>
+
+                    <Link to="/questions/merge" style={{ marginRight: 40 }}>Merge Questions</Link>
+
+                    <Link to="/admin">Admin</Link>
                 </div>
 
-                <h4>Merge data groups</h4>
+                <h4>Merge organizations</h4>
 
                 <span>{this.getTextForStep()}</span>
 
@@ -40,7 +46,7 @@ export class DataGroupMerge extends Component {
 
                 <p>
                     Merging {(this.state.checked.map(checked => checked.name).join(', ') + ' ') || '? '}
-                    into a group of the name {this.state.mergeTo?.name || '?'}
+                    into an organization of the name {this.state.mergeTo?.name || '?'}
                 </p>
 
                 <Button onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Merge</Button>

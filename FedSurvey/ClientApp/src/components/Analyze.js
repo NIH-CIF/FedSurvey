@@ -1,8 +1,8 @@
 ﻿import React, { Component } from 'react';
 import { Button, ButtonGroup, Row, Col } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import { Advanced } from './Advanced';
 import { ResultsDataTable } from './ResultsDataTable';
-import { Upload } from './Upload';
 import { Redirect } from 'react-router-dom';
 
 export class Analyze extends Component {
@@ -74,7 +74,14 @@ export class Analyze extends Component {
                     </span>
 
                     <ButtonGroup>
-                        <Upload />
+                        <Button
+                            outline
+                            color="secondary"
+                            tag={Link}
+                            href="/admin"
+                        >
+                            Admin
+                        </Button>
 
                         {this.state.rightButtons.map(rb => (
                             <Button

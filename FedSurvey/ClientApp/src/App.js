@@ -5,6 +5,7 @@ import { History } from './components/History';
 import { QuestionPage } from './components/QuestionPage';
 import { DataGroupMerge } from './components/DataGroupMerge';
 import { DataGroupCreate } from './components/DataGroupCreate';
+import { Admin } from './components/Admin';
 import { Analyze } from './components/Analyze';
 import { QuestionMerge } from './components/QuestionMerge';
 
@@ -23,6 +24,7 @@ export default class App extends Component {
                 <Route path='/data-groups/merge' component={DataGroupMerge} />
                 <Route path='/data-groups/create' component={DataGroupCreate} />
                 <Route path='/history' component={History} />
+                <Route path='/admin' component={Admin} />
             </Switch>
       </Layout>
     );

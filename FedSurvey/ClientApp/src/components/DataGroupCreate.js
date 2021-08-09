@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, FormGroup, Input, Label } from 'reactstrap';
+import { Button, ButtonGroup, FormGroup, Input, Label } from 'reactstrap';
 
 // This is exclusive to computed groups for now, but it could become more generic.
 // This was copied from DataGroupMerge, so maybe similar code could be put into its own file.
@@ -27,16 +27,22 @@ export class DataGroupCreate extends Component {
         return !this.state.loading && (
             <div>
                 <div>
-                    <Link to='/'>Home</Link>
+                    <Link to="/" style={{ marginRight: 40 }}>Home</Link>
+
+                    <Link to="/data-groups/merge" style={{ marginRight: 40 }}>Merge Organizations</Link>
+
+                    <Link to="/questions/merge" style={{ marginRight: 40 }}>Merge Questions</Link>
+
+                    <Link to="/admin">Admin</Link>
                 </div>
 
-                <h4>Create computed data group</h4>
+                <h4>Create computed organization</h4>
 
-                <span>Name the new group</span>
+                <span>Name the new organization</span>
 
                 <Input type="text" onChange={e => this.setState({ newGroupName: e.target.value })} />
 
-                <span>Check the organizations that will sum to the new group</span>
+                <span>Check the organizations that will sum to the new organization</span>
 
                 <FormGroup>
                     {this.state.dataGroups.filter(dg => !this.state.checked.map(dg => dg.id).includes(dg.id)).map(dg => (
@@ -54,7 +60,10 @@ export class DataGroupCreate extends Component {
                     {' ' + (this.state.checked.length > 0 ? this.state.checked.map(checked => checked.name).join(' + ') : '?')}
                 </p>
 
-                <Button onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Create</Button>
+                <ButtonGroup>
+                    <Button color="primary" onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Create</Button>
+                    <Button onClick={this.reset.bind(this)}>Reset</Button>
+                </ButtonGroup>
 
                 {this.state.processing && (<p>Processing creation...</p>)}
                 {this.state.success === true && (
