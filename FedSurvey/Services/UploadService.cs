@@ -39,11 +39,13 @@ namespace FedSurvey.Services
                                 continue;
 
                             // Maybe more validation to do, but the upload should be able to handle bad data.
-                            if (reader.GetString(0).Replace("\n", " ").Equals("Sorting Level") &&
+                            if ((reader.GetString(0).Replace("\n", " ").Equals("Sorting Level") ||
+                                reader.GetString(0).Replace("\n", " ").Equals("Sorting Code")) &&
                                 reader.GetString(1).Replace("\n", " ").Equals("Organization") &&
                                 reader.GetString(2).Replace("\n", " ").Equals("Item") &&
                                 reader.GetString(3).Replace("\n", " ").Equals("Item Text") &&
-                                reader.GetString(4).Replace("\n", " ").Equals("Item Respondents N"))
+                                (reader.GetString(4).Replace("\n", " ").Equals("Item Respondents N") ||
+                                reader.GetString(4).Replace("\n", " ").Equals("Item Respondents (N)")))
                             {
                                 headerRowExists = true;
                                 break;
@@ -89,9 +91,10 @@ namespace FedSurvey.Services
                             for (int i = POSSIBLE_RESPONSE_START; i < reader.FieldCount; i++)
                             {
                                 string responseWithSuffix = reader.GetString(i).Replace("\n", " ").Replace("\u00A0", " ");
-                                isPercent[i] = responseWithSuffix.EndsWith('%');
+                                isPercent[i] = responseWithSuffix.EndsWith('%') || responseWithSuffix.EndsWith("(%)");
 
-                                string response = Regex.Replace(responseWithSuffix, @"[%|N]$", "").Trim();
+                                // Adjust this to handle parentheses too.
+                                string response = Regex.Replace(responseWithSuffix, @"%$|N$|\(%\)$|\(N\)$", "").Trim();
 
                                 PossibleResponseString responseName = context.PossibleResponseStrings.Where(prs => prs.Name.Equals(response)).Include(x => x.PossibleResponse).FirstOrDefault();
 

@@ -78,7 +78,7 @@ export class Analyze extends Component {
                             outline
                             color="secondary"
                             tag={Link}
-                            href="/admin"
+                            to="/admin"
                         >
                             Admin
                         </Button>
