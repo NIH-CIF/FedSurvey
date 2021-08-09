@@ -10,7 +10,12 @@ export class QuestionMerge extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            questionTexts: [], toMerge: [], loading: true, processing: false, success: null
+            questionTexts: [],
+            mergeCandidates: [],
+            toMerge: [],
+            loading: true,
+            processing: false,
+            success: null
         };
     }
 
@@ -56,13 +61,30 @@ export class QuestionMerge extends Component {
                         Please contact the development team.
                     </p>
                 )}
+
+                {this.state.mergeCandidates.length > 0 && (
+                    <>
+                        <h5>Merge Candidates</h5>
+
+                        <p>This follows a simple algorithm to guess which questions might need to be merged with others.</p>
+                    </>
+                )}
+
+                {this.state.mergeCandidates.map(mc => (
+                    <p>Question Number {mc.position} in {mc.executionKey}: {mc.body}</p>
+                ))}
             </div>
         );
     }
 
     reset() {
         this.setState({
-            questionTexts: [], toMerge: [], loading: true, processing: false, success: null
+            questionTexts: [],
+            mergeCandidates: [],
+            toMerge: [],
+            loading: true,
+            processing: false,
+            success: null
         });
         this.populateQuestionTexts();
     }
@@ -82,9 +104,17 @@ export class QuestionMerge extends Component {
 
     async populateQuestionTexts() {
         // would be good to show all strings for each data group listed here
-        const questionExecutions = await (await fetch('api/question-executions')).json();
+        const response = await Promise.all(
+            [
+                fetch('api/question-executions'),
+                fetch('api/questions/merge-candidates')
+            ]
+        );
+        const [questionExecutions, mergeCandidates] = await Promise.all(
+            response.map(r => r.json())
+        );
         const duplicatesRemoved = Object.keys(_.groupBy(questionExecutions, qe => qe.body)).sort((a, b) => (a < b) ? -1 : ((b < a) ? 1 : 0));
 
-        this.setState({ questionTexts: duplicatesRemoved, loading: false });
+        this.setState({ questionTexts: duplicatesRemoved, mergeCandidates: mergeCandidates.sort((a, b) => a.position - b.position), loading: false });
     }
 }
