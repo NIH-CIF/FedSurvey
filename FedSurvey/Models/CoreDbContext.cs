@@ -28,6 +28,8 @@ namespace FedSurvey.Models
         public virtual DbSet<Response> Responses { get; set; }
         public virtual DbSet<ResponseDTO> ResponseDTOs { get; set; }
         public virtual DbSet<ResultDTO> ResultDTOs { get; set; }
+        public virtual DbSet<View> Views { get; set; }
+        public virtual DbSet<ViewConfig> ViewConfigs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -201,6 +203,24 @@ namespace FedSurvey.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Responses_QuestionExecutions");
             });
+
+            modelBuilder.Entity<View>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+            modelBuilder.Entity<View>().ToTable("Views");
+
+            modelBuilder.Entity<ViewConfig>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.HasOne(d => d.View)
+                    .WithMany(p => p.ViewConfigs)
+                    .HasForeignKey(d => d.ViewId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ViewConfigs_Views_ViewId");
+            });
+            modelBuilder.Entity<ViewConfig>().ToTable("ViewConfigs");
 
             // Later this should probably go away, as ResultDTO does the same thing but better.
             modelBuilder.Entity<ResponseDTO>().ToSqlQuery(
