@@ -19,13 +19,14 @@ export class Analyze extends Component {
             mode: null,
             loading: true,
             latestExecutionNames: null,
+            views: [],
             leftButtons: [],
             rightButtons: []
         };
     }
 
     componentDidMount() {
-        this.populateExecutionData();
+        this.populateHomeData();
     }
 
     linkCol(text, stateChange) {
@@ -100,21 +101,9 @@ export class Analyze extends Component {
 
                 {this.state.mode === null && (
                     <Row xs="3" style={{ height: 'calc(100% - 40px)', width: '100%', margin: 0 }}>
-                        {this.linkCol('Top Positive Responses', {
-                            mode: 'no-component',
-                            sortingVariable: 'dataGroupName',
-                            groupingVariable: 'questionId',
-                            filters: {
-                                'possible-response-names': ['Positive'],
-                                'execution-keys': [this.state.latestExecutionNames[0]],
-                                'data-group-names': ['OSC TOTAL', 'DIV PRGM COORD, PLNG & STRATEGIC INITIATIVES', 'OFFICE OF THE DIRECTOR (OD)'],
-                                'question-group-ids': [1]
-                            },
-                            sort: {
-                                header: 'OSC TOTAL',
-                                direction: 'desc'
-                            }
-                        })}
+                        {this.state.views.map(v => (
+                            this.linkCol(v.name, {mode: 'no-component', ...this.prepareConfig(v.config)})
+                        ))}
                         {this.linkCol('Top Neutral Responses', {
                             mode: 'no-component',
                             sortingVariable: 'dataGroupName',
@@ -356,21 +345,29 @@ export class Analyze extends Component {
         this.setState({ showDifference: val });
     }
 
-    async populateExecutionData() {
+    prepareConfig(json) {
+        return JSON.parse(json.replace(/\$\(latestExecutionNames(\d)\)/, (a, b) => {
+            return this.state.latestExecutionNames.slice(0, b).join(',');
+        }));
+    }
+
+    async populateHomeData() {
         // get questions, data groups, executions, possible responses
         // maybe a questions API route for easier processing later
         const response = await Promise.all(
             [
                 fetch('api/executions'),
+                fetch('api/views')
             ]
         );
-        const [executions] = await Promise.all(
+        const [executions, views] = await Promise.all(
             response.map(r => r.json())
         );
         const sortedExecutions = executions.sort((a, b) => (a.occurredTime < b.occurredTime) ? 1 : ((a.occurredTime > b.occurredTime ? -1 : 0)));
 
         this.setState({
             latestExecutionNames: sortedExecutions.map(se => se.key),
+            views,
             loading: false
         });
     }
