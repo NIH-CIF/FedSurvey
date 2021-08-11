@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FedSurvey.Models;
+using FedSurvey.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FedSurvey
@@ -34,6 +35,7 @@ namespace FedSurvey
             });
 
             services.AddSingleton<IConfiguration>(Configuration);
+            services.AddSingleton<AuthenticationService>(new AuthenticationService(Configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
