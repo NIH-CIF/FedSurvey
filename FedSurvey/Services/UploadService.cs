@@ -133,7 +133,7 @@ namespace FedSurvey.Services
                             Dictionary<string, DataGroupString> organizationStringToObject = new Dictionary<string, DataGroupString>();
                             Dictionary<string, QuestionExecution> questionTextToObject = new Dictionary<string, QuestionExecution>();
 
-                            while (reader.Read())
+                            while (reader.Read() && !reader.IsDBNull(0))
                             {
                                 // Columns:
                                 // 0 Sorting Level - this will be ignored unless it is later needed
