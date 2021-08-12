@@ -8,6 +8,7 @@ import { DataGroupCreate } from './components/DataGroupCreate';
 import { Admin } from './components/Admin';
 import { Analyze } from './components/Analyze';
 import { QuestionMerge } from './components/QuestionMerge';
+import { Login } from './components/Login';
 
 import './custom.css'
 
@@ -25,6 +26,7 @@ export default class App extends Component {
                 <Route path='/data-groups/create' component={DataGroupCreate} />
                 <Route path='/history' component={History} />
                 <Route path='/admin' component={Admin} />
+                <Route path='/login' component={Login} />
             </Switch>
       </Layout>
     );
