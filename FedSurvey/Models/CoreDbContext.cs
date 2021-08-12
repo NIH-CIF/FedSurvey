@@ -222,6 +222,16 @@ namespace FedSurvey.Models
             });
             modelBuilder.Entity<ViewConfig>().ToTable("ViewConfigs");
 
+            modelBuilder.Entity<Token>(entity =>
+            {
+                entity.HasIndex(e => e.Body)
+                    .HasName("UQ__Token__C41E02890F7150E6")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+            modelBuilder.Entity<Token>().ToTable("Tokens");
+
             // Later this should probably go away, as ResultDTO does the same thing but better.
             modelBuilder.Entity<ResponseDTO>().ToSqlQuery(
                 @"SELECT
