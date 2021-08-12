@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, ButtonGroup, FormGroup } from 'reactstrap';
 import Select from 'react-select';
 import _ from 'lodash';
+import api from '../api';
 
 export class QuestionMerge extends Component {
     static displayName = QuestionMerge.name;
@@ -105,7 +106,7 @@ export class QuestionMerge extends Component {
     submit() {
         this.setState({ processing: true });
 
-        fetch('api/questions/merge', {
+        api.fetch('api/questions/merge', {
             method: 'post',
             body: JSON.stringify(this.state.toMerge),
             headers: {
@@ -119,8 +120,8 @@ export class QuestionMerge extends Component {
         // would be good to show all strings for each data group listed here
         const response = await Promise.all(
             [
-                fetch('api/question-executions'),
-                fetch('api/questions/merge-candidates')
+                api.fetch('api/question-executions'),
+                api.fetch('api/questions/merge-candidates')
             ]
         );
         const [questionExecutions, mergeCandidates] = await Promise.all(

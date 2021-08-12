@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Advanced } from './Advanced';
 import { ResultsDataTable } from './ResultsDataTable';
 import { Redirect } from 'react-router-dom';
+import api from '../api';
 
 export class Analyze extends Component {
     static displayName = Analyze.name;
@@ -228,8 +229,8 @@ export class Analyze extends Component {
         // maybe a questions API route for easier processing later
         const response = await Promise.all(
             [
-                fetch('api/executions'),
-                fetch('api/views')
+                api.fetch('api/executions'),
+                api.fetch('api/views')
             ]
         );
         const [executions, views] = await Promise.all(

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, FormText, Label, Input } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import api from '../api';
 
 export class Upload extends Component {
     static displayName = Upload.name;
@@ -106,7 +107,7 @@ export class Upload extends Component {
         const data = new FormData();
         data.append('file', target.files[0]);
 
-        const res = await fetch('api/upload/format', {
+        const res = await api.fetch('api/upload/format', {
             method: 'POST',
             body: data
         });
@@ -125,7 +126,7 @@ export class Upload extends Component {
         if (this.state.dataGroupName)
             data.append('dataGroupName', this.state.dataGroupName);
 
-        const res = await fetch('api/upload', {
+        const res = await api.fetch('api/upload', {
             method: 'POST',
             body: data
         });

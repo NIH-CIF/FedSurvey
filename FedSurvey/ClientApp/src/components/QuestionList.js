@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import api from '../api';
 
 export class QuestionList extends Component {
     static displayName = QuestionList.name;
@@ -43,7 +44,7 @@ export class QuestionList extends Component {
         if (!this.props.executionId || (prevProps && prevProps.executionId === this.props.executionId))
             return;
 
-        const response = await fetch('api/question-executions?' + new URLSearchParams({ 'execution-ids': [this.props.executionId] }));
+        const response = await api.fetch('api/question-executions?' + new URLSearchParams({ 'execution-ids': [this.props.executionId] }));
         const data = await response.json();
         this.setState({ questionExecutions: data });
     }

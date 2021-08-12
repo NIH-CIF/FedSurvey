@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, ButtonGroup, FormGroup, Input, Label } from 'reactstrap';
+import api from '../api';
 
 // This is exclusive to computed groups for now, but it could become more generic.
 // This was copied from DataGroupMerge, so maybe similar code could be put into its own file.
@@ -104,7 +105,7 @@ export class DataGroupCreate extends Component {
         // Prepare the ids for the POST in the correct order.
         this.setState({ processing: true });
 
-        fetch('api/data-groups/create', {
+        api.fetch('api/data-groups/create', {
             method: 'post',
             body: JSON.stringify({
                 name: this.state.newGroupName,
@@ -119,7 +120,7 @@ export class DataGroupCreate extends Component {
 
     async populateDataGroups() {
         // would be good to show all strings for each data group listed here
-        const dataGroups = await (await fetch('api/data-groups?computed=false')).json();
+        const dataGroups = await (await api.fetch('api/data-groups?computed=false')).json();
 
         this.setState({ dataGroups: dataGroups, loading: false });
     }

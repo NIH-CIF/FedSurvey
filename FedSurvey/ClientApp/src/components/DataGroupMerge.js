@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, FormGroup, Input, Label } from 'reactstrap';
+import api from '../api';
 
 export class DataGroupMerge extends Component {
     static displayName = DataGroupMerge.name;
@@ -95,7 +96,7 @@ export class DataGroupMerge extends Component {
         const ids = this.state.checked.sort((a, b) => (b.id === this.state.mergeTo.id ? 1 : 0) - (a.id === this.state.mergeTo.id ? 1 : 0)).map(dg => dg.id);
         this.setState({ processing: true });
 
-        fetch('api/data-groups/merge', {
+        api.fetch('api/data-groups/merge', {
             method: 'post',
             body: JSON.stringify(ids),
             headers: {
@@ -107,7 +108,7 @@ export class DataGroupMerge extends Component {
 
     async populateDataGroups() {
         // would be good to show all strings for each data group listed here
-        const dataGroups = await (await fetch('api/data-groups?computed=false')).json();
+        const dataGroups = await (await api.fetch('api/data-groups?computed=false')).json();
 
         this.setState({ dataGroups: dataGroups, loading: false });
     }

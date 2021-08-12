@@ -2,6 +2,7 @@
 import { Table } from 'reactstrap';
 import _ from 'lodash';
 import { CSVLink } from 'react-csv';
+import api from '../api';
 
 export class ResultsDataTable extends Component {
     static displayName = ResultsDataTable.name;

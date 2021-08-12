@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, Input, Label } from 'reactstrap';
 import { QuestionList } from './QuestionList';
 import { Link } from 'react-router-dom';
+import api from '../api';
 
 export class History extends Component {
     static displayName = History.name;
@@ -45,7 +46,7 @@ export class History extends Component {
     }
 
     async populateExecutionData() {
-        const response = await fetch('api/executions');
+        const response = await api.fetch('api/executions');
         const data = await response.json();
         this.setState({ executions: data, currentExecutionId: data[data.length - 1].id, loading: false });
     }

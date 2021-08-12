@@ -2,6 +2,7 @@
 import { Input, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { ResultsDataTable } from './ResultsDataTable';
+import api from '../api';
 
 export class QuestionPage extends Component {
     static displayName = QuestionPage.name;
@@ -69,9 +70,9 @@ export class QuestionPage extends Component {
     async populateQuestionData() {
         const response = await Promise.all(
             [
-                fetch('api/question-executions?' + new URLSearchParams({ 'question-ids': this.props.match.params.questionId })),
-                fetch('api/data-groups'),
-                fetch('api/executions')
+                api.fetch('api/question-executions?' + new URLSearchParams({ 'question-ids': this.props.match.params.questionId })),
+                api.fetch('api/data-groups'),
+                api.fetch('api/executions')
             ]    
         );
         const [questionExecutions, dataGroups, executions] = await Promise.all(
