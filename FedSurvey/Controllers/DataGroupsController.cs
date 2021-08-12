@@ -13,18 +13,25 @@ namespace FedSurvey.Controllers
     public class DataGroupsController : ControllerBase
     {
         private readonly CoreDbContext _context;
+        private readonly TokenService _tokenService;
 
-        public DataGroupsController(CoreDbContext context)
+        public DataGroupsController(CoreDbContext context, TokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         // One guide recommended using async more often here.
         [HttpGet]
         [Route("api/data-groups")]
-        public IEnumerable<DataGroup.DTO> Get(
+        public IActionResult Get(
             [FromQuery] bool computed
         ) {
+            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
+            {
+                return Unauthorized();
+            }
+
             IEnumerable<DataGroup> dataGroups = _context.DataGroups.Include(x => x.DataGroupStrings).Include(x => x.ParentLinks);
 
             if (computed)
@@ -37,7 +44,7 @@ namespace FedSurvey.Controllers
                 dataGroups = dataGroups.Where(x => x.ParentLinks.Count == 0);
             }
 
-            return dataGroups.Select(x => DataGroup.ToDTO(x)).ToList().OrderBy(x => x.Name);
+            return new JsonResult(dataGroups.Select(x => DataGroup.ToDTO(x)).ToList().OrderBy(x => x.Name));
         }
 
         // Accepts list of ids like "[2,6]" as JSON body and merges them.

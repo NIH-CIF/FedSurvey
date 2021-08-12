@@ -30,6 +30,7 @@ namespace FedSurvey.Models
         public virtual DbSet<ResultDTO> ResultDTOs { get; set; }
         public virtual DbSet<View> Views { get; set; }
         public virtual DbSet<ViewConfig> ViewConfigs { get; set; }
+        public virtual DbSet<Token> Tokens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

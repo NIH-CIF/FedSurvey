@@ -36,6 +36,7 @@ namespace FedSurvey
 
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddSingleton<AuthenticationService>(new AuthenticationService(Configuration));
+            services.AddSingleton<TokenService>(new TokenService(Configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
