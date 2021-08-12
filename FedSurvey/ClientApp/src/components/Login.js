@@ -71,8 +71,12 @@ export class Login extends Component {
 
                 response.json()
                     .then(j => {
+                        const today = new Date();
+
                         const cookies = new Cookies();
-                        cookies.set('token', j.body);
+                        cookies.set('token', j.body, {
+                            expires: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
+                        });
                     });
             });
     }

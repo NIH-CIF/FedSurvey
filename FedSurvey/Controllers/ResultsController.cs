@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FedSurvey.Models;
+using FedSurvey.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
@@ -15,11 +16,13 @@ namespace FedSurvey.Controllers
     {
         private readonly CoreDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly TokenService _tokenService;
 
-        public ResultsController(CoreDbContext context, IConfiguration configuration)
+        public ResultsController(CoreDbContext context, IConfiguration configuration, TokenService tokenService)
         {
             _context = context;
             _configuration = configuration;
+            _tokenService = tokenService;
         }
 
         // This is so ugly!
@@ -27,13 +30,18 @@ namespace FedSurvey.Controllers
         // or if I did some things wrong.
         // Consider making all filters ID-based?
         [HttpGet]
-        public IEnumerable<ResultDTO> Get(
+        public IActionResult Get(
             [FromQuery(Name = "question-ids")] List<int> questionIds,
             [FromQuery(Name = "question-group-ids")] List<int> questionGroupIds,
             [FromQuery(Name = "data-group-names")] List<string> dataGroupNames,
             [FromQuery(Name = "possible-response-names")] List<string> possibleResponseNames,
             [FromQuery(Name = "execution-keys")] List<string> executionKeys
         ) {
+            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
+            {
+                return Unauthorized();
+            }
+
             // Consider using Question query as another subquery to establish latest question text.
             // {0} is BottomLevel query string,
             // {1} is MiddleLevel query string
@@ -364,7 +372,7 @@ namespace FedSurvey.Controllers
                 }
             }
 
-            return results;
+            return new JsonResult(results);
         }
     }
 }

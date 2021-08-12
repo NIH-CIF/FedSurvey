@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FedSurvey.Models;
+using FedSurvey.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FedSurvey.Controllers
@@ -12,10 +13,12 @@ namespace FedSurvey.Controllers
     public class QuestionsController : ControllerBase
     {
         private readonly CoreDbContext _context;
+        private readonly TokenService _tokenService;
 
-        public QuestionsController(CoreDbContext context)
+        public QuestionsController(CoreDbContext context, TokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         // One guide recommended using async more often here.
@@ -42,6 +45,11 @@ namespace FedSurvey.Controllers
         [Route("api/[controller]/merge")]
         public IActionResult Merge([FromBody] List<string> texts)
         {
+            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
+            {
+                return Unauthorized();
+            }
+
             // handle ids being empty
 
             List<int> questionIds = _context.QuestionExecutions.Where(qe => texts.Contains(qe.Body)).Select(qe => qe.QuestionId).Distinct().ToList();

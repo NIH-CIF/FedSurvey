@@ -144,8 +144,8 @@ export class ResultsDataTable extends Component {
 
         const response = await Promise.all(
             [
-                fetch('api/results?' + new URLSearchParams(searchPairs)),
-                fetch('api/executions') // later will be an if to be included based on config
+                api.fetch('api/results?' + new URLSearchParams(searchPairs)),
+                api.fetch('api/executions') // later will be an if to be included based on config
             ]
         );
         const [results, executions] = await Promise.all(

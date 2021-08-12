@@ -27,11 +27,6 @@ namespace FedSurvey.Controllers
         public IActionResult Get(
             [FromQuery] bool computed
         ) {
-            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
-            {
-                return Unauthorized();
-            }
-
             IEnumerable<DataGroup> dataGroups = _context.DataGroups.Include(x => x.DataGroupStrings).Include(x => x.ParentLinks);
 
             if (computed)
@@ -56,6 +51,11 @@ namespace FedSurvey.Controllers
         [Route("api/data-groups/merge")]
         public IActionResult Merge([FromBody] List<int> ids)
         {
+            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
+            {
+                return Unauthorized();
+            }
+
             // handle ids being empty
 
             // We will make the first id in the list be the final data group.
@@ -93,6 +93,11 @@ namespace FedSurvey.Controllers
         [Route("api/data-groups/create")]
         public IActionResult Create([FromBody] CreateModel createModel)
         {
+            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
+            {
+                return Unauthorized();
+            }
+
             if (createModel.name == null)
             {
                 return UnprocessableEntity();

@@ -16,10 +16,12 @@ namespace FedSurvey.Controllers
     public class UploadController : ControllerBase
     {
         private readonly CoreDbContext _context;
+        private readonly TokenService _tokenService;
 
-        public UploadController(CoreDbContext context)
+        public UploadController(CoreDbContext context, TokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         [Route("api/[controller]/format")]
@@ -53,6 +55,11 @@ namespace FedSurvey.Controllers
         [HttpPost]
         public IActionResult Upload([FromForm] UploadModel uploadModel)
         {
+            if (!_tokenService.IsValidHeaders(Request.Headers, _context))
+            {
+                return Unauthorized();
+            }
+
             if (uploadModel.file == null || uploadModel.key == null)
             {
                 return UnprocessableEntity();
