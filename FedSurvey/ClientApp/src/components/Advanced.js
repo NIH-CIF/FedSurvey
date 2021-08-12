@@ -2,6 +2,7 @@
 import { Label, Input } from 'reactstrap';
 import _ from 'lodash';
 import Select from 'react-select';
+import api from '../api';
 
 export class Advanced extends Component {
     static displayName = Advanced.name;
@@ -235,10 +236,10 @@ export class Advanced extends Component {
         // maybe a questions API route for easier processing later
         const response = await Promise.all(
             [
-                fetch('api/question-executions'),
-                fetch('api/executions'), // later will be an if to be included based on config
-                fetch('api/data-groups'),
-                fetch('api/possible-responses')
+                api.fetch('api/question-executions'),
+                api.fetch('api/executions'), // later will be an if to be included based on config
+                api.fetch('api/data-groups'),
+                api.fetch('api/possible-responses')
             ]
         );
         const [questionExecutions, executions, dataGroups, possibleResponses] = await Promise.all(
