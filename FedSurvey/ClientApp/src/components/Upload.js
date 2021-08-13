@@ -108,7 +108,7 @@ export class Upload extends Component {
         data.append('file', target.files[0]);
 
         const res = await api.fetch('api/upload/format', {
-            method: 'POST',
+            method: 'post',
             body: data
         });
         const result = await res.json();
@@ -127,7 +127,7 @@ export class Upload extends Component {
             data.append('dataGroupName', this.state.dataGroupName);
 
         const res = await api.fetch('api/upload', {
-            method: 'POST',
+            method: 'post',
             body: data
         });
 

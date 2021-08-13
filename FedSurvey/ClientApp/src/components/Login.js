@@ -30,7 +30,7 @@ export class Login extends Component {
                     <Input type="text" onChange={e => this.setState({ username: e.target.value })} />
                 </FormGroup>
                 <FormGroup>
-                    <Label for="password">Username</Label>
+                    <Label for="password">Password</Label>
                     <Input type="password" onChange={e => this.setState({ password: e.target.value })} />
                 </FormGroup>
 

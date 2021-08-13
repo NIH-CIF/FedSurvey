@@ -5,6 +5,7 @@ import { Advanced } from './Advanced';
 import { ResultsDataTable } from './ResultsDataTable';
 import { Redirect } from 'react-router-dom';
 import api from '../api';
+import { hasToken, LOGIN_ENABLED } from '../token';
 
 export class Analyze extends Component {
     static displayName = Analyze.name;
@@ -76,14 +77,25 @@ export class Analyze extends Component {
                     </span>
 
                     <ButtonGroup>
-                        <Button
-                            outline
-                            color="secondary"
-                            tag={Link}
-                            to="/admin"
-                        >
-                            Admin
-                        </Button>
+                        {(hasToken() || !LOGIN_ENABLED) ? (
+                            <Button
+                                outline
+                                color="secondary"
+                                tag={Link}
+                                to="/admin"
+                            >
+                                Admin
+                            </Button>
+                        ) : (
+                            <Button
+                                outline
+                                color="primary"
+                                tag={Link}
+                                to="/login"
+                            >
+                                Log In
+                            </Button>
+                        )}
 
                         {this.state.rightButtons.map(rb => (
                             <Button
