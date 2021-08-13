@@ -15,8 +15,15 @@ export class Documentation extends Component {
     }
 
     render() {
-        return this.state.markdown && (
-            <ReactMarkdown children={this.state.markdown} />
+        return this.state.markdown ? (
+            <ReactMarkdown
+                children={this.state.markdown}
+                components={{
+                    img: ({ node, ...props }) => <img style={{ maxWidth: '100%' }} {...props} />
+                }}
+            />
+        ) : (
+            <div>Loading...</div>
         );
     }
 

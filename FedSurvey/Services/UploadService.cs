@@ -497,6 +497,7 @@ namespace FedSurvey.Services
                 return false;
             }
 
+            // todo should actually ensure that both an item sheet and a data sheet exist
             using (var stream = file.OpenReadStream())
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
