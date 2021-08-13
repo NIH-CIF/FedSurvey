@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, FormGroup, Input, Label } from 'reactstrap';
+import { Button, ButtonGroup, FormGroup, Input, Label } from 'reactstrap';
 import api from '../api';
 
 export class DataGroupMerge extends Component {
@@ -50,7 +50,10 @@ export class DataGroupMerge extends Component {
                     into an organization of the name {this.state.mergeTo?.name || '?'}
                 </p>
 
-                <Button onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Merge</Button>
+                <ButtonGroup>
+                    <Button color="primary" onClick={this.submit.bind(this)} disabled={this.state.checked.length < 2}>Merge</Button>
+                    <Button onClick={this.reset.bind(this)}>Reset</Button>
+                </ButtonGroup>
 
                 {this.state.processing && (<p>Processing merge...</p>)}
                 {this.state.success === true && (
