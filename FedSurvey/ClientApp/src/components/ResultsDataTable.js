@@ -32,6 +32,8 @@ export class ResultsDataTable extends Component {
                 text: 'Export'
             });
         }
+
+        this.populateResultsData();
     }
 
     componentDidUpdate(prevProps) {
