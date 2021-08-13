@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Button, ButtonGroup } from 'reactstrap';
 import { Upload } from './Upload';
-import { Documentation } from './Documentation';
+import { DocumentationList } from './DocumentationList';
 
 export class Admin extends Component {
     static displayName = Admin.name;
@@ -34,7 +34,7 @@ export class Admin extends Component {
                         to="/data-groups/create"
                         style={{ flex: 1 }}
                     >
-                        Create Computed Data Group
+                        Create Computed Organization
                     </Button>
 
                     <Button
@@ -52,7 +52,7 @@ export class Admin extends Component {
                     />
                 </ButtonGroup>
 
-                <Documentation file="organization-merge.md" />
+                <DocumentationList />
             </div>
         );
     }

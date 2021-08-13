@@ -9,6 +9,7 @@ import { Admin } from './components/Admin';
 import { Analyze } from './components/Analyze';
 import { QuestionMerge } from './components/QuestionMerge';
 import { Login } from './components/Login';
+import { DocumentationList } from './components/DocumentationList';
 
 import './custom.css'
 
@@ -27,6 +28,7 @@ export default class App extends Component {
                 <Route path='/history' component={History} />
                 <Route path='/admin' component={Admin} />
                 <Route path='/login' component={Login} />
+                <Route path='/docs' component={DocumentationList} />
             </Switch>
       </Layout>
     );
