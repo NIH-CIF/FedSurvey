@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Button, ButtonGroup } from 'reactstrap';
 import { Upload } from './Upload';
+import { Documentation } from './Documentation';
 
 export class Admin extends Component {
     static displayName = Admin.name;
@@ -50,6 +51,8 @@ export class Admin extends Component {
                         style={{ flex: 1 }}
                     />
                 </ButtonGroup>
+
+                <Documentation file="organization-merge.md" />
             </div>
         );
     }
